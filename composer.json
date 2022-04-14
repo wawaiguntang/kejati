@@ -1,0 +1,14 @@
+{
+    "name": "windows/ipm",
+    "autoload": {},
+    "authors": [
+        {
+            "name": "Diki Rahmad Sandi",
+            "email": "wawaiguntang@gmail.com"
+        }
+    ],
+    "require": {},
+    "config": {
+        "platform-check": false
+    }
+}

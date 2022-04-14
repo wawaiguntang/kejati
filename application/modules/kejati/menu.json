@@ -1,0 +1,13 @@
+{
+    "code": "KEJATI",
+    "header" : "Kejaksaan Tinggi",
+    "menu" : [
+        {
+            "text" : "Master",
+            "icon" : "<i class='fa fa-gear'></i>",
+            "url" : "kejati/master",
+            "access" : ["RJABATAN","RPANGKAT","RGOLONGAN"]
+        }
+    ]
+}
+

@@ -1,0 +1,13 @@
+{
+    "code" : "DA",
+    "header" : "Dashboard",
+    "menu" : [
+        {
+            "text" : "Home",
+            "icon" : "<i class='fa fa-home'></i>",
+            "url" : "dashboard/index",
+            "access" : ["RDASH"]
+        }
+    ]
+}
+
