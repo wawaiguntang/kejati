@@ -142,7 +142,7 @@ class Pegawai extends MX_Controller
 
             $inUse = array_values(array_column($this->pegawai->get_all(), 'userCode'));
             $user = [];
-            $getUser = $this->db->select('userCode, email')->where_not_in('userCode', [0])->get_where('user', ['deleteAt' => NULL])->result();
+            $getUser = $this->db->select('userCode, email')->where_not_in('userCode', (empty($inUse) ? [] : $inUse))->get_where('user', ['deleteAt' => NULL])->result();
             foreach ($getUser as $k) {
                 $user[$k->userCode] = $k->email;
             }

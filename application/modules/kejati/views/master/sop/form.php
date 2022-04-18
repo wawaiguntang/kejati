@@ -9,6 +9,7 @@
         <?php echo form_open('', ["id" => "form"]); ?>
         <?php echo input('hidden', 'id', '', [], ["value" => $id]); ?>
         <?php echo inputWithFormGroup('SOP', 'text', 'sop', 'SOP', [], ["value" => $sop]); ?>
+        <?php echo selectWithFormGroup('kategori', 'Katgori', 'kategori', ["Penyelidikan" => "Penyelidikan", "Penyidikan" => "Penyidikan"], $kategori); ?>
         <div class="d-flex justify-content-end">
             <?php echo button('Save', ["btn-primary"], ["id" => "btnSave", "onclick" => "save()"]); ?>
         </div>

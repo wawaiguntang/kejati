@@ -13,7 +13,7 @@
             <?php echo table('kegiatan', ['Kegiatan', 'Waktu', 'Keterangan', 'Aksi'], ['table-hover py-1 px-0 mx-0']); ?>
         </div>
     </div>
-    <div class="col-md-6 col-12">
+    <div class="col-md-6 col-12 detailKegiatan">
 
     </div>
 </div>
@@ -43,7 +43,7 @@
     }
 
     function editKegiatan(id) {
-        save_label = "update";
+        save_label = "add";
         $.ajax({
             url: base_url + 'kejati/ajax/sop/editKegiatanHTML/' + id,
             type: "POST",
@@ -62,50 +62,8 @@
         });
     }
 
-    function saveKegiatan() {
-        $("#btnSave").text("saving...");
-        $("#btnSave").attr("disabled", true);
-        var url, method;
 
-        if (save_label == "add") {
-            url = base_url + 'kejati/ajax/sop/addKegiatan';
-            method = "saved";
-        } else {
-            url = base_url + 'kejati/ajax/sop/updateKegiatan';
-            method = "updated";
-        }
-
-        $.ajax({
-            url: url,
-            type: "POST",
-            data: $("#form").serialize(),
-            dataType: "json",
-            success: function(data) {
-                if (data.status) {
-                    sop();
-                    handleToast("success", data.message);
-                } else {
-                    handleError(data);
-                }
-                $("#btnSave").text("save");
-                $("#btnSave").attr("disabled", false);
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                alert("Error adding / update data");
-                $("#btnSave").text("save");
-                $("#btnSave").attr("disabled", false);
-            },
-        });
-
-        $("#form input, #form textarea").on("keyup", function() {
-            $(this).removeClass("is-valid is-invalid");
-        });
-        $("#form select").on("change", function() {
-            $(this).removeClass("is-valid is-invalid");
-        });
-    }
-
-    function deleteData(id) {
+    function deleteKegiatan(id) {
         Swal.fire({
             title: "Are you sure?",
             text: "You won't be able to revert this!",
@@ -122,7 +80,7 @@
 
                     success: function(data) {
                         if (data.status) {
-                            sop();
+                            infoKegiatan(<?php echo $id ?>);
                             handleToast("success", data.message);
                         } else {
                             handleError(data);
@@ -133,6 +91,25 @@
                     },
                 });
             }
+        });
+    }
+
+    function infoDetailKegiatan(id) {
+        let kegiatan_id = id;
+        $.ajax({
+            url: base_url + 'kejati/ajax/sop/detailKegiatanHTML/' + kegiatan_id,
+            type: "GET",
+            dataType: "JSON",
+            success: function(data) {
+                if (data.status) {
+                    $(".detailKegiatan").html(data.data);
+                } else {
+                    handleError(data);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert("Error get data from ajax");
+            },
         });
     }
 </script>

@@ -7,6 +7,18 @@
             "icon" : "<i class='fa fa-gear'></i>",
             "url" : "kejati/master",
             "access" : ["RJABATAN","RPANGKAT","RGOLONGAN"]
+        },
+        {
+            "text" : "Pengaduan",
+            "icon" : "<i class='fa fa-question'></i>",
+            "url" : "kejati/pengaduan",
+            "access" : ["RPENGADUAN"]
+        },
+        {
+            "text" : "Penyelidikan",
+            "icon" : "<i class='fa fa-search'></i>",
+            "url" : "kejati/penyelidikan",
+            "access" : ["RPENYELIDIKAN"]
         }
     ]
 }

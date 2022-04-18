@@ -1,19 +1,55 @@
-<div class="d-flex justify-content-end my-4">
-    <?php echo ((in_array('CSOP', $userPermission)) ? '<i class="ri-add-circle-line ri-xl text-success" role="button" title="Create" onclick="addData()"></i>' : '') ?>
+<div class="data">
 </div>
-<div class="table-responsive">
-    <?php echo table('sop', ['SOP', 'Kategori', 'Waktu', 'Aksi'], ['table-hover py-1 px-0 mx-0']); ?>
-</div>
-
-
 <script>
     var base_url = '<?php echo base_url() ?>';
     var save_label = "add";
 
+    $(document).ready(function() {
+        getData();
+    });
+
+    function back() {
+        getData();
+    }
+
+    function getData() {
+        $.ajax({
+            url: base_url + 'kejati/ajax/pengaduan/data',
+            type: "GET",
+
+            success: function(data) {
+                $(".data").html(data.data);
+                breadcrumb(data.breadcrumb);
+                let list = $("#pengaduan").DataTable({
+                    processing: true,
+                    serverSide: true,
+                    order: [],
+                    ajax: {
+                        url: base_url + 'kejati/ajax/pengaduan/list',
+                        type: "POST",
+                    },
+                    columnDefs: [{
+                        targets: [-1],
+                        orderable: false,
+                    }, ],
+                    language: {
+                        paginate: {
+                            previous: "<",
+                            next: ">",
+                        },
+                    },
+                });
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert("Error get data from ajax");
+            },
+        });
+    }
+
     function addData() {
         save_label = "add";
         $.ajax({
-            url: base_url + 'kejati/ajax/sop/addHTML',
+            url: base_url + 'kejati/ajax/pengaduan/addHTML',
             type: "POST",
 
             success: function(data) {
@@ -33,7 +69,7 @@
     function editData(id) {
         save_label = "update";
         $.ajax({
-            url: base_url + 'kejati/ajax/sop/editHTML/' + id,
+            url: base_url + 'kejati/ajax/pengaduan/editHTML/' + id,
             type: "POST",
 
             success: function(data) {
@@ -56,10 +92,10 @@
         var url, method;
 
         if (save_label == "add") {
-            url = base_url + 'kejati/ajax/sop/add';
+            url = base_url + 'kejati/ajax/pengaduan/add';
             method = "saved";
         } else {
-            url = base_url + 'kejati/ajax/sop/update';
+            url = base_url + 'kejati/ajax/pengaduan/update';
             method = "updated";
         }
 
@@ -70,7 +106,7 @@
             dataType: "json",
             success: function(data) {
                 if (data.status) {
-                    sop();
+                    back();
                     handleToast("success", data.message);
                 } else {
                     handleError(data);
@@ -105,12 +141,12 @@
         }).then((result) => {
             if (result.value) {
                 $.ajax({
-                    url: base_url + 'kejati/ajax/sop/delete/' + id,
+                    url: base_url + 'kejati/ajax/pengaduan/delete/' + id,
                     type: "POST",
 
                     success: function(data) {
                         if (data.status) {
-                            sop();
+                            back();
                             handleToast("success", data.message);
                         } else {
                             handleError(data);
@@ -124,42 +160,4 @@
         });
     }
 
-    function infoKegiatan(id) {
-        let sop_id = id;
-        $.ajax({
-            url: base_url + 'kejati/ajax/sop/detailHTML/' + id,
-            type: "GET",
-            dataType: "JSON",
-            success: function(data) {
-                if (data.status) {
-                    $(".data").html(data.data);
-                    breadcrumb(data.breadcrumb);
-                    $('#kegiatan').DataTable({
-                        processing: true,
-                        serverSide: true,
-                        order: [],
-                        ajax: {
-                            url: base_url + 'kejati/ajax/sop/listKegiatan/' + sop_id,
-                            type: "POST",
-                        },
-                        columnDefs: [{
-                            targets: [-1],
-                            orderable: false,
-                        }, ],
-                        language: {
-                            paginate: {
-                                previous: "<",
-                                next: ">",
-                            },
-                        },
-                    });
-                } else {
-                    handleError(data);
-                }
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                alert("Error get data from ajax");
-            },
-        });
-    }
 </script>
