@@ -390,9 +390,9 @@ class Sop extends MX_Controller
         $data = array();
         foreach ($list as $kegiatan) {
             $row = array();
-            $row[] = '<p class="text-sm d-flex py-auto my-auto">' . $kegiatan->kegiatan . '</p>';
+            $row[] = '<p class="text-sm d-flex py-auto my-auto" title="' . $kegiatan->kegiatan . '">' . character_limiter($kegiatan->kegiatan, 25) . '</p>';
             $row[] = '<p class="text-sm d-flex py-auto my-auto">' . $kegiatan->waktu . ' ' . $kegiatan->satuan . '</p>';
-            $row[] = '<p class="text-sm d-flex py-auto my-auto">' . $kegiatan->keterangan . '</p>';
+            $row[] = '<p class="text-sm d-flex py-auto my-auto" title="' . $kegiatan->keterangan . '">' . character_limiter($kegiatan->keterangan, 25) . '</p>';
 
             $row[] = "
                 <div class='d-flex justify-content-center'>
@@ -620,6 +620,21 @@ class Sop extends MX_Controller
                                 $data['message'] = "Failed to add kegiatan";
                             }
                         }
+                        if ($this->input->post('satuan') == 'menit') {
+                            $newWaktu = $this->input->post('waktu');
+                        } elseif ($this->input->post('satuan') == 'jam') {
+                            $newWaktu = $this->input->post('waktu') * 60;
+                        } elseif ($this->input->post('satuan') == 'hari') {
+                            $newWaktu = $this->input->post('waktu') * 24 * 60;
+                        } else {
+                            $newWaktu = $this->input->post('waktu');
+                        }
+                        $this->db->update('sop', ['waktu' => $sop->waktu + $newWaktu], ['id' => $sop->id]);
+                        if ($this->db->trans_status() === FALSE) {
+                            $this->db->trans_rollback();
+                            $data['status'] = FALSE;
+                            $data['message'] = "Failed to add kegiatan";
+                        }
                         $this->db->trans_complete();
                         $this->output->set_content_type('application/json')->set_output(json_encode($data));
                     }
@@ -674,13 +689,40 @@ class Sop extends MX_Controller
                             'keterangan' => $this->input->post('keterangan'),
                             'satuan' => $this->input->post('satuan'),
                         );
-                        $kegiatan = $this->kegiatan->update(['id' => $id], $update);
-                        if ($kegiatan) {
-                            $data['status'] = TRUE;
-                            $data['message'] = "Success to edit kegiatan";
+                        $sop = $this->sop->get_by_id($kegiatan->sop_id);
+                        if ($sop == NULL) {
+                            $data = array(
+                                'status'         => FALSE,
+                                'message'         => "SOP not found!"
+                            );
                         } else {
-                            $data['status'] = FALSE;
-                            $data['message'] = "Failed to edit kegiatan";
+                            if ($this->input->post('satuan') == 'menit') {
+                                $newWaktu = $this->input->post('waktu');
+                            } elseif ($this->input->post('satuan') == 'jam') {
+                                $newWaktu = $this->input->post('waktu') * 60;
+                            } elseif ($this->input->post('satuan') == 'hari') {
+                                $newWaktu = $this->input->post('waktu') * 24 * 60;
+                            } else {
+                                $newWaktu = $this->input->post('waktu');
+                            }
+                            if ($kegiatan->satuan == 'menit') {
+                                $lastWaktu = $kegiatan->waktu;
+                            } elseif ($kegiatan->satuan == 'jam') {
+                                $lastWaktu = $kegiatan->waktu * 60;
+                            } elseif ($kegiatan->satuan == 'hari') {
+                                $lastWaktu = $kegiatan->waktu * 24 * 60;
+                            } else {
+                                $lastWaktu = $kegiatan->waktu;
+                            }
+                            $this->db->update('sop', ['waktu' => ($sop->waktu - $lastWaktu) + $newWaktu], ['id' => $sop->id]);
+                            $update = $this->kegiatan->update(['id' => $id], $update);
+                            if ($update) {
+                                $data['status'] = TRUE;
+                                $data['message'] = "Success to edit kegiatan";
+                            } else {
+                                $data['status'] = FALSE;
+                                $data['message'] = "Failed to edit kegiatan";
+                            }
                         }
                         $this->output->set_content_type('application/json')->set_output(json_encode($data));
                     }
@@ -712,13 +754,31 @@ class Sop extends MX_Controller
                         'message'         => "Kegiatan not found!"
                     );
                 } else {
-                    $del = $this->kegiatan->delete_by_id($id);
-                    if ($del) {
-                        $data['status'] = TRUE;
-                        $data['message'] = "Success to delete kegiatan";
+                    $sop = $this->sop->get_by_id($kegiatan->sop_id);
+                    if ($sop == NULL) {
+                        $data = array(
+                            'status'         => FALSE,
+                            'message'         => "SOP not found!"
+                        );
                     } else {
-                        $data['status'] = FALSE;
-                        $data['message'] = "Failed to delete kegiatan";
+                        if ($kegiatan->satuan == 'menit') {
+                            $lastWaktu = $kegiatan->waktu;
+                        } elseif ($kegiatan->satuan == 'jam') {
+                            $lastWaktu = $kegiatan->waktu * 60;
+                        } elseif ($kegiatan->satuan == 'hari') {
+                            $lastWaktu = $kegiatan->waktu * 24 * 60;
+                        } else {
+                            $lastWaktu = $kegiatan->waktu;
+                        }
+                        $this->db->update('sop', ['waktu' => ($sop->waktu - $lastWaktu)], ['id' => $sop->id]);
+                        $del = $this->kegiatan->delete_by_id($id);
+                        if ($del) {
+                            $data['status'] = TRUE;
+                            $data['message'] = "Success to delete kegiatan";
+                        } else {
+                            $data['status'] = FALSE;
+                            $data['message'] = "Failed to delete kegiatan";
+                        }
                     }
                     $this->output->set_content_type('application/json')->set_output(json_encode($data));
                 }
@@ -942,7 +1002,7 @@ class Sop extends MX_Controller
                         $update = array(
                             'kelengkapan' => $this->input->post('kelengkapan'),
                         );
-                        $up = $this->db->update('kelengkapan',$update,['id' => $this->input->post('id')]);
+                        $up = $this->db->update('kelengkapan', $update, ['id' => $this->input->post('id')]);
                         if ($up) {
                             $data['status'] = TRUE;
                             $data['message'] = "Success to update kelengkapan";
@@ -959,7 +1019,7 @@ class Sop extends MX_Controller
 
     public function deleteKelengkapan($id = '')
     {
-        
+
         $userPermission = getPermissionFromUser();
         if (!in_array('DKELENGKAPANKEGIATAN', $userPermission)) {
             $data = array(
@@ -975,7 +1035,7 @@ class Sop extends MX_Controller
                     'message'         => "ID kelengkapan is required"
                 );
             } else {
-                
+
                 $kelengkapan = $this->db->get_where('kelengkapan', ['id' => $id, 'deleteAt' => NULL])->row();
                 if ($kelengkapan == NULL) {
                     $data = array(
@@ -984,7 +1044,7 @@ class Sop extends MX_Controller
                     );
                 } else {
                     $params['deleteAt'] = date('Y-m-d H:i:s');
-		            $del = $this->db->update('kelengkapan', $params, ['id' => $id]);
+                    $del = $this->db->update('kelengkapan', $params, ['id' => $id]);
                     if ($del) {
                         $data['status'] = TRUE;
                         $data['message'] = "Success to delete kelengkapan";
@@ -1170,7 +1230,7 @@ class Sop extends MX_Controller
                         $update = array(
                             'hasil' => $this->input->post('hasil'),
                         );
-                        $up = $this->db->update('hasil',$update,['id' => $this->input->post('id')]);
+                        $up = $this->db->update('hasil', $update, ['id' => $this->input->post('id')]);
                         if ($up) {
                             $data['status'] = TRUE;
                             $data['message'] = "Success to update hasil";
@@ -1187,7 +1247,7 @@ class Sop extends MX_Controller
 
     public function deleteHasil($id = '')
     {
-        
+
         $userPermission = getPermissionFromUser();
         if (!in_array('DHASILKEGIATAN', $userPermission)) {
             $data = array(
@@ -1203,7 +1263,7 @@ class Sop extends MX_Controller
                     'message'         => "ID hasil is required"
                 );
             } else {
-                
+
                 $hasil = $this->db->get_where('hasil', ['id' => $id, 'deleteAt' => NULL])->row();
                 if ($hasil == NULL) {
                     $data = array(
@@ -1212,7 +1272,7 @@ class Sop extends MX_Controller
                     );
                 } else {
                     $params['deleteAt'] = date('Y-m-d H:i:s');
-		            $del = $this->db->update('hasil', $params, ['id' => $id]);
+                    $del = $this->db->update('hasil', $params, ['id' => $id]);
                     if ($del) {
                         $data['status'] = TRUE;
                         $data['message'] = "Success to delete hasil";

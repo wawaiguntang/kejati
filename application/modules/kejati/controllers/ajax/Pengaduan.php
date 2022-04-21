@@ -65,9 +65,9 @@ class Pengaduan extends MX_Controller
                         <p class="text-sm d-flex py-auto my-auto">Tanggal Terima : ' . $pengaduan->tanggal_terima . '</p>';
 
             $row[] = '  <p class="text-sm d-flex py-auto my-auto"><b>' . $pengaduan->asal_surat . '</b></p>
-                        <p class="text-sm d-flex py-auto my-auto">' . $pengaduan->perihal . '</p>';
+                        <p class="text-sm d-flex py-auto my-auto" title="' . $pengaduan->perihal . '">' . character_limiter($pengaduan->perihal, 25) . '</p>';
 
-            $row[] = '  <p class="text-sm d-flex py-auto my-auto">' . $pengaduan->isi . '</p>';
+            $row[] = '  <p class="text-sm d-flex py-auto my-auto" title="' . $pengaduan->isi . '">' . character_limiter($pengaduan->isi, 25) . '</p>';
 
             $row[] = "
                 <div class='d-flex justify-content-center'>
@@ -329,12 +329,12 @@ class Pengaduan extends MX_Controller
     private function _validate()
     {
         $this->form_validation->set_error_delimiters('', '');
-        $this->form_validation->set_rules('no', 'No','trim|required');
-        $this->form_validation->set_rules('tanggal_surat', 'Tanggal Surat','trim|required');
-        $this->form_validation->set_rules('tanggal_terima', 'Tanggal Terima','trim|required');
-        $this->form_validation->set_rules('asal_surat', 'Asal Surat','trim|required');
-        $this->form_validation->set_rules('perihal', 'Perihal','trim|required');
-        $this->form_validation->set_rules('isi', 'Isi','trim|required');
+        $this->form_validation->set_rules('no', 'No', 'trim|required');
+        $this->form_validation->set_rules('tanggal_surat', 'Tanggal Surat', 'trim|required');
+        $this->form_validation->set_rules('tanggal_terima', 'Tanggal Terima', 'trim|required');
+        $this->form_validation->set_rules('asal_surat', 'Asal Surat', 'trim|required');
+        $this->form_validation->set_rules('perihal', 'Perihal', 'trim|required');
+        $this->form_validation->set_rules('isi', 'Isi', 'trim|required');
         if ($this->validation_for == 'update') {
             $this->form_validation->set_rules('id', 'Code', 'trim|required');
         }
