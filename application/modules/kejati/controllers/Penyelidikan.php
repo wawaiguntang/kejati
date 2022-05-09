@@ -27,4 +27,11 @@ class Penyelidikan extends MX_Controller
         $data['_view'] = $this->module . '/penyelidikan';
         $this->load->view('layouts/back/main', $data);
     }
+
+    public function download($path, $name)
+    {
+        $this->load->helper('download');
+
+        force_download($name, file_get_contents(DIR.decrypt($path)));
+    }
 }

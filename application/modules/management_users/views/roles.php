@@ -202,6 +202,7 @@
                         selectionCssClass: "select2--small", // For Select2 v4.1
                         dropdownCssClass: "select2--small",
                     });
+                    $(".select2-container").addClass('form-control');
                 } else {
                     handleError(data);
                 }

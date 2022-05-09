@@ -192,7 +192,7 @@ class Pegawai extends MX_Controller
                 if ($pegawai == NULL) {
                     $data = array(
                         'status'         => FALSE,
-                        'message'         => "Pegawai not found!"
+                        'message'         => "Pegawai tidak ditemukan!"
                     );
                 } else {
                     $data['status'] = TRUE;
@@ -366,7 +366,7 @@ class Pegawai extends MX_Controller
                 if ($pegawai == NULL) {
                     $data = array(
                         'status'         => FALSE,
-                        'message'         => "Pegawai not found!"
+                        'message'         => "Pegawai tidak ditemukan!"
                     );
                 } else {
                     $this->_validate();
@@ -460,7 +460,7 @@ class Pegawai extends MX_Controller
                 if ($pegawai == NULL) {
                     $data = array(
                         'status'         => FALSE,
-                        'message'         => "Pegawai not found!"
+                        'message'         => "Pegawai tidak ditemukan!"
                     );
                 } else {
                     $del = $this->pegawai->delete_by_id($id);

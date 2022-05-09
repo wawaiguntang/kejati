@@ -135,6 +135,35 @@ $profile = getProfileWeb();
             $("#breadcrumb").html(breadcrumb);
         }
     </script>
+    <style>
+        .select2-dropdown {
+            border-top-right-radius: 0px;
+            border-top-left-radius: 0px;
+            border-bottom-right-radius: 0.5rem;
+            border-bottom-left-radius: 0.5rem;
+            border: 1px solid #d2d6da;
+        }
+
+        .select2-search__field {
+            border: 1px solid #d2d6da;
+            border-radius: 0.5rem;
+        }
+
+        .select2-container {
+            padding: 0.35rem 0.075rem;
+            margin: 0px;
+        }
+
+        .select2-selection {
+            padding: 0px;
+            margin: 0px;
+            border: 0px !important;
+        }
+
+        .select2-selection__arrow {
+            display: none;
+        }
+    </style>
 </head>
 
 <body class="g-sidenav-show  bg-gray-100">

@@ -31,7 +31,7 @@ class Pengaduan extends MX_Controller
                 'status'         => FALSE,
                 'message'         => "You don't have access!"
             );
-            $this->output->set_content_type('application/json')->set_output(json_encode($data));
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
         $params = [
             'userPermission' => $userPermission
@@ -149,7 +149,7 @@ class Pengaduan extends MX_Controller
                 if ($pengaduan == NULL) {
                     $data = array(
                         'status'         => FALSE,
-                        'message'         => "Pengaduan not found!"
+                        'message'         => "Pengaduan tidak ditemukan!"
                     );
                 } else {
                     $params = [
@@ -245,7 +245,7 @@ class Pengaduan extends MX_Controller
                 if ($pengaduan == NULL) {
                     $data = array(
                         'status'         => FALSE,
-                        'message'         => "pengaduan not found!"
+                        'message'         => "pengaduan tidak ditemukan!"
                     );
                 } else {
                     $this->_validate();
@@ -309,7 +309,7 @@ class Pengaduan extends MX_Controller
                 if ($pengaduan == NULL) {
                     $data = array(
                         'status'         => FALSE,
-                        'message'         => "pengaduan not found!"
+                        'message'         => "pengaduan tidak ditemukan!"
                     );
                 } else {
                     $del = $this->pengaduan->delete_by_id($id);

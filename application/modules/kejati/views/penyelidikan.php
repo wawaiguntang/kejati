@@ -1,26 +1,7 @@
-<script src="<?php echo base_url('assets/js/paginate/paginate.js'); ?>"></script>
-<link rel="stylesheet" href="<?php echo base_url('assets/js/paginate/pag.css'); ?>">
-<div id="headerContent">
-    <div class="d-flex justify-content-end">
-        <?php echo button('Tambah Penyelidikan', ["btn-primary"], ["onclick" => "addData()"]); ?>
-    </div>
-    <div class="d-flex justify-content-between">
-        <div class="col-4 col-sm-6 col-md-4">
-            <?php echo selectWithFormGroup('noPengaduan', 'No Pengaduan', 'noPengaduan', $pengaduan, '', ['form-control', 'form-select-transparent']) ?>
-        </div>
-        <div class="col-4 col-sm-6 col-md-4">
-            <div class="form-group">
-                <label for="Cari" class="form-control-label">Cari</label>
-                <input class="form-control" type="search" placeholder="Cari Tugas" id="Cari">
-            </div>
-        </div>
-    </div>
-</div>
+
 <div class="data">
 </div>
-<div class="mt-3 d-flex justify-content-center">
-    <div class="pagination"  id="footerContent"></div>
-</div>
+
 <script>
     var base_url = '<?php echo base_url() ?>';
     var save_label = "add";
@@ -36,24 +17,33 @@
         getData();
     }
 
-    function getData(noPengaduan = '', cari = '') {
+    function getData() {
         $.ajax({
             url: base_url + 'kejati/ajax/penyelidikan/data',
-            type: "POST",
-            data: {
-                noPengaduan: noPengaduan,
-                cari: cari
-            },
+            type: "GET",
+
             success: function(data) {
                 $(".data").html(data.data);
-                $("#headerContent").css('display','');
-                $("#footerContent").css('display','');
-                $('.pagination').html('');
-                $('.pagination').pagination({
-                    itemsToPaginate: ".pluginPaginate",
-                    activeClass: 'activePaginate'
-                });
                 breadcrumb(data.breadcrumb);
+                let list = $("#penyelidikan").DataTable({
+                    processing: true,
+                    serverSide: true,
+                    order: [],
+                    ajax: {
+                        url: base_url + 'kejati/ajax/penyelidikan/list',
+                        type: "POST",
+                    },
+                    columnDefs: [{
+                        targets: [-1],
+                        orderable: false,
+                    }, ],
+                    language: {
+                        paginate: {
+                            previous: "<",
+                            next: ">",
+                        },
+                    },
+                });
             },
             error: function(jqXHR, textStatus, errorThrown) {
                 alert("Error get data from ajax");
@@ -69,8 +59,8 @@
 
             success: function(data) {
                 if (data.status) {
-                    $("#headerContent").css('display','none');
-                    $("#footerContent").css('display','none');
+                    $("#headerContent").css('display', 'none');
+                    $("#footerContent").css('display', 'none');
                     $(".data").html(data.data);
                     breadcrumb(data.breadcrumb);
                 } else {
@@ -94,34 +84,62 @@
         var cariTag = $("#Cari").val();
         getData(pengaduanTag, cariTag);
     });
+
+    function savePenyelidikan() {
+        $("#btnSave").text("saving...");
+        $("#btnSave").attr("disabled", true);
+        var url, method;
+
+        url = base_url + 'kejati/ajax/penyelidikan/save';
+        method = "saved";
+
+        var formData = $("#form").serialize();
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: formData,
+            success: function(data) {
+                if (data.status) {
+                    back();
+                    handleToast("success", data.message);
+                } else {
+                    handleError(data);
+                }
+                $("#btnSave").text("save");
+                $("#btnSave").attr("disabled", false);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert("Error adding / update data");
+                $("#btnSave").text("save");
+                $("#btnSave").attr("disabled", false);
+            },
+        });
+
+        $("#form input, #form textarea").on("keyup", function() {
+            $(this).removeClass("is-valid is-invalid");
+        });
+        $("#form select").on("change", function() {
+            $(this).removeClass("is-valid is-invalid");
+        });
+    }
+
+    function detail(tugas_id = '') {
+        $.ajax({
+            url: base_url + 'kejati/ajax/penyelidikan/detail',
+            type: "POST",
+            data: {
+                tugas_id: tugas_id,
+            },
+            success: function(data) {
+                $("#headerContent").css('display', 'none');
+                $("#footerContent").css('display', 'none');
+                $(".data").html(data.data);
+                breadcrumb(data.breadcrumb);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert("Error get data from ajax");
+            },
+        });
+    }
+
 </script>
-
-<style>
-    .select2-dropdown {
-        border-top-right-radius: 0px;
-        border-top-left-radius: 0px;
-        border-bottom-right-radius: 0.5rem;
-        border-bottom-left-radius: 0.5rem;
-        border: 1px solid #d2d6da;
-    }
-
-    .select2-search__field {
-        border: 1px solid #d2d6da;
-        border-radius: 0.5rem;
-    }
-
-    .select2-container {
-        padding: 0.35rem 0.075rem;
-        margin: 0px;
-    }
-
-    .select2-selection {
-        padding: 0px;
-        margin: 0px;
-        border: 0px !important;
-    }
-
-    .select2-selection__arrow {
-        display: none;
-    }
-</style>

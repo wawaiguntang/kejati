@@ -143,7 +143,7 @@ class Golongan extends MX_Controller
                 if ($golongan == NULL) {
                     $data = array(
                         'status'         => FALSE,
-                        'message'         => "Golongan not found!"
+                        'message'         => "Golongan tidak ditemukan!"
                     );
                 } else {
                     $params = [
@@ -240,7 +240,7 @@ class Golongan extends MX_Controller
                 if ($golongan == NULL) {
                     $data = array(
                         'status'         => FALSE,
-                        'message'         => "Golongan not found!"
+                        'message'         => "Golongan tidak ditemukan!"
                     );
                 } else {
                     $this->_validate();
@@ -294,7 +294,7 @@ class Golongan extends MX_Controller
                 if ($golongan == NULL) {
                     $data = array(
                         'status'         => FALSE,
-                        'message'         => "Golongan not found!"
+                        'message'         => "Golongan tidak ditemukan!"
                     );
                 } else {
                     $del = $this->golongan->delete_by_id($id);

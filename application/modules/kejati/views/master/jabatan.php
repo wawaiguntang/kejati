@@ -2,7 +2,7 @@
     <?php echo ((in_array('CJABATAN', $userPermission)) ? '<i class="ri-add-circle-line ri-xl text-success" role="button" title="Create" onclick="addData()"></i>' : '') ?>
 </div>
 <div class="table-responsive">
-    <?php echo table('jabatan', ['Jabatan', 'Aksi'], ['table-hover py-1 px-0 mx-0']); ?>
+    <?php echo table('jabatan', ['Jabatan', 'Aksi'], ['table-hover py-1 px-0 mx-0 table-sm']); ?>
 </div>
 
 <script>

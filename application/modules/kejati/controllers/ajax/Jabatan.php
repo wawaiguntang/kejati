@@ -143,7 +143,7 @@ class Jabatan extends MX_Controller
                 if ($jabatan == NULL) {
                     $data = array(
                         'status'         => FALSE,
-                        'message'         => "Jabatan not found!"
+                        'message'         => "Jabatan tidak ditemukan!"
                     );
                 } else {
                     $params = [
@@ -240,7 +240,7 @@ class Jabatan extends MX_Controller
                 if ($jabatan == NULL) {
                     $data = array(
                         'status'         => FALSE,
-                        'message'         => "Jabatan not found!"
+                        'message'         => "Jabatan tidak ditemukan!"
                     );
                 } else {
                     $this->_validate();
@@ -294,7 +294,7 @@ class Jabatan extends MX_Controller
                 if ($jabatan == NULL) {
                     $data = array(
                         'status'         => FALSE,
-                        'message'         => "Jabatan not found!"
+                        'message'         => "Jabatan tidak ditemukan!"
                     );
                 } else {
                     $del = $this->jabatan->delete_by_id($id);

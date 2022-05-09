@@ -91,7 +91,7 @@ class Pangkat extends MX_Controller
                 'status'         => FALSE,
                 'message'         => "You don't have access!"
             );
-            $this->output->set_content_type('application/json')->set_output(json_encode($data));
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
             $data['status'] = TRUE;
             $params = [
@@ -130,7 +130,7 @@ class Pangkat extends MX_Controller
                 'status'         => FALSE,
                 'message'         => "You don't have access!"
             );
-            $this->output->set_content_type('application/json')->set_output(json_encode($data));
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
             $data['status'] = TRUE;
             if ($id == '') {
@@ -143,7 +143,7 @@ class Pangkat extends MX_Controller
                 if ($pangkat == NULL) {
                     $data = array(
                         'status'         => FALSE,
-                        'message'         => "Pangkat not found!"
+                        'message'         => "Pangkat tidak ditemukan!"
                     );
                 } else {
                     $params = [
@@ -171,7 +171,7 @@ class Pangkat extends MX_Controller
                     $data['data'] = $this->load->view($this->module . '/master/pangkat/form', $params, TRUE);
                 }
             }
-            $this->output->set_content_type('application/json')->set_output(json_encode($data));
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
     }
 
@@ -183,7 +183,7 @@ class Pangkat extends MX_Controller
                 'status'         => FALSE,
                 'message'         => "You don't have access!"
             );
-            $this->output->set_content_type('application/json')->set_output(json_encode($data));
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
             $this->validation_for = 'add';
             $data = array();
@@ -240,7 +240,7 @@ class Pangkat extends MX_Controller
                 if ($pangkat == NULL) {
                     $data = array(
                         'status'         => FALSE,
-                        'message'         => "Pangkat not found!"
+                        'message'         => "Pangkat tidak ditemukan!"
                     );
                 } else {
                     $this->_validate();
@@ -294,7 +294,7 @@ class Pangkat extends MX_Controller
                 if ($pangkat == NULL) {
                     $data = array(
                         'status'         => FALSE,
-                        'message'         => "Pangkat not found!"
+                        'message'         => "Pangkat tidak ditemukan!"
                     );
                 } else {
                     $del = $this->pangkat->delete_by_id($id);

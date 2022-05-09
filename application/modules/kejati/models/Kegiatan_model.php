@@ -76,9 +76,12 @@ class Kegiatan_model extends CI_Model
 		return $this->db->count_all_results();
 	}
 
-	public function get_all()
+	public function get_all(string $sop_id = '')
 	{
 		$this->db->from($this->table);
+		if ($sop_id != '') {
+			$this->db->where('sop_id', $sop_id);
+		}
 		$this->db->where('deleteAt', NULL);
 		$query = $this->db->get();
 

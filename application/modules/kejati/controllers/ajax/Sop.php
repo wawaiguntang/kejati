@@ -65,7 +65,7 @@ class Sop extends MX_Controller
             $row = array();
             $row[] = '<p class="text-sm d-flex py-auto my-auto">' . $sop->sop . '</p>';
             $row[] = '<p class="text-sm d-flex py-auto my-auto">' . $sop->kategori . '</p>';
-            $row[] = '<p class="text-sm d-flex py-auto my-auto">' . $sop->waktu . '</p>';
+            $row[] = '<p class="text-sm d-flex py-auto my-auto">' . formatWaktu($sop->waktu) . '</p>';
 
             $row[] = "
                 <div class='d-flex justify-content-center'>
@@ -149,7 +149,7 @@ class Sop extends MX_Controller
                 if ($sop == NULL) {
                     $data = array(
                         'status'         => FALSE,
-                        'message'         => "SOP not found!"
+                        'message'         => "SOP tidak ditemukan!"
                     );
                 } else {
                     $params = [
@@ -249,7 +249,7 @@ class Sop extends MX_Controller
                 if ($sop == NULL) {
                     $data = array(
                         'status'         => FALSE,
-                        'message'         => "SOP not found!"
+                        'message'         => "SOP tidak ditemukan!"
                     );
                 } else {
                     $this->_validate();
@@ -305,7 +305,7 @@ class Sop extends MX_Controller
                 if ($sop == NULL) {
                     $data = array(
                         'status'         => FALSE,
-                        'message'         => "SOP not found!"
+                        'message'         => "SOP tidak ditemukan!"
                     );
                 } else {
                     $del = $this->sop->delete_by_id($id);
@@ -345,7 +345,7 @@ class Sop extends MX_Controller
                 if ($sop == NULL) {
                     $data = array(
                         'status'         => FALSE,
-                        'message'         => "SOP not found!"
+                        'message'         => "SOP tidak ditemukan!"
                     );
                 } else {
                     $params = [
@@ -435,7 +435,7 @@ class Sop extends MX_Controller
                 if ($sop == NULL) {
                     $data = array(
                         'status'         => FALSE,
-                        'message'         => "SOP not found!"
+                        'message'         => "SOP tidak ditemukan!"
                     );
                 } else {
                     $data['status'] = TRUE;
@@ -492,7 +492,7 @@ class Sop extends MX_Controller
                 if ($kegiatan == NULL) {
                     $data = array(
                         'status'         => FALSE,
-                        'message'         => "Kegiatan not found!"
+                        'message'         => "Kegiatan tidak ditemukan!"
                     );
                 } else {
                     $data['status'] = TRUE;
@@ -554,7 +554,7 @@ class Sop extends MX_Controller
                 if ($sop == NULL) {
                     $data = array(
                         'status'         => FALSE,
-                        'message'         => "SOP not found!"
+                        'message'         => "SOP tidak ditemukan!"
                     );
                 } else {
                     $this->validation_for = 'add';
@@ -663,7 +663,7 @@ class Sop extends MX_Controller
                 if ($kegiatan == NULL) {
                     $data = array(
                         'status'         => FALSE,
-                        'message'         => "Kegiatan not found!"
+                        'message'         => "Kegiatan tidak ditemukan!"
                     );
                 } else {
                     $this->validation_for = 'update';
@@ -693,7 +693,7 @@ class Sop extends MX_Controller
                         if ($sop == NULL) {
                             $data = array(
                                 'status'         => FALSE,
-                                'message'         => "SOP not found!"
+                                'message'         => "SOP tidak ditemukan!"
                             );
                         } else {
                             if ($this->input->post('satuan') == 'menit') {
@@ -751,14 +751,14 @@ class Sop extends MX_Controller
                 if ($kegiatan == NULL) {
                     $data = array(
                         'status'         => FALSE,
-                        'message'         => "Kegiatan not found!"
+                        'message'         => "Kegiatan tidak ditemukan!"
                     );
                 } else {
                     $sop = $this->sop->get_by_id($kegiatan->sop_id);
                     if ($sop == NULL) {
                         $data = array(
                             'status'         => FALSE,
-                            'message'         => "SOP not found!"
+                            'message'         => "SOP tidak ditemukan!"
                         );
                     } else {
                         if ($kegiatan->satuan == 'menit') {
@@ -815,7 +815,7 @@ class Sop extends MX_Controller
                 if ($kegiatan == NULL) {
                     $data = array(
                         'status'         => FALSE,
-                        'message'         => "Kegiatan not found!"
+                        'message'         => "Kegiatan tidak ditemukan!"
                     );
                 } else {
                     $params = [
@@ -853,7 +853,7 @@ class Sop extends MX_Controller
                 if ($kegiatan == NULL) {
                     $data = array(
                         'status'         => FALSE,
-                        'message'         => "Kegiatan not found!"
+                        'message'         => "Kegiatan tidak ditemukan!"
                     );
                 } else {
                     $params = [
@@ -893,7 +893,7 @@ class Sop extends MX_Controller
                 if ($kelengkapan == NULL) {
                     $data = array(
                         'status'         => FALSE,
-                        'message'         => "kelengkapan not found!"
+                        'message'         => "kelengkapan tidak ditemukan!"
                     );
                 } else {
                     $params = [
@@ -984,7 +984,7 @@ class Sop extends MX_Controller
                 if ($kelengkapan == NULL) {
                     $data = array(
                         'status'         => FALSE,
-                        'message'         => "SOP not found!"
+                        'message'         => "SOP tidak ditemukan!"
                     );
                 } else {
                     $this->_validateKelengkapan();
@@ -1040,7 +1040,7 @@ class Sop extends MX_Controller
                 if ($kelengkapan == NULL) {
                     $data = array(
                         'status'         => FALSE,
-                        'message'         => "Kelengkapan not found!"
+                        'message'         => "Kelengkapan tidak ditemukan!"
                     );
                 } else {
                     $params['deleteAt'] = date('Y-m-d H:i:s');
@@ -1081,7 +1081,7 @@ class Sop extends MX_Controller
                 if ($kegiatan == NULL) {
                     $data = array(
                         'status'         => FALSE,
-                        'message'         => "Kegiatan not found!"
+                        'message'         => "Kegiatan tidak ditemukan!"
                     );
                 } else {
                     $params = [
@@ -1121,7 +1121,7 @@ class Sop extends MX_Controller
                 if ($hasil == NULL) {
                     $data = array(
                         'status'         => FALSE,
-                        'message'         => "hasil not found!"
+                        'message'         => "hasil tidak ditemukan!"
                     );
                 } else {
                     $params = [
@@ -1212,7 +1212,7 @@ class Sop extends MX_Controller
                 if ($hasil == NULL) {
                     $data = array(
                         'status'         => FALSE,
-                        'message'         => "SOP not found!"
+                        'message'         => "SOP tidak ditemukan!"
                     );
                 } else {
                     $this->_validateHasil();
@@ -1268,7 +1268,7 @@ class Sop extends MX_Controller
                 if ($hasil == NULL) {
                     $data = array(
                         'status'         => FALSE,
-                        'message'         => "Hasil not found!"
+                        'message'         => "Hasil tidak ditemukan!"
                     );
                 } else {
                     $params['deleteAt'] = date('Y-m-d H:i:s');

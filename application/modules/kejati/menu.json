@@ -19,6 +19,18 @@
             "icon" : "<i class='fa fa-search'></i>",
             "url" : "kejati/penyelidikan",
             "access" : ["RPENYELIDIKAN"]
+        },
+        {
+            "text" : "Penyidikan",
+            "icon" : "<i class='fa fa-search'></i>",
+            "url" : "kejati/penyidikan",
+            "access" : ["RPENYIDIKAN"]
+        },
+        {
+            "text" : "Tugas",
+            "icon" : "<i class='fa fa-search'></i>",
+            "url" : "kejati/tugas",
+            "access" : ["RTUGASSELF"]
         }
     ]
 }

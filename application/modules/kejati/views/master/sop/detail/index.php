@@ -10,7 +10,7 @@
             <?php echo ((in_array('CKEGIATAN', $userPermission)) ? '<i class="ri-add-circle-line ri-xl text-success" role="button" title="Create" onclick="addKegiatan(' . $id . ')"></i>' : '') ?>
         </div>
         <div class="table-responsive">
-            <?php echo table('kegiatan', ['Kegiatan', 'Waktu', 'Keterangan', 'Aksi'], ['table-hover py-1 px-0 mx-0']); ?>
+            <?php echo table('kegiatan', ['Kegiatan', 'Waktu', 'Keterangan', 'Aksi'], ['table-hover py-1 px-0 mx-0 table-sm']); ?>
         </div>
     </div>
     <div class="col-md-6 col-12 detailKegiatan">
