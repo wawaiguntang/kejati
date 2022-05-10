@@ -1,6 +1,3 @@
-<!-- <pre>
-    <?php //echo var_dump($this->session->userdata('temp'))?>
-</pre> -->
 <ul class="mt-1">
     <?php foreach ($kelengkapan as $kel) { ?>
         <li>
