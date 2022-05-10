@@ -23,10 +23,10 @@ class Penyelidikan extends MX_Controller
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
-        if (!$this->input->is_ajax_request()) {
-            exit('No direct script access allowed');
-            die();
-        }
+        // if (!$this->input->is_ajax_request()) {
+        //     exit('No direct script access allowed');
+        //     die();
+        // }
     }
 
     public function data()
@@ -776,6 +776,8 @@ class Penyelidikan extends MX_Controller
 
                 // cek kelengkapan
                 $temp = $this->session->userdata('temp');
+                // var_dump($temp);
+                // die;
                 foreach ($temp['kegiatan_kelengkapan'] as $k => $v) {
                     if ($v == NULL || $v == '') {
                         $data = array(
@@ -869,7 +871,7 @@ class Penyelidikan extends MX_Controller
                     }
                     $kegiatan_id = $this->db->insert_id();
                     $pegawai_detail_tugasParams = [];
-                    foreach ($v as $kk => $x) {
+                    foreach ($v as $k => $x) {
                         $pegawai_detail_tugasParams[] = [
                             'pegawai_id' => $x['pegawai']['id'],
                             'detail_tugas_id' => $kegiatan_id,
@@ -884,10 +886,10 @@ class Penyelidikan extends MX_Controller
                         return $this->output->set_content_type('application/json')->set_output(json_encode($data));
                     }
 
-                    // var_dump($temp['kegiatan_kelengkapan'][$kegiatan_id]);
-                    // die; 
+                    // var_dump($temp['kegiatan_kelengkapan'][$kegiatanData->id]);
+                    // die;
                     $kelengkapanParams = [];
-                    foreach ($temp['kegiatan_kelengkapan'][$k] as $t => $y) {
+                    foreach ($temp['kegiatan_kelengkapan'][$kegiatanData->id] as $t => $y) {
                         $kelengkapanParams[] = [
                             'detail_tugas_id' => $kegiatan_id,
                             'kelengkapan_id' => $t,
@@ -903,7 +905,8 @@ class Penyelidikan extends MX_Controller
                         return $this->output->set_content_type('application/json')->set_output(json_encode($data));
                     }
 
-                    $hasilData = $this->db->get_where('hasil', ['deleteAt' => NULL, 'kegiatan_id' => $k])->result_array();
+                    $hasilData = $this->db->get_where('hasil', ['deleteAt' => NULL, 'kegiatan_id' => $kegiatanData->id])->result_array();
+
 
                     $hasilParams = [];
                     foreach ($hasilData as $h => $r) {
@@ -959,7 +962,7 @@ class Penyelidikan extends MX_Controller
         }
 
         $detail_tugas = [];
-        $detail_tugas_data = $this->db->select('*,detail_tugas.id as detail_tugas_id')->join('kegiatan','kegiatan.id=detail_tugas.kegiatan_id')->get_where('detail_tugas', ['detail_tugas.deleteAt' => NULL, 'detail_tugas.tugas_id' => $this->input->post('tugas_id')])->result_array();
+        $detail_tugas_data = $this->db->select('*,detail_tugas.id as detail_tugas_id')->join('kegiatan', 'kegiatan.id=detail_tugas.kegiatan_id')->get_where('detail_tugas', ['detail_tugas.deleteAt' => NULL, 'detail_tugas.tugas_id' => $this->input->post('tugas_id')])->result_array();
         foreach ($detail_tugas_data as $k) {
             $k['pegawai'] = $this->db->join('pegawai', 'pegawai.id=pegawai_detail_tugas.pegawai_id')
                 ->where(['pegawai.deleteAt' => NULL, 'pegawai_detail_tugas.deleteAt' => NULL, 'pegawai_detail_tugas.detail_tugas_id' => $k['detail_tugas_id']])
@@ -1015,7 +1018,8 @@ class Penyelidikan extends MX_Controller
         $this->output->set_content_type('application/json')->set_output(json_encode($data));
     }
 
-    public function terima(){
+    public function terima()
+    {
         $userPermission = getPermissionFromUser();
         if (!in_array('RDETAILPENYELIDIKAN', $userPermission)) {
             $data = array(
@@ -1056,7 +1060,8 @@ class Penyelidikan extends MX_Controller
         $this->output->set_content_type('application/json')->set_output(json_encode($data));
     }
 
-    public function tolak(){
+    public function tolak()
+    {
         $userPermission = getPermissionFromUser();
         if (!in_array('RDETAILPENYELIDIKAN', $userPermission)) {
             $data = array(
@@ -1086,7 +1091,7 @@ class Penyelidikan extends MX_Controller
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
-        $update = $this->db->where('id', $this->input->post('detail_tugas_id'))->update('detail_tugas', ['status' => 'Ditolak','waktu_selesai' => NULL]);
+        $update = $this->db->where('id', $this->input->post('detail_tugas_id'))->update('detail_tugas', ['status' => 'Ditolak', 'waktu_selesai' => NULL]);
         if ($update) {
             $data['status'] = TRUE;
             $data['message'] = "Berhasil menolak tugas dari ketua tim";

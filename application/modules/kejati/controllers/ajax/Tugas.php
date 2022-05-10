@@ -68,7 +68,7 @@ class Tugas extends MX_Controller
         $data = array();
         foreach ($list as $tugas) {
             $row = array();
-            $row[] = '  <p class="text-sm d-flex py-auto my-auto"><b><span class="badge ' . (($tugas->detail_tugasStatus == 'Selesai') ? 'bg-success' : 'bg-warning') . '">' . $tugas->detail_tugasStatus . '</span>' . '</b></p>
+            $row[] = '  <p class="text-sm d-flex py-auto my-auto"><b><span class="badge ' . (($tugas->detail_tugasStatus == 'Ditinjau atasan' || $tugas->detail_tugasStatus == 'Dalam proses') ? 'bg-warning' : (($tugas->detail_tugasStatus == 'Ditolak') ? 'bg-danger' : 'bg-success')) . '">' . $tugas->detail_tugasStatus . '</span>' . '</b></p>
             <p class="text-sm d-flex py-auto my-auto">' . $tugas->waktu . ' ' . $tugas->satuan . '</p>
             <p class="text-xs d-flex py-auto my-auto">Mulai: ' . $tugas->waktu_mulai . '</p>
             <p class="text-xs d-flex py-auto my-auto">Selesai: ' . $tugas->waktu_selesai . '</p>';
