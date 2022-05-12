@@ -11,7 +11,7 @@
         <?php echo inputWithFormGroup('SOP', 'text', 'sop', 'SOP', [], ["value" => $sop]); ?>
         <?php echo selectWithFormGroup('kategori', 'Katgori', 'kategori', ["Penyelidikan" => "Penyelidikan", "Penyidikan" => "Penyidikan"], $kategori); ?>
         <div class="d-flex justify-content-end">
-            <?php echo button('Save', ["btn-primary"], ["id" => "btnSave", "onclick" => "save()"]); ?>
+            <?php echo button('Simpan', ["btn-primary"], ["id" => "btnSave", "onclick" => "save()"]); ?>
         </div>
         <?php echo form_close(); ?>
     </div>

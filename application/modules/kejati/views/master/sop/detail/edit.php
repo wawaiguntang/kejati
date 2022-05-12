@@ -25,7 +25,7 @@
         </div>
         <?php echo inputWithFormGroup('Keterangan', 'text', 'keterangan', 'Keterangan', [], ['value' => $keterangan]); ?>
         <div class="d-flex justify-content-end">
-            <?php echo button('Save', ["btn-primary"], ["id" => "btnSave", "onclick" => "saveKegiatan(" . $kegiatan_id . ")"]); ?>
+            <?php echo button('Simpan', ["btn-primary"], ["id" => "btnSave", "onclick" => "saveKegiatan(" . $kegiatan_id . ")"]); ?>
         </div>
         <?php echo form_close(); ?>
     </div>

@@ -1,5 +1,5 @@
 <div class="d-flex justify-content-end my-4">
-    <?php echo ((in_array('CPEGAWAI', $userPermission)) ? '<i class="ri-add-circle-line ri-xl text-success" role="button" title="Create" onclick="addData()"></i>' : '') ?>
+    <?php echo ((in_array('CPEGAWAI', $userPermission)) ? '<i class="ri-add-circle-line ri-xl text-success" role="button" title="Tambah" onclick="addData()"></i>' : '') ?>
 </div>
 <div class="table-responsive">
     <?php echo table('pegawai', ['Nama/Nip', 'Jabatan', 'Pangkat/Golongan', 'Akun', 'Aksi'], ['table-hover py-1 px-0 mx-0 table-sm']); ?>

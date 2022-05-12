@@ -7,7 +7,7 @@
     <div class="col-md-6 col-12">
         <div class="d-flex justify-content-between my-3">
             <i title="back" role="button" class="ri-arrow-left-circle-line ri-lg my-auto text-danger" onclick="sop()"></i>
-            <?php echo ((in_array('CKEGIATAN', $userPermission)) ? '<i class="ri-add-circle-line ri-xl text-success" role="button" title="Create" onclick="addKegiatan(' . $id . ')"></i>' : '') ?>
+            <?php echo ((in_array('CKEGIATAN', $userPermission)) ? '<i class="ri-add-circle-line ri-xl text-success" role="button" title="Tambah" onclick="addKegiatan(' . $id . ')"></i>' : '') ?>
         </div>
         <div class="table-responsive">
             <?php echo table('kegiatan', ['Kegiatan', 'Waktu', 'Keterangan', 'Aksi'], ['table-hover py-1 px-0 mx-0 table-sm']); ?>

@@ -11,7 +11,7 @@
         <?php echo input('hidden', 'id', '', [], ["value" => $id]); ?>
         <?php echo inputWithFormGroup('Kelengkapan', 'text', 'kelengkapan', 'Kelengkapan', [], ["value" => $kelengkapan]); ?>
         <div class="d-flex justify-content-end">
-            <?php echo button('Save', ["btn-primary"], ["id" => "btnSave", "onclick" => "save()"]); ?>
+            <?php echo button('Simpan', ["btn-primary"], ["id" => "btnSave", "onclick" => "save()"]); ?>
         </div>
         <?php echo form_close(); ?>
     </div>

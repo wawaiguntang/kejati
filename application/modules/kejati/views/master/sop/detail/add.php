@@ -49,7 +49,7 @@
 
         <?php echo inputWithFormGroup('Keterangan', 'text', 'keterangan', 'Keterangan', [], []); ?>
         <div class="d-flex justify-content-end">
-            <?php echo button('Save', ["btn-primary"], ["id" => "btnSave", "onclick" => "saveKegiatan(" . $id . ")"]); ?>
+            <?php echo button('Simpan', ["btn-primary"], ["id" => "btnSave", "onclick" => "saveKegiatan(" . $id . ")"]); ?>
         </div>
         <?php echo form_close(); ?>
     </div>

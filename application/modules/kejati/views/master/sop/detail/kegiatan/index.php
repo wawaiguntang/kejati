@@ -1,6 +1,6 @@
     <div class="row mt-2">
         <div class="col-md-6 col-sm-12 col-12">
-            <h6 class="d-flex my-auto">Kelengkapan <?php echo ((in_array('CKELENGKAPANKEGIATAN', $userPermission)) ? '<i class="my-auto ri-add-circle-line ri-xl text-success" role="button" title="Create" onclick="addKelengkapanKegiatan(' . $kegiatan_id . ')"></i>' : '') ?></h6>
+            <h6 class="d-flex my-auto">Kelengkapan <?php echo ((in_array('CKELENGKAPANKEGIATAN', $userPermission)) ? '<i class="my-auto ri-add-circle-line ri-xl text-success" role="button" title="Tambah" onclick="addKelengkapanKegiatan(' . $kegiatan_id . ')"></i>' : '') ?></h6>
             <ul class="mt-3">
                 <?php foreach ($kelengkapan as $k) { ?>
                     <li>
@@ -12,7 +12,7 @@
             </ul>
         </div>
         <div class="col-md-6 col-sm-12 col-12">
-            <h6 class="d-flex my-auto">Hasil <?php echo ((in_array('CHASILKEGIATAN', $userPermission)) ? '<i class="my-auto ri-add-circle-line ri-xl text-success" role="button" title="Create" onclick="addHasilKegiatan(' . $kegiatan_id . ')"></i>' : '') ?></h6>
+            <h6 class="d-flex my-auto">Hasil <?php echo ((in_array('CHASILKEGIATAN', $userPermission)) ? '<i class="my-auto ri-add-circle-line ri-xl text-success" role="button" title="Tambah" onclick="addHasilKegiatan(' . $kegiatan_id . ')"></i>' : '') ?></h6>
             <ul class="mt-3">
                 <?php foreach ($hasil as $h) { ?>
                     <li>
