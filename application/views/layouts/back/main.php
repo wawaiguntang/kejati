@@ -164,6 +164,7 @@ $profile = getProfileWeb();
             display: none;
         }
     </style>
+    <link rel="stylesheet" href="<?php echo base_url() ?>assets/kejati/css/style.css">
 </head>
 
 <body class="g-sidenav-show  bg-gray-100">
@@ -216,7 +217,6 @@ $profile = getProfileWeb();
             }
             Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
         }
-     
     </script>
     <!-- Github buttons -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
