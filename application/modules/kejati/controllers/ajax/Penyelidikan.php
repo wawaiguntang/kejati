@@ -23,11 +23,10 @@ class Penyelidikan extends MX_Controller
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
-        // if (!$this->input->is_ajax_request()) {
-        //     exit('No direct script access allowed');
-        //     die();
-        // }
-
+        if (!$this->input->is_ajax_request()) {
+            exit('No direct script access allowed');
+            die();
+        }
     }
 
     public function data()
@@ -53,7 +52,7 @@ class Penyelidikan extends MX_Controller
                 ]
             ], 'Data Penyelidikan');
             $data['data'] =  $this->load->view($this->module . '/penyelidikan/index', $params, TRUE);
-            $this->output
+            return $this->output
                 ->set_content_type('application/json')
                 ->set_output(
                     json_encode($data)
@@ -640,32 +639,6 @@ class Penyelidikan extends MX_Controller
         $data['data'] = $this->load->view($this->module . '/penyelidikan/sop_kelengkapan', $params, TRUE);
         $this->output->set_content_type('application/json')->set_output(json_encode($data));
     }
-    // public function getDetailKelengkapan()
-    // {
-    //     $userPermission = getPermissionFromUser();
-    //     if (!in_array('CPENYELIDIKAN', $userPermission)) {
-    //         $data = array(
-    //             'status'         => FALSE,
-    //             'message'         => "You don't have access!"
-    //         );
-    //         return $this->output->set_content_type('application/json')->set_output(json_encode($data));
-    //     }
-    //     if ($this->input->post('kegiatan_id') == NULL) {
-    //         $data = array(
-    //             'status'         => FALSE,
-    //             'message'         => "Kegiatan is required"
-    //         );
-    //         return $this->output->set_content_type('application/json')->set_output(json_encode($data));
-    //     }
-    //     $params = [
-    //         'userPermission' => $userPermission,
-    //         'kelengkapan' => $this->kelengkapan->get_all($this->input->post('kegiatan_id')),
-    //         'kegiatan_id' => $this->input->post('kegiatan_id')
-    //     ];
-    //     $data['status'] = TRUE;
-    //     $data['data'] = $this->load->view($this->module . '/penyelidikan/detail_sop_kelengkapan', $params, TRUE);
-    //     $this->output->set_content_type('application/json')->set_output(json_encode($data));
-    // }
 
     public function uploadKelengkapanHTML()
     {
@@ -876,8 +849,11 @@ class Penyelidikan extends MX_Controller
                     'perihal_nota_dinas' => $this->input->post('perihal_nota_dinas'),
                     'pengaduan_id' => $this->input->post('pengaduan'),
                     'sop_id' => $this->input->post('sop'),
-                    'status' => 'Dalam proses'
+                    'status' => 'Dalam proses',
+                    'userCode' => $this->session->userdata('userCode')
                 );
+                $pengaduan = $this->pengaduan->get_by_id($this->input->post('pengaduan'));
+                $from = $this->session->userdata('userCode');
 
                 // cek kelengkapan
                 $temp = $this->session->userdata('temp');
@@ -983,6 +959,30 @@ class Penyelidikan extends MX_Controller
                             'detail_tugas_id' => $kegiatan_id,
                             'leader' => $x['leader']
                         ];
+
+                        if ($x['leader'] == 1) {
+                            $description = 'Anda diberi tugas sebagai ketua tim dengan no surat tugas ' . $this->input->post('no_surat_tugas') . ' dari no pengaduan ' . $pengaduan->no . ' untuk melakukan kegiatan penyelidikan ' . $kegiatanData->kegiatan;
+                        } else {
+                            $description = 'Anda diberi tugas sebagai anggota tim dengan no surat tugas ' . $this->input->post('no_surat_tugas') . ' dari no pengaduan ' . $pengaduan->no . ' untuk melakukan kegiatan penyelidikan ' . $kegiatanData->kegiatan;
+                        }
+
+                        $notifParam = [
+                            'from' => $from,
+                            'to' => $x['pegawai']['userCode'],
+                            'description' => $description,
+                            'data' => json_encode([
+                                'link' => base_url('kejati/tugas/index/' . encrypt('detail(' . $kegiatan_id . ');')),
+                                'action' => 'detail(' . $kegiatan_id . ');'
+                            ], true)
+                        ];
+
+                        $notif = $this->db->insert('notifikasi', $notifParam);
+                        if ($this->db->trans_status() === FALSE || $notif == FALSE) {
+                            $this->db->trans_rollback();
+                            $data['status'] = FALSE;
+                            $data['message'] = "Failed to add penyelidikan";
+                            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                        }
                     }
                     $pegawai_detail_tugas = $this->db->insert_batch('pegawai_detail_tugas', $pegawai_detail_tugasParams);
                     if ($this->db->trans_status() === FALSE || $pegawai_detail_tugas == FALSE) {
@@ -1030,6 +1030,7 @@ class Penyelidikan extends MX_Controller
                     }
                 }
                 $this->db->trans_commit();
+
 
                 $data['status'] = TRUE;
                 $data['message'] = "Success to add penyelidikan";
@@ -1328,11 +1329,32 @@ class Penyelidikan extends MX_Controller
         }
         $update = $this->db->where('id', $this->input->post('detail_tugas_id'))->update('detail_tugas', ['status' => 'Diterima']);
         if ($update) {
+            $notifParam = [];
+            $pegawai = $this->db->get_where('pegawai_detail_tugas', ['detail_tugas_id' => $this->input->post('detail_tugas_id'), 'deleteAt' => NULL])->result_array();
+            foreach ($pegawai as $p => $i) {
+                $p = $this->db->get_where('pegawai', ['pegawai.deleteAt' => NULL, 'pegawai.id' => $i['pegawai_id']])->row_array();
+                $notifParam[] = [
+                    'from' => $this->session->userdata('userCode'),
+                    'to' => $p['userCode'],
+                    'description' => "Dokumen hasil kegiatan " . $tugas['kegiatan'] . " diterima oleh atasan ",
+                    'data' => json_encode([
+                        'link' => base_url('kejati/tugas/index/' . encrypt('detail(' . $tugas['id'] . ');')),
+                        'action' => 'detail(' . $tugas['id'] . ');'
+                    ], true)
+                ];
+            }
+
+            $notif = $this->db->insert_batch('notifikasi', $notifParam);
+            if ($notif == FALSE) {
+                $data['status'] = FALSE;
+                $data['message'] = "Gagal menerima tugas dari ketua tim";
+                return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+            }
             $data['status'] = TRUE;
             $data['message'] = "Berhasil menerima tugas dari ketua tim";
         } else {
             $data['status'] = FALSE;
-            $data['message'] = "Berhasil menerima tugas dari ketua tim";
+            $data['message'] = "Gagal menerima tugas dari ketua tim";
         }
         $this->output->set_content_type('application/json')->set_output(json_encode($data));
     }
@@ -1370,11 +1392,32 @@ class Penyelidikan extends MX_Controller
         }
         $update = $this->db->where('id', $this->input->post('detail_tugas_id'))->update('detail_tugas', ['status' => 'Ditolak', 'waktu_selesai' => NULL]);
         if ($update) {
+            $notifParam = [];
+            $pegawai = $this->db->get_where('pegawai_detail_tugas', ['detail_tugas_id' => $this->input->post('detail_tugas_id'), 'deleteAt' => NULL])->result_array();
+            foreach ($pegawai as $p => $i) {
+                $p = $this->db->get_where('pegawai', ['pegawai.deleteAt' => NULL, 'pegawai.id' => $i['pegawai_id']])->row_array();
+                $notifParam[] = [
+                    'from' => $this->session->userdata('userCode'),
+                    'to' => $p['userCode'],
+                    'description' => "Dokumen hasil kegiatan " . $tugas['kegiatan'] . " ditolak oleh atasan ",
+                    'data' => json_encode([
+                        'link' => base_url('kejati/tugas/index/' . encrypt('detail(' . $tugas['id'] . ');')),
+                        'action' => 'detail(' . $tugas['id'] . ');'
+                    ], true)
+                ];
+            }
+
+            $notif = $this->db->insert_batch('notifikasi', $notifParam);
+            if ($notif == FALSE) {
+                $data['status'] = FALSE;
+                $data['message'] = "Gagal menolak tugas dari ketua tim";
+                return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+            }
             $data['status'] = TRUE;
             $data['message'] = "Berhasil menolak tugas dari ketua tim";
         } else {
             $data['status'] = FALSE;
-            $data['message'] = "Berhasil menolak tugas dari ketua tim";
+            $data['message'] = "Gagal menolak tugas dari ketua tim";
         }
         $this->output->set_content_type('application/json')->set_output(json_encode($data));
     }

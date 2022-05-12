@@ -13,7 +13,7 @@ class Penyelidikan extends MX_Controller
         $this->session->unset_userdata('temp_edit');
     }
 
-    public function index()
+    public function index($action = '', $id = '')
     {
         $userPermission = getPermissionFromUser();
         (count(array_intersect($userPermission, ["RPENYELIDIKAN"])) > 0) ? '' : redirect('authentication/logout');
@@ -23,8 +23,15 @@ class Penyelidikan extends MX_Controller
         foreach ($getPengaduan as $k) {
             $pengaduan[$k->id] = $k->no;
         }
+        if ($action != '') {
+            if($id != ''){
+                $this->db->where('id',$id)->update('notifikasi',['isRead' => 1]);
+            }
+            $data['action'] = decrypt($action);
+        }
         $data['pengaduan'] = $pengaduan;
         $data['userPermission'] = $userPermission;
+
         $data['_view'] = $this->module . '/penyelidikan';
         $this->load->view('layouts/back/main', $data);
     }

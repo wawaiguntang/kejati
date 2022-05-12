@@ -51,7 +51,7 @@
                         <div class="card card-body p-2" style="border: 1px solid #D4D4D4;">
                             <div class="d-flex justify-content-between my-0 py-0 mb-1">
                                 <span class="text-uppercase text-sm font-weight-bold" title="SOP">PERMINTAAN DAN PENERIMAAN DOKUMEN</span>
-                                <span class="text-uppercase text-sm font-weight-bold" title="Waktu"><span class="badge bg-warning"><?php echo $tugas['tugasStatus'] ?></span> <?php echo formatWaktu($tugas['sopWaktu']) ?></span>
+                                <span class="text-uppercase text-sm font-weight-bold" title="Waktu"><?php echo formatWaktu($tugas['sopWaktu']) ?></span>
                             </div>
                             <div class="card card-body py-1 mb-1 mx-1 px-2" style="border: 1px solid #D4D4D4;" id="kegiatan3">
                                 <div class="row">
@@ -121,7 +121,8 @@
                                                                 ?>
                                                             </ul>
                                                         </div>
-                                                        <?php if ($push == TRUE && ($tugas['detail_tugasStatus'] == 'Dalam proses' || $tugas['detail_tugasStatus'] == 'Ditolak')) { ?>
+                                                     
+                                                        <?php if ($tugas['leader']['userCode'] == $this->session->userdata('userCode') && $push == TRUE && ($tugas['detail_tugasStatus'] == 'Dalam proses' || $tugas['detail_tugasStatus'] == 'Ditolak')) { ?>
                                                             <div class="d-flex justify-content-end">
                                                                 <button class="btn btn-sm btn-primary" onclick="kirim(<?php echo $detail_tugas_id ?>)" title="Kirim ke atasan">Kirim ke atasan</button>
                                                             </div>

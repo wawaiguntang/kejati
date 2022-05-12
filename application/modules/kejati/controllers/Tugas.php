@@ -12,11 +12,17 @@ class Tugas extends MX_Controller
         $this->load->model($this->module . '/pengaduan_model', 'pengaduan');
     }
 
-    public function index()
+    public function index($action = '', $id = '')
     {
         $userPermission = getPermissionFromUser();
         (count(array_intersect($userPermission, ["RTUGASSELF"])) > 0) ? '' : redirect('authentication/logout');
         $data['userPermission'] = $userPermission;
+        if ($action != '') {
+            if ($id != '') {
+                $this->db->where('id', $id)->update('notifikasi', ['isRead' => 1]);
+            }
+            $data['action'] = decrypt($action);
+        }
         $data['_view'] = $this->module . '/tugas';
         $this->load->view('layouts/back/main', $data);
     }
@@ -25,6 +31,6 @@ class Tugas extends MX_Controller
     {
         $this->load->helper('download');
 
-        force_download($name, file_get_contents(DIR.decrypt($path)));
+        force_download($name, file_get_contents(DIR . decrypt($path)));
     }
 }
