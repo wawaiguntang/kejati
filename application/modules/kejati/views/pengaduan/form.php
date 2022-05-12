@@ -29,7 +29,7 @@
                     <textarea class="form-control" name="isi" placeholder="Isi" rows="3"><?php echo $isi; ?></textarea>
                 </div>
                 <div class="d-flex justify-content-end">
-                    <?php echo button('Save', ["btn-primary"], ["id" => "btnSave", "onclick" => "save()"]); ?>
+                    <?php echo button('Simpan', ["btn-primary"], ["id" => "btnSave", "onclick" => "save()"]); ?>
                 </div>
                 <?php echo form_close(); ?>
             </div>
