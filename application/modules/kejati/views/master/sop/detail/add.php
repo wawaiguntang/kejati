@@ -28,7 +28,7 @@
                     <div class="form-group">
                         <label class="form-control-label" for="">Kelengkapan</label>
                         <div class="input-group mb-1">
-                            <input type="text" class="form-control" placeholder="Kelengkapan" name="kelengkapan[]">
+                            <input type="text" class="form-control" placeholder="Kelengkapan" id="valKelengkapan" required>
                             <button class="btn btn-outline-primary mb-0" type="button" onclick="tambahKelengkapan()" id="btnTambahKelengkapan">Tambah</button>
                         </div>
                     </div>
@@ -39,7 +39,7 @@
                     <div class="form-group">
                         <label class="form-control-label" for="">Hasil</label>
                         <div class="input-group mb-1">
-                            <input type="text" class="form-control" placeholder="Hasil" name="hasil[]">
+                            <input type="text" class="form-control" placeholder="Hasil" id="valHasil" required>
                             <button class="btn btn-outline-primary mb-0" type="button" onclick="tambahHasil()" id="btnTambahHasil">Tambah</button>
                         </div>
                     </div>
@@ -57,13 +57,20 @@
 
 <script>
     function tambahKelengkapan() {
-        var kelengkapan = `<div class="row" id="copyKelengkapan">
-            <div class="input-group mb-1">
-                <input type="text" class="form-control" placeholder="Kelengkapan" name="kelengkapan[]" value="">
-                <button class="btn btn-outline-primary mb-0" type="button" onclick="hapusKelengkapan(this)" id="btnHapusKelengkapan">Hapus</button>
-            </div>
-        </div>`;
-        $('#mustBeKelengkapan').append(kelengkapan);
+        const valKelengkapan = $("#valKelengkapan").val();
+        $("#valKelengkapan").removeClass('is-invalid');
+        if (valKelengkapan == null || valKelengkapan == 'undefined' || valKelengkapan == '') {
+            $("#valKelengkapan").addClass('is-invalid');
+        } else {
+            var kelengkapan = `<div class="row" id="copyKelengkapan">
+                <div class="input-group mb-1">
+                    <input type="text" class="form-control" placeholder="Kelengkapan" name="kelengkapan[]" value="` + valKelengkapan + `" disabled>
+                    <button class="btn btn-outline-primary mb-0" type="button" onclick="hapusKelengkapan(this)" id="btnHapusKelengkapan">Hapus</button>
+                </div>
+            </div>`;
+            $('#mustBeKelengkapan').append(kelengkapan);
+            $("#valKelengkapan").val("");
+        }
     }
 
     function hapusKelengkapan(element) {
@@ -71,13 +78,20 @@
     }
 
     function tambahHasil() {
-        var hasil = `<div class="row" id="copyHasil">
-            <div class="input-group mb-1">
-                <input type="text" class="form-control" placeholder="Hasil" name="hasil[]" value="">
-                <button class="btn btn-outline-primary mb-0" type="button" onclick="hapusHasil(this)" id="btnHapusHasil">Hapus</button>
-            </div>
-        </div>`
-        $('#mustBeHasil').append(hasil);
+        const valHasil = $("#valHasil").val();
+        $("#valHasil").removeClass('is-invalid');
+        if (valHasil == null || valHasil == 'undefined' || valHasil == '') {
+            $("#valHasil").addClass('is-invalid');
+        } else {
+            var hasil = `<div class="row" id="copyHasil">
+                <div class="input-group mb-1">
+                    <input type="text" class="form-control" placeholder="Hasil" name="hasil[]" value="` + valHasil + `" disabled>
+                    <button class="btn btn-outline-primary mb-0" type="button" onclick="hapusHasil(this)" id="btnHapusHasil">Hapus</button>
+                </div>
+            </div>`
+            $('#mustBeHasil').append(hasil);
+            $("#valHasil").val("");
+        }
     }
 
     function hapusHasil(element) {

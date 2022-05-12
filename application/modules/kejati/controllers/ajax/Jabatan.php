@@ -12,7 +12,7 @@ class Jabatan extends MX_Controller
         if (isLogin() == false) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You must login first!"
+                'message'         => "Anda harus login terlebih dahulu!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -29,7 +29,7 @@ class Jabatan extends MX_Controller
         if (in_array('RJABATAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -65,8 +65,8 @@ class Jabatan extends MX_Controller
 
             $row[] = "
                 <div class='d-flex justify-content-center'>
-                " . ((in_array('UJABATAN', $userPermission)) ? '<i class="ri-edit-2-line ri-lg text-warning m-1" role="button" title="Update" onclick="editData(' . $jabatan->id . ')"></i>' : '') . "
-                " . ((in_array('DJABATAN', $userPermission)) ? '<i class="ri-delete-bin-line ri-lg text-danger m-1" role="button" title="Delete" onclick="deleteData(' . $jabatan->id . ')"></i>' : '') . "
+                " . ((in_array('UJABATAN', $userPermission)) ? '<i class="ri-edit-2-line ri-lg text-warning m-1" role="button" title="Ubah" onclick="editData(' . $jabatan->id . ')"></i>' : '') . "
+                " . ((in_array('DJABATAN', $userPermission)) ? '<i class="ri-delete-bin-line ri-lg text-danger m-1" role="button" title="Hapus" onclick="deleteData(' . $jabatan->id . ')"></i>' : '') . "
                 </div>
                 ";
 
@@ -89,13 +89,13 @@ class Jabatan extends MX_Controller
         if (!in_array('CJABATAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
             $data['status'] = TRUE;
             $params = [
-                'title' => 'Add Data',
+                'title' => 'Tambah Data',
                 'id' => NULL,
                 'jabatan' => NULL,
             ];
@@ -113,9 +113,9 @@ class Jabatan extends MX_Controller
                     "action" => "jabatan()"
                 ],
                 [
-                    "text" => "Add Data"
+                    "text" => "Tambah Data"
                 ]
-            ], 'Add Data');
+            ], 'Tambah Data');
             $data['data'] = $this->load->view($this->module . '/master/jabatan/form', $params, TRUE);
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -128,7 +128,7 @@ class Jabatan extends MX_Controller
         if (!in_array('UJABATAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -147,7 +147,7 @@ class Jabatan extends MX_Controller
                     );
                 } else {
                     $params = [
-                        'title' => 'Edit Data',
+                        'title' => 'Ubah Data',
                         'id' => $jabatan->id,
                         'jabatan' => $jabatan->jabatan,
                     ];
@@ -165,9 +165,9 @@ class Jabatan extends MX_Controller
                             "action" => "jabatan()"
                         ],
                         [
-                            "text" => "Edit Data"
+                            "text" => "Ubah Data"
                         ]
-                    ], 'Edit Data');
+                    ], 'Ubah Data');
                     $data['data'] = $this->load->view($this->module . '/master/jabatan/form', $params, TRUE);
                 }
             }
@@ -181,7 +181,7 @@ class Jabatan extends MX_Controller
         if (!in_array('CJABATAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -207,10 +207,10 @@ class Jabatan extends MX_Controller
                 $insert = $this->jabatan->save($insert);
                 if ($insert) {
                     $data['status'] = TRUE;
-                    $data['message'] = "Success to add jabatan";
+                    $data['message'] = "Berhasil menambah jabatan";
                 } else {
                     $data['status'] = FALSE;
-                    $data['message'] = "Failed to add jabatan";
+                    $data['message'] = "Gagal menambah jabatan";
                 }
                 $this->output->set_content_type('application/json')->set_output(json_encode($data));
             }
@@ -223,7 +223,7 @@ class Jabatan extends MX_Controller
         if (!in_array('UJABATAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -261,10 +261,10 @@ class Jabatan extends MX_Controller
                         $up = $this->jabatan->update(array('id' => $this->input->post('id')), $update);
                         if ($up) {
                             $data['status'] = TRUE;
-                            $data['message'] = "Success to update jabatan";
+                            $data['message'] = "Berhasil mengubah jabatan";
                         } else {
                             $data['status'] = FALSE;
-                            $data['message'] = "Failed to update jabatan";
+                            $data['message'] = "Gagal mengubah jabatan";
                         }
                         $this->output->set_content_type('application/json')->set_output(json_encode($data));
                     }
@@ -279,7 +279,7 @@ class Jabatan extends MX_Controller
         if (!in_array('DJABATAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -300,10 +300,10 @@ class Jabatan extends MX_Controller
                     $del = $this->jabatan->delete_by_id($id);
                     if ($del) {
                         $data['status'] = TRUE;
-                        $data['message'] = "Success to delete jabatan";
+                        $data['message'] = "Berhasil menghapus jabatan";
                     } else {
                         $data['status'] = FALSE;
-                        $data['message'] = "Failed to delete jabatan";
+                        $data['message'] = "Gagal menghapus jabatan";
                     }
                     $this->output->set_content_type('application/json')->set_output(json_encode($data));
                 }

@@ -12,7 +12,7 @@ class Pangkat extends MX_Controller
         if (isLogin() == false) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You must login first!"
+                'message'         => "Anda harus login terlebih dahulu!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -29,7 +29,7 @@ class Pangkat extends MX_Controller
         if (in_array('RPANGKAT', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -65,8 +65,8 @@ class Pangkat extends MX_Controller
 
             $row[] = "
                 <div class='d-flex justify-content-center'>
-                " . ((in_array('UGOLONGAN', $userPermission)) ? '<i class="ri-edit-2-line ri-lg text-warning m-1" role="button" title="Update" onclick="editData(' . $pangkat->id . ')"></i>' : '') . "
-                " . ((in_array('DGOLONGAN', $userPermission)) ? '<i class="ri-delete-bin-line ri-lg text-danger m-1" role="button" title="Delete" onclick="deleteData(' . $pangkat->id . ')"></i>' : '') . "
+                " . ((in_array('UGOLONGAN', $userPermission)) ? '<i class="ri-edit-2-line ri-lg text-warning m-1" role="button" title="Ubah" onclick="editData(' . $pangkat->id . ')"></i>' : '') . "
+                " . ((in_array('DGOLONGAN', $userPermission)) ? '<i class="ri-delete-bin-line ri-lg text-danger m-1" role="button" title="Hapus" onclick="deleteData(' . $pangkat->id . ')"></i>' : '') . "
                 </div>
                 ";
 
@@ -89,13 +89,13 @@ class Pangkat extends MX_Controller
         if (!in_array('CPANGKAT', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
             $data['status'] = TRUE;
             $params = [
-                'title' => 'Add Data',
+                'title' => 'Tambah Data',
                 'id' => NULL,
                 'pangkat' => NULL,
             ];
@@ -113,9 +113,9 @@ class Pangkat extends MX_Controller
                     "action" => "pangkat()"
                 ],
                 [
-                    "text" => "Add Data"
+                    "text" => "Tambah Data"
                 ]
-            ], 'Add Data');
+            ], 'Tambah Data');
             $data['data'] = $this->load->view($this->module . '/master/pangkat/form', $params, TRUE);
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -128,7 +128,7 @@ class Pangkat extends MX_Controller
         if (!in_array('UPANGKAT', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -147,7 +147,7 @@ class Pangkat extends MX_Controller
                     );
                 } else {
                     $params = [
-                        'title' => 'Edit Data',
+                        'title' => 'Ubah Data',
                         'id' => $pangkat->id,
                         'pangkat' => $pangkat->pangkat,
                     ];
@@ -165,9 +165,9 @@ class Pangkat extends MX_Controller
                             "action" => "pangkat()"
                         ],
                         [
-                            "text" => "Edit Data"
+                            "text" => "Ubah Data"
                         ]
-                    ], 'Edit Data');
+                    ], 'Ubah Data');
                     $data['data'] = $this->load->view($this->module . '/master/pangkat/form', $params, TRUE);
                 }
             }
@@ -181,7 +181,7 @@ class Pangkat extends MX_Controller
         if (!in_array('CPANGKAT', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -207,10 +207,10 @@ class Pangkat extends MX_Controller
                 $insert = $this->pangkat->save($insert);
                 if ($insert) {
                     $data['status'] = TRUE;
-                    $data['message'] = "Success to add pangkat";
+                    $data['message'] = "Berhasil menambah pangkat";
                 } else {
                     $data['status'] = FALSE;
-                    $data['message'] = "Failed to add pangkat";
+                    $data['message'] = "Gagal menambah pangkat";
                 }
                 $this->output->set_content_type('application/json')->set_output(json_encode($data));
             }
@@ -223,7 +223,7 @@ class Pangkat extends MX_Controller
         if (!in_array('UPANGKAT', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -261,10 +261,10 @@ class Pangkat extends MX_Controller
                         $up = $this->pangkat->update(array('id' => $this->input->post('id')), $update);
                         if ($up) {
                             $data['status'] = TRUE;
-                            $data['message'] = "Success to update pangkat";
+                            $data['message'] = "Berhasil mengubah pangkat";
                         } else {
                             $data['status'] = FALSE;
-                            $data['message'] = "Failed to update pangkat";
+                            $data['message'] = "Gagal mengubah pangkat";
                         }
                         $this->output->set_content_type('application/json')->set_output(json_encode($data));
                     }
@@ -279,7 +279,7 @@ class Pangkat extends MX_Controller
         if (!in_array('DPANGKAT', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -300,10 +300,10 @@ class Pangkat extends MX_Controller
                     $del = $this->pangkat->delete_by_id($id);
                     if ($del) {
                         $data['status'] = TRUE;
-                        $data['message'] = "Success to delete pangkat";
+                        $data['message'] = "Berhasil menghapus pangkat";
                     } else {
                         $data['status'] = FALSE;
-                        $data['message'] = "Failed to delete pangkat";
+                        $data['message'] = "Gagal menghapus pangkat";
                     }
                     $this->output->set_content_type('application/json')->set_output(json_encode($data));
                 }

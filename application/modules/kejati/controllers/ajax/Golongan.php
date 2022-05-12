@@ -12,7 +12,7 @@ class Golongan extends MX_Controller
         if (isLogin() == false) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You must login first!"
+                'message'         => "Anda harus login terlebih dahulu"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -29,7 +29,7 @@ class Golongan extends MX_Controller
         if (in_array('RGOLONGAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -65,8 +65,8 @@ class Golongan extends MX_Controller
 
             $row[] = "
                 <div class='d-flex justify-content-center'>
-                " . ((in_array('UGOLONGAN', $userPermission)) ? '<i class="ri-edit-2-line ri-lg text-warning m-1" role="button" title="Update" onclick="editData(' . $golongan->id . ')"></i>' : '') . "
-                " . ((in_array('DGOLONGAN', $userPermission)) ? '<i class="ri-delete-bin-line ri-lg text-danger m-1" role="button" title="Delete" onclick="deleteData(' . $golongan->id . ')"></i>' : '') . "
+                " . ((in_array('UGOLONGAN', $userPermission)) ? '<i class="ri-edit-2-line ri-lg text-warning m-1" role="button" title="Ubah" onclick="editData(' . $golongan->id . ')"></i>' : '') . "
+                " . ((in_array('DGOLONGAN', $userPermission)) ? '<i class="ri-delete-bin-line ri-lg text-danger m-1" role="button" title="Hapus" onclick="deleteData(' . $golongan->id . ')"></i>' : '') . "
                 </div>
                 ";
 
@@ -89,13 +89,13 @@ class Golongan extends MX_Controller
         if (!in_array('CGOLONGAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
             $data['status'] = TRUE;
             $params = [
-                'title' => 'Add Data',
+                'title' => 'Tambah Data',
                 'id' => NULL,
                 'golongan' => NULL,
             ];
@@ -113,9 +113,9 @@ class Golongan extends MX_Controller
                     "action" => "golongan()"
                 ],
                 [
-                    "text" => "Add Data"
+                    "text" => "Tambah Data"
                 ]
-            ], 'Add Data');
+            ], 'Tambah Data');
             $data['data'] = $this->load->view($this->module . '/master/golongan/form', $params, TRUE);
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -128,7 +128,7 @@ class Golongan extends MX_Controller
         if (!in_array('UGOLONGAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -136,7 +136,7 @@ class Golongan extends MX_Controller
             if ($id == '') {
                 $data = array(
                     'status'         => FALSE,
-                    'message'         => "ID golongan is required"
+                    'message'         => "ID golongan tidak boleh kosong"
                 );
             } else {
                 $golongan = $this->golongan->get_by_id($id);
@@ -147,7 +147,7 @@ class Golongan extends MX_Controller
                     );
                 } else {
                     $params = [
-                        'title' => 'Edit Data',
+                        'title' => 'Ubah Data',
                         'id' => $golongan->id,
                         'golongan' => $golongan->golongan,
                     ];
@@ -165,9 +165,9 @@ class Golongan extends MX_Controller
                             "action" => "golongan()"
                         ],
                         [
-                            "text" => "Edit Data"
+                            "text" => "Ubah Data"
                         ]
-                    ], 'Edit Data');
+                    ], 'Ubah Data');
                     $data['data'] = $this->load->view($this->module . '/master/golongan/form', $params, TRUE);
                 }
             }
@@ -181,7 +181,7 @@ class Golongan extends MX_Controller
         if (!in_array('CGOLONGAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -207,10 +207,10 @@ class Golongan extends MX_Controller
                 $insert = $this->golongan->save($insert);
                 if ($insert) {
                     $data['status'] = TRUE;
-                    $data['message'] = "Success to add golongan";
+                    $data['message'] = "Berhasil menambah golongan";
                 } else {
                     $data['status'] = FALSE;
-                    $data['message'] = "Failed to add golongan";
+                    $data['message'] = "Gagal menambah golongan";
                 }
                 $this->output->set_content_type('application/json')->set_output(json_encode($data));
             }
@@ -223,7 +223,7 @@ class Golongan extends MX_Controller
         if (!in_array('UGOLONGAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -233,7 +233,7 @@ class Golongan extends MX_Controller
             if ($this->input->post('id') == '' || $this->input->post('id') == NULL) {
                 $data = array(
                     'status'         => FALSE,
-                    'message'         => "ID golongan is required"
+                    'message'         => "ID golongan tidak boleh kosong"
                 );
             } else {
                 $golongan = $this->golongan->get_by_id($this->input->post('id'));
@@ -261,10 +261,10 @@ class Golongan extends MX_Controller
                         $up = $this->golongan->update(array('id' => $this->input->post('id')), $update);
                         if ($up) {
                             $data['status'] = TRUE;
-                            $data['message'] = "Success to update golongan";
+                            $data['message'] = "Berhasil mengubah golongan";
                         } else {
                             $data['status'] = FALSE;
-                            $data['message'] = "Failed to update golongan";
+                            $data['message'] = "Gagal mengubah golongan";
                         }
                         $this->output->set_content_type('application/json')->set_output(json_encode($data));
                     }
@@ -279,7 +279,7 @@ class Golongan extends MX_Controller
         if (!in_array('DGOLONGAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -287,7 +287,7 @@ class Golongan extends MX_Controller
             if ($id == '') {
                 $data = array(
                     'status'         => FALSE,
-                    'message'         => "ID golongan is required"
+                    'message'         => "ID golongan tidak boleh kosong"
                 );
             } else {
                 $golongan = $this->golongan->get_by_id($id);
@@ -300,10 +300,10 @@ class Golongan extends MX_Controller
                     $del = $this->golongan->delete_by_id($id);
                     if ($del) {
                         $data['status'] = TRUE;
-                        $data['message'] = "Success to delete golongan";
+                        $data['message'] = "Berhasil menghapus golongan";
                     } else {
                         $data['status'] = FALSE;
-                        $data['message'] = "Failed to delete golongan";
+                        $data['message'] = "Gagal menghapus golongan";
                     }
                     $this->output->set_content_type('application/json')->set_output(json_encode($data));
                 }

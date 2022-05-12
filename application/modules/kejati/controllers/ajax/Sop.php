@@ -12,7 +12,7 @@ class Sop extends MX_Controller
         if (isLogin() == false) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You must login first!"
+                'message'         => "Anda harus login terlebih dahulu!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -30,7 +30,7 @@ class Sop extends MX_Controller
         if (in_array('RSOP', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -69,8 +69,8 @@ class Sop extends MX_Controller
 
             $row[] = "
                 <div class='d-flex justify-content-center'>
-                " . ((in_array('USOP', $userPermission)) ? '<i class="ri-edit-2-line ri-lg text-warning m-1" role="button" title="Update" onclick="editData(' . $sop->id . ')"></i>' : '') . "
-                " . ((in_array('DSOP', $userPermission)) ? '<i class="ri-delete-bin-line ri-lg text-danger m-1" role="button" title="Delete" onclick="deleteData(' . $sop->id . ')"></i>' : '') . "
+                " . ((in_array('USOP', $userPermission)) ? '<i class="ri-edit-2-line ri-lg text-warning m-1" role="button" title="Ubah" onclick="editData(' . $sop->id . ')"></i>' : '') . "
+                " . ((in_array('DSOP', $userPermission)) ? '<i class="ri-delete-bin-line ri-lg text-danger m-1" role="button" title="Hapus" onclick="deleteData(' . $sop->id . ')"></i>' : '') . "
                 " . ((in_array('RKEGIATAN', $userPermission)) ? '<i class="ri-information-line ri-lg text-primary m-1" role="button" title="Info" onclick="infoKegiatan(' . $sop->id . ')"></i>' : '') . "
                 </div>
                 ";
@@ -94,13 +94,13 @@ class Sop extends MX_Controller
         if (!in_array('CSOP', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
             $data['status'] = TRUE;
             $params = [
-                'title' => 'Add Data',
+                'title' => 'Tambah Data',
                 'id' => '',
                 'sop' => '',
                 'kategori' => '',
@@ -119,9 +119,9 @@ class Sop extends MX_Controller
                     "action" => "sop()"
                 ],
                 [
-                    "text" => "Add Data"
+                    "text" => "Tambah Data"
                 ]
-            ], 'Add Data');
+            ], 'Tambah Data');
             $data['data'] = $this->load->view($this->module . '/master/sop/form', $params, TRUE);
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -134,7 +134,7 @@ class Sop extends MX_Controller
         if (!in_array('USOP', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -153,7 +153,7 @@ class Sop extends MX_Controller
                     );
                 } else {
                     $params = [
-                        'title' => 'Edit Data',
+                        'title' => 'Ubah Data',
                         'id' => $sop->id,
                         'sop' => $sop->sop,
                         'kategori' => $sop->kategori,
@@ -172,9 +172,9 @@ class Sop extends MX_Controller
                             "action" => "sop()"
                         ],
                         [
-                            "text" => "Edit Data"
+                            "text" => "Ubah Data"
                         ]
-                    ], 'Edit Data');
+                    ], 'Ubah Data');
                     $data['data'] = $this->load->view($this->module . '/master/sop/form', $params, TRUE);
                 }
             }
@@ -188,7 +188,7 @@ class Sop extends MX_Controller
         if (!in_array('CSOP', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -216,10 +216,10 @@ class Sop extends MX_Controller
                 $insert = $this->sop->save($insert);
                 if ($insert) {
                     $data['status'] = TRUE;
-                    $data['message'] = "Success to add sop";
+                    $data['message'] = "Berhasil menambah sop";
                 } else {
                     $data['status'] = FALSE;
-                    $data['message'] = "Failed to add sop";
+                    $data['message'] = "Gagal menambah sop";
                 }
                 $this->output->set_content_type('application/json')->set_output(json_encode($data));
             }
@@ -232,7 +232,7 @@ class Sop extends MX_Controller
         if (!in_array('USOP', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -272,10 +272,10 @@ class Sop extends MX_Controller
                         $up = $this->sop->update(array('id' => $this->input->post('id')), $update);
                         if ($up) {
                             $data['status'] = TRUE;
-                            $data['message'] = "Success to update sop";
+                            $data['message'] = "Berhasil mengubah sop";
                         } else {
                             $data['status'] = FALSE;
-                            $data['message'] = "Failed to update sop";
+                            $data['message'] = "Gagal mengubah sop";
                         }
                         $this->output->set_content_type('application/json')->set_output(json_encode($data));
                     }
@@ -290,7 +290,7 @@ class Sop extends MX_Controller
         if (!in_array('DSOP', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -311,10 +311,10 @@ class Sop extends MX_Controller
                     $del = $this->sop->delete_by_id($id);
                     if ($del) {
                         $data['status'] = TRUE;
-                        $data['message'] = "Success to delete sop";
+                        $data['message'] = "Berhasil menghapus sop";
                     } else {
                         $data['status'] = FALSE;
-                        $data['message'] = "Failed to delete sop";
+                        $data['message'] = "Gagal menghapus sop";
                     }
                     $this->output->set_content_type('application/json')->set_output(json_encode($data));
                 }
@@ -377,7 +377,7 @@ class Sop extends MX_Controller
         } else {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -396,8 +396,8 @@ class Sop extends MX_Controller
 
             $row[] = "
                 <div class='d-flex justify-content-center'>
-                " . ((in_array('UKEGIATAN', $userPermission)) ? '<i class="ri-edit-2-line ri-lg text-warning m-1" role="button" title="Update" onclick="editKegiatan(' . $kegiatan->id . ')"></i>' : '') . "
-                " . ((in_array('DKEGIATAN', $userPermission)) ? '<i class="ri-delete-bin-line ri-lg text-danger m-1" role="button" title="Delete" onclick="deleteKegiatan(' . $kegiatan->id . ')"></i>' : '') . "
+                " . ((in_array('UKEGIATAN', $userPermission)) ? '<i class="ri-edit-2-line ri-lg text-warning m-1" role="button" title="Ubah" onclick="editKegiatan(' . $kegiatan->id . ')"></i>' : '') . "
+                " . ((in_array('DKEGIATAN', $userPermission)) ? '<i class="ri-delete-bin-line ri-lg text-danger m-1" role="button" title="Hapus" onclick="deleteKegiatan(' . $kegiatan->id . ')"></i>' : '') . "
                 " . ((in_array('RDETAILKEGIATAN', $userPermission)) ? '<i class="ri-information-line ri-lg text-primary m-1" role="button" title="Info" onclick="infoDetailKegiatan(' . $kegiatan->id . ')"></i>' : '') . "
                 </div>
                 ";
@@ -421,7 +421,7 @@ class Sop extends MX_Controller
         if (!in_array('CKEGIATAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -440,7 +440,7 @@ class Sop extends MX_Controller
                 } else {
                     $data['status'] = TRUE;
                     $params = [
-                        'title' => 'Add Data Kegiatan',
+                        'title' => 'Tambah Data Kegiatan',
                         'id' => $sop->id,
                         'sop' => $sop->sop,
                     ];
@@ -462,9 +462,9 @@ class Sop extends MX_Controller
                             "action" => "infoKegiatan(" . $id . ")"
                         ],
                         [
-                            "text" => "Add Data Kegiatan"
+                            "text" => "Tambah Data Kegiatan"
                         ]
-                    ], 'Add Data Kegiatan');
+                    ], 'Tambah Data Kegiatan');
                     $data['data'] = $this->load->view($this->module . '/master/sop/detail/add', $params, TRUE);
                     $this->output->set_content_type('application/json')->set_output(json_encode($data));
                 }
@@ -478,7 +478,7 @@ class Sop extends MX_Controller
         if (!in_array('UKEGIATAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -497,7 +497,7 @@ class Sop extends MX_Controller
                 } else {
                     $data['status'] = TRUE;
                     $params = [
-                        'title' => 'Edit Data Kegiatan',
+                        'title' => 'Ubah Data Kegiatan',
                         'sop_id' => $kegiatan->sop_id,
                         'kegiatan_id' => $kegiatan->id,
                         'kegiatan' => $kegiatan->kegiatan,
@@ -523,9 +523,9 @@ class Sop extends MX_Controller
                             "action" => "infoKegiatan(" . $id . ")"
                         ],
                         [
-                            "text" => "Edit Data Kegiatan"
+                            "text" => "Ubah Data Kegiatan"
                         ]
-                    ], 'Edit Data Kegiatan');
+                    ], 'Ubah Data Kegiatan');
                     $data['data'] = $this->load->view($this->module . '/master/sop/detail/edit', $params, TRUE);
                     $this->output->set_content_type('application/json')->set_output(json_encode($data));
                 }
@@ -540,7 +540,7 @@ class Sop extends MX_Controller
         if (!in_array('CKEGIATAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -584,13 +584,13 @@ class Sop extends MX_Controller
                         $this->db->trans_start();
                         $kegiatan = $this->kegiatan->save($insert);
                         $data['status'] = TRUE;
-                        $data['message'] = "Success to add kegiatan";
+                        $data['message'] = "Berhasil menambah kegiatan";
                         if ($this->db->trans_status() === FALSE) {
                             $this->db->trans_rollback();
                             $data['status'] = FALSE;
-                            $data['message'] = "Failed to add kegiatan";
+                            $data['message'] = "Gagal menambah kegiatan";
                         }
-                        if (!empty($this->input->post('kelengkapan'))) {
+                        if (!empty($this->input->post('kelengkapan')) && $this->input->post('kelengkapan') != NULL) {
                             $params = [];
                             foreach ($this->input->post('kelengkapan') as $k => $v) {
                                 $params[] = [
@@ -602,10 +602,10 @@ class Sop extends MX_Controller
                             if ($this->db->trans_status() === FALSE) {
                                 $this->db->trans_rollback();
                                 $data['status'] = FALSE;
-                                $data['message'] = "Failed to add kegiatan";
+                                $data['message'] = "Gagal menambah kegiatan";
                             }
                         }
-                        if (!empty($this->input->post('hasil'))) {
+                        if (!empty($this->input->post('hasil')) && $this->input->post('hasil') != NULL) {
                             $params = [];
                             foreach ($this->input->post('hasil') as $k => $v) {
                                 $params[] = [
@@ -617,7 +617,7 @@ class Sop extends MX_Controller
                             if ($this->db->trans_status() === FALSE) {
                                 $this->db->trans_rollback();
                                 $data['status'] = FALSE;
-                                $data['message'] = "Failed to add kegiatan";
+                                $data['message'] = "Gagal menambah kegiatan";
                             }
                         }
                         if ($this->input->post('satuan') == 'menit') {
@@ -629,11 +629,11 @@ class Sop extends MX_Controller
                         } else {
                             $newWaktu = $this->input->post('waktu');
                         }
-                        $this->db->update('sop', ['waktu' => $sop->waktu + $newWaktu], ['id' => $sop->id]);
+                        $this->db->update('sop', ['waktu' => (int)$sop->waktu + (int)$newWaktu], ['id' => $sop->id]);
                         if ($this->db->trans_status() === FALSE) {
                             $this->db->trans_rollback();
                             $data['status'] = FALSE;
-                            $data['message'] = "Failed to add kegiatan";
+                            $data['message'] = "Gagal menambah kegiatan";
                         }
                         $this->db->trans_complete();
                         $this->output->set_content_type('application/json')->set_output(json_encode($data));
@@ -649,7 +649,7 @@ class Sop extends MX_Controller
         if (!in_array('UKEGIATAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -718,10 +718,10 @@ class Sop extends MX_Controller
                             $update = $this->kegiatan->update(['id' => $id], $update);
                             if ($update) {
                                 $data['status'] = TRUE;
-                                $data['message'] = "Success to edit kegiatan";
+                                $data['message'] = "Berhasil mengubah kegiatan";
                             } else {
                                 $data['status'] = FALSE;
-                                $data['message'] = "Failed to edit kegiatan";
+                                $data['message'] = "Gagal mengubah kegiatan";
                             }
                         }
                         $this->output->set_content_type('application/json')->set_output(json_encode($data));
@@ -737,7 +737,7 @@ class Sop extends MX_Controller
         if (!in_array('DKEGIATAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -774,10 +774,10 @@ class Sop extends MX_Controller
                         $del = $this->kegiatan->delete_by_id($id);
                         if ($del) {
                             $data['status'] = TRUE;
-                            $data['message'] = "Success to delete kegiatan";
+                            $data['message'] = "Berhasil menghapus kegiatan";
                         } else {
                             $data['status'] = FALSE;
-                            $data['message'] = "Failed to delete kegiatan";
+                            $data['message'] = "Gagal menghapus kegiatan";
                         }
                     }
                     $this->output->set_content_type('application/json')->set_output(json_encode($data));
@@ -831,7 +831,7 @@ class Sop extends MX_Controller
         } else {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -871,7 +871,7 @@ class Sop extends MX_Controller
         } else {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -911,7 +911,7 @@ class Sop extends MX_Controller
         } else {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -923,7 +923,7 @@ class Sop extends MX_Controller
         if (!in_array('CKELENGKAPANKEGIATAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -951,10 +951,10 @@ class Sop extends MX_Controller
                 $insert = $this->db->insert('kelengkapan', $insert);
                 if ($insert) {
                     $data['status'] = TRUE;
-                    $data['message'] = "Success to add kelengkapan";
+                    $data['message'] = "Berhasil menambah kelengkapan";
                 } else {
                     $data['status'] = FALSE;
-                    $data['message'] = "Failed to add kelengkapan";
+                    $data['message'] = "Gagal menambah kelengkapan";
                 }
                 $this->output->set_content_type('application/json')->set_output(json_encode($data));
             }
@@ -967,7 +967,7 @@ class Sop extends MX_Controller
         if (!in_array('UKELENGKAPANKEGIATAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -1005,10 +1005,10 @@ class Sop extends MX_Controller
                         $up = $this->db->update('kelengkapan', $update, ['id' => $this->input->post('id')]);
                         if ($up) {
                             $data['status'] = TRUE;
-                            $data['message'] = "Success to update kelengkapan";
+                            $data['message'] = "Berhasil mengubah kelengkapan";
                         } else {
                             $data['status'] = FALSE;
-                            $data['message'] = "Failed to update kelengkapan";
+                            $data['message'] = "Gagal mengubah kelengkapan";
                         }
                         $this->output->set_content_type('application/json')->set_output(json_encode($data));
                     }
@@ -1024,7 +1024,7 @@ class Sop extends MX_Controller
         if (!in_array('DKELENGKAPANKEGIATAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -1047,10 +1047,10 @@ class Sop extends MX_Controller
                     $del = $this->db->update('kelengkapan', $params, ['id' => $id]);
                     if ($del) {
                         $data['status'] = TRUE;
-                        $data['message'] = "Success to delete kelengkapan";
+                        $data['message'] = "Berhasil menghapus kelengkapan";
                     } else {
                         $data['status'] = FALSE;
-                        $data['message'] = "Failed to delete kelengkapan";
+                        $data['message'] = "Gagal menghapus kelengkapan";
                     }
                     $this->output->set_content_type('application/json')->set_output(json_encode($data));
                 }
@@ -1099,7 +1099,7 @@ class Sop extends MX_Controller
         } else {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -1139,7 +1139,7 @@ class Sop extends MX_Controller
         } else {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -1151,7 +1151,7 @@ class Sop extends MX_Controller
         if (!in_array('CHASILKEGIATAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -1179,10 +1179,10 @@ class Sop extends MX_Controller
                 $insert = $this->db->insert('hasil', $insert);
                 if ($insert) {
                     $data['status'] = TRUE;
-                    $data['message'] = "Success to add hasil";
+                    $data['message'] = "Berhasil menambah hasil";
                 } else {
                     $data['status'] = FALSE;
-                    $data['message'] = "Failed to add hasil";
+                    $data['message'] = "Gagal menambah hasil";
                 }
                 $this->output->set_content_type('application/json')->set_output(json_encode($data));
             }
@@ -1195,7 +1195,7 @@ class Sop extends MX_Controller
         if (!in_array('UHASILKEGIATAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -1233,10 +1233,10 @@ class Sop extends MX_Controller
                         $up = $this->db->update('hasil', $update, ['id' => $this->input->post('id')]);
                         if ($up) {
                             $data['status'] = TRUE;
-                            $data['message'] = "Success to update hasil";
+                            $data['message'] = "Berhasil mengubah hasil";
                         } else {
                             $data['status'] = FALSE;
-                            $data['message'] = "Failed to update hasil";
+                            $data['message'] = "Gagal mengubah hasil";
                         }
                         $this->output->set_content_type('application/json')->set_output(json_encode($data));
                     }
@@ -1252,7 +1252,7 @@ class Sop extends MX_Controller
         if (!in_array('DHASILKEGIATAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -1275,10 +1275,10 @@ class Sop extends MX_Controller
                     $del = $this->db->update('hasil', $params, ['id' => $id]);
                     if ($del) {
                         $data['status'] = TRUE;
-                        $data['message'] = "Success to delete hasil";
+                        $data['message'] = "Berhasil menghapus hasil";
                     } else {
                         $data['status'] = FALSE;
-                        $data['message'] = "Failed to delete hasil";
+                        $data['message'] = "Gagal menghapus hasil";
                     }
                     $this->output->set_content_type('application/json')->set_output(json_encode($data));
                 }

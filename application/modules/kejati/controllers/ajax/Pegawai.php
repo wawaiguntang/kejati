@@ -12,7 +12,7 @@ class Pegawai extends MX_Controller
         if (isLogin() == false) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You must login first!"
+                'message'         => "Anda harus login terlebih dahulu!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -32,7 +32,7 @@ class Pegawai extends MX_Controller
         if (in_array('RPEGAWAI', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -80,8 +80,8 @@ class Pegawai extends MX_Controller
 
             $row[] = "
                 <div class='d-flex justify-content-center'>
-                " . ((in_array('UPEGAWAI', $userPermission)) ? '<i class="ri-edit-2-line ri-lg text-warning m-1" role="button" title="Update" onclick="editData(' . $pegawai->pegawai_id . ')"></i>' : '') . "
-                " . ((in_array('DPEGAWAI', $userPermission)) ? '<i class="ri-delete-bin-line ri-lg text-danger m-1" role="button" title="Delete" onclick="deleteData(' . $pegawai->pegawai_id . ')"></i>' : '') . "
+                " . ((in_array('UPEGAWAI', $userPermission)) ? '<i class="ri-edit-2-line ri-lg text-warning m-1" role="button" title="Ubah" onclick="editData(' . $pegawai->pegawai_id . ')"></i>' : '') . "
+                " . ((in_array('DPEGAWAI', $userPermission)) ? '<i class="ri-delete-bin-line ri-lg text-danger m-1" role="button" title="Hapus" onclick="deleteData(' . $pegawai->pegawai_id . ')"></i>' : '') . "
                 </div>
                 ";
 
@@ -104,13 +104,13 @@ class Pegawai extends MX_Controller
         if (!in_array('CPEGAWAI', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
             $data['status'] = TRUE;
             $params = [
-                'title' => 'Add Data',
+                'title' => 'Tambah Data',
                 'id' => '',
                 'nama' => '',
                 'nip' => '',
@@ -167,9 +167,9 @@ class Pegawai extends MX_Controller
                     "action" => "pegawai()"
                 ],
                 [
-                    "text" => "Add Data"
+                    "text" => "Tambah Data"
                 ]
-            ], 'Add Data');
+            ], 'Tambah Data');
             $data['data'] = $this->load->view($this->module . '/master/pegawai/form', $params, TRUE);
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -182,7 +182,7 @@ class Pegawai extends MX_Controller
         if (!in_array('UPEGAWAI', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -202,7 +202,7 @@ class Pegawai extends MX_Controller
                 } else {
                     $data['status'] = TRUE;
                     $params = [
-                        'title' => 'Edit Data',
+                        'title' => 'Ubah Data',
                         'id' => $pegawai->id,
                         'nama' => $pegawai->nama,
                         'nip' => $pegawai->nip,
@@ -259,9 +259,9 @@ class Pegawai extends MX_Controller
                             "action" => "pegawai()"
                         ],
                         [
-                            "text" => "Edit Data"
+                            "text" => "Ubah Data"
                         ]
-                    ], 'Edit Data');
+                    ], 'Ubah Data');
                     $data['data'] = $this->load->view($this->module . '/master/pegawai/form', $params, TRUE);
                     $this->output->set_content_type('application/json')->set_output(json_encode($data));
                 }
@@ -276,7 +276,7 @@ class Pegawai extends MX_Controller
         if (!in_array('CPEGAWAI', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -331,10 +331,10 @@ class Pegawai extends MX_Controller
                         $insert = $this->pegawai->save($insert);
                         if ($insert) {
                             $data['status'] = TRUE;
-                            $data['message'] = "Success to add pegawai";
+                            $data['message'] = "Berhasil menambah pegawai";
                         } else {
                             $data['status'] = FALSE;
-                            $data['message'] = "Failed to add pegawai";
+                            $data['message'] = "Gagal menambah pegawai";
                         }
                     }
                     $this->output->set_content_type('application/json')->set_output(json_encode($data));
@@ -358,7 +358,7 @@ class Pegawai extends MX_Controller
         if (!in_array('UPEGAWAI', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -424,10 +424,10 @@ class Pegawai extends MX_Controller
                                 $up = $this->pegawai->update(array('id' => $this->input->post('id')), $update);
                                 if ($up) {
                                     $data['status'] = TRUE;
-                                    $data['message'] = "Success to update pegawai";
+                                    $data['message'] = "Berhasil mengubah pegawai";
                                 } else {
                                     $data['status'] = FALSE;
-                                    $data['message'] = "Failed to update pegawai";
+                                    $data['message'] = "Gagal mengubah pegawai";
                                 }
                             }
                             $this->output->set_content_type('application/json')->set_output(json_encode($data));
@@ -435,10 +435,10 @@ class Pegawai extends MX_Controller
                             $up = $this->pegawai->update(array('id' => $this->input->post('id')), $update);
                             if ($up) {
                                 $data['status'] = TRUE;
-                                $data['message'] = "Success to update pegawai";
+                                $data['message'] = "Berhasil mengubah pegawai";
                             } else {
                                 $data['status'] = FALSE;
-                                $data['message'] = "Failed to update pegawai";
+                                $data['message'] = "Gagal mengubah pegawai";
                             }
                             $this->output->set_content_type('application/json')->set_output(json_encode($data));
                         }
@@ -454,7 +454,7 @@ class Pegawai extends MX_Controller
         if (!in_array('DPEGAWAI', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -475,10 +475,10 @@ class Pegawai extends MX_Controller
                     $del = $this->pegawai->delete_by_id($id);
                     if ($del) {
                         $data['status'] = TRUE;
-                        $data['message'] = "Success to delete pegawai";
+                        $data['message'] = "Berhasil menghapus pegawai";
                     } else {
                         $data['status'] = FALSE;
-                        $data['message'] = "Failed to delete pegawai";
+                        $data['message'] = "Gagal menghapus pegawai";
                     }
                     $this->output->set_content_type('application/json')->set_output(json_encode($data));
                 }

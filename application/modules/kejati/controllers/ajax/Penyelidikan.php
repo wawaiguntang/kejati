@@ -19,7 +19,7 @@ class Penyelidikan extends MX_Controller
         if (isLogin() == false) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You must login first!"
+                'message'         => "Anda harus login terlebih dahulu!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -35,7 +35,7 @@ class Penyelidikan extends MX_Controller
         if (!in_array('RPENYELIDIKAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -75,15 +75,15 @@ class Penyelidikan extends MX_Controller
 
             // $row[] = "
             //     <div class='d-flex justify-content-center'>
-            //     " . ((in_array('UPENYELIDIKAN', $userPermission)) ? '<i class="ri-edit-2-line ri-lg text-warning m-1" role="button" title="Update" onclick="editData(' . $penyelidikan->id . ')"></i>' : '') . "
-            //     " . ((in_array('DPENYELIDIKAN', $userPermission)) ? '<i class="ri-delete-bin-line ri-lg text-danger m-1" role="button" title="Delete" onclick="deleteData(' . $penyelidikan->id . ')"></i>' : '') . "
+            //     " . ((in_array('UPENYELIDIKAN', $userPermission)) ? '<i class="ri-edit-2-line ri-lg text-warning m-1" role="button" title="Ubah" onclick="editData(' . $penyelidikan->id . ')"></i>' : '') . "
+            //     " . ((in_array('DPENYELIDIKAN', $userPermission)) ? '<i class="ri-delete-bin-line ri-lg text-danger m-1" role="button" title="Hapus" onclick="deleteData(' . $penyelidikan->id . ')"></i>' : '') . "
             //     " . ((in_array('RDETAILPENYELIDIKAN', $userPermission)) ? '<i class="ri-information-line ri-lg text-primary m-1" role="button" title="Info" onclick="detail(' . $penyelidikan->id . ')"></i>' : '') . "
             //     </div>
             //     ";
 
             $row[] = "
                 <div class='d-flex justify-content-center'>
-                " . ((in_array('DPENYELIDIKAN', $userPermission)) ? '<i class="ri-delete-bin-line ri-lg text-danger m-1" role="button" title="Delete" onclick="deleteData(' . $penyelidikan->id . ')"></i>' : '') . "
+                " . ((in_array('DPENYELIDIKAN', $userPermission)) ? '<i class="ri-delete-bin-line ri-lg text-danger m-1" role="button" title="Hapus" onclick="deleteData(' . $penyelidikan->id . ')"></i>' : '') . "
                 " . ((in_array('RDETAILPENYELIDIKAN', $userPermission)) ? '<i class="ri-information-line ri-lg text-primary m-1" role="button" title="Info" onclick="detail(' . $penyelidikan->id . ')"></i>' : '') . "
                 </div>
                 ";
@@ -108,7 +108,7 @@ class Penyelidikan extends MX_Controller
         if (!in_array('CPENYELIDIKAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -130,7 +130,7 @@ class Penyelidikan extends MX_Controller
             }
 
             $params = [
-                'title' => 'Add Data Penyelidikan',
+                'title' => 'Tambah Data Penyelidikan',
                 'id' => NULL,
                 'no' => NULL,
                 'tanggal_surat' => NULL,
@@ -151,9 +151,9 @@ class Penyelidikan extends MX_Controller
                     "action" => "back()"
                 ],
                 [
-                    "text" => "Add Data Penyelidikan"
+                    "text" => "Tambah Data Penyelidikan"
                 ]
-            ], 'Add Data Penyelidikan');
+            ], 'Tambah Data Penyelidikan');
             $data['data'] = $this->load->view($this->module . '/penyelidikan/add', $params, TRUE);
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -165,7 +165,7 @@ class Penyelidikan extends MX_Controller
         if (!(count(array_intersect($userPermission, ['CPENYELIDIKAN', 'UPENYELIDIKAN'])) > 0)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -201,7 +201,7 @@ class Penyelidikan extends MX_Controller
         if (!(count(array_intersect($userPermission, ['CPENYELIDIKAN', 'UPENYELIDIKAN'])) > 0)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -258,7 +258,7 @@ class Penyelidikan extends MX_Controller
         if (!in_array('CPENYELIDIKAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -314,7 +314,7 @@ class Penyelidikan extends MX_Controller
         if (!in_array('CPENYELIDIKAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -392,7 +392,7 @@ class Penyelidikan extends MX_Controller
         if (!in_array('CPENYELIDIKAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -428,7 +428,7 @@ class Penyelidikan extends MX_Controller
                 ]);
 
                 $data['status'] = TRUE;
-                $data['message'] = "Success to delete kegiatan";
+                $data['message'] = "Berhasil menghapus kegiatan";
                 $this->output->set_content_type('application/json')->set_output(json_encode($data));
             }
         }
@@ -440,7 +440,7 @@ class Penyelidikan extends MX_Controller
         if (!in_array('CPENYELIDIKAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -466,7 +466,7 @@ class Penyelidikan extends MX_Controller
         if (!in_array('CPENYELIDIKAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -500,7 +500,7 @@ class Penyelidikan extends MX_Controller
         if (!in_array('CPENYELIDIKAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -558,7 +558,7 @@ class Penyelidikan extends MX_Controller
                 }
 
                 $data['status'] = TRUE;
-                $data['message'] = "Success to add jaksa";
+                $data['message'] = "Berhasil menambah jaksa";
                 $this->output->set_content_type('application/json')->set_output(json_encode($data));
             }
         }
@@ -570,7 +570,7 @@ class Penyelidikan extends MX_Controller
         if (!in_array('CPENYELIDIKAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -610,7 +610,7 @@ class Penyelidikan extends MX_Controller
                 ]);
 
                 $data['status'] = TRUE;
-                $data['message'] = "Success to delete jaksa";
+                $data['message'] = "Berhasil menghapus jaksa";
                 $this->output->set_content_type('application/json')->set_output(json_encode($data));
             }
         }
@@ -622,7 +622,7 @@ class Penyelidikan extends MX_Controller
         if (!in_array('CPENYELIDIKAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -649,7 +649,7 @@ class Penyelidikan extends MX_Controller
         if (!in_array('CPENYELIDIKAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -687,7 +687,7 @@ class Penyelidikan extends MX_Controller
         if (!in_array('CPENYELIDIKAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -742,7 +742,7 @@ class Penyelidikan extends MX_Controller
                         ]);
                         $data['status'] = TRUE;
                         $data['kegiatan_id'] = $insert['kegiatan_id'];
-                        $data['message'] = "Success to upload file";
+                        $data['message'] = "Berhasil to upload file";
                         return $this->output->set_content_type('application/json')->set_output(json_encode($data));
                     }
                 } else {
@@ -764,7 +764,7 @@ class Penyelidikan extends MX_Controller
         if (!in_array('CPENYELIDIKAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -801,7 +801,7 @@ class Penyelidikan extends MX_Controller
 
             $data = array(
                 'status'         => TRUE,
-                'message'         => "Success to set leader",
+                'message'         => "Berhasil to set leader",
                 'kegiatan_id' => $ex[0],
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
@@ -814,7 +814,7 @@ class Penyelidikan extends MX_Controller
         if (!in_array('CPENYELIDIKAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -912,7 +912,7 @@ class Penyelidikan extends MX_Controller
                 if ($this->db->trans_status() === FALSE || $tugas == FALSE) {
                     $this->db->trans_rollback();
                     $data['status'] = FALSE;
-                    $data['message'] = "Failed to add penyelidikan";
+                    $data['message'] = "Gagal menambah penyelidikan";
                     return $this->output->set_content_type('application/json')->set_output(json_encode($data));
                 }
                 $tugas_id = $this->db->insert_id();
@@ -932,7 +932,7 @@ class Penyelidikan extends MX_Controller
                 if ($this->db->trans_status() === FALSE || $tembusan == FALSE) {
                     $this->db->trans_rollback();
                     $data['status'] = FALSE;
-                    $data['message'] = "Failed to add penyelidikan";
+                    $data['message'] = "Gagal menambah penyelidikan";
                     return $this->output->set_content_type('application/json')->set_output(json_encode($data));
                 }
 
@@ -951,7 +951,7 @@ class Penyelidikan extends MX_Controller
                     if ($this->db->trans_status() === FALSE || $kegiatan == FALSE) {
                         $this->db->trans_rollback();
                         $data['status'] = FALSE;
-                        $data['message'] = "Failed to add penyelidikan";
+                        $data['message'] = "Gagal menambah penyelidikan";
                         return $this->output->set_content_type('application/json')->set_output(json_encode($data));
                     }
                     $kegiatan_id = $this->db->insert_id();
@@ -983,7 +983,7 @@ class Penyelidikan extends MX_Controller
                         if ($this->db->trans_status() === FALSE || $notif == FALSE) {
                             $this->db->trans_rollback();
                             $data['status'] = FALSE;
-                            $data['message'] = "Failed to add penyelidikan";
+                            $data['message'] = "Gagal menambah penyelidikan";
                             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
                         }
                     }
@@ -991,7 +991,7 @@ class Penyelidikan extends MX_Controller
                     if ($this->db->trans_status() === FALSE || $pegawai_detail_tugas == FALSE) {
                         $this->db->trans_rollback();
                         $data['status'] = FALSE;
-                        $data['message'] = "Failed to add penyelidikan";
+                        $data['message'] = "Gagal menambah penyelidikan";
                         return $this->output->set_content_type('application/json')->set_output(json_encode($data));
                     }
 
@@ -1010,7 +1010,7 @@ class Penyelidikan extends MX_Controller
                     if ($this->db->trans_status() === FALSE || $kelengkapan == FALSE) {
                         $this->db->trans_rollback();
                         $data['status'] = FALSE;
-                        $data['message'] = "Failed to add penyelidikan";
+                        $data['message'] = "Gagal menambah penyelidikan";
                         return $this->output->set_content_type('application/json')->set_output(json_encode($data));
                     }
 
@@ -1028,7 +1028,7 @@ class Penyelidikan extends MX_Controller
                     if ($this->db->trans_status() === FALSE || $hasil == FALSE) {
                         $this->db->trans_rollback();
                         $data['status'] = FALSE;
-                        $data['message'] = "Failed to add penyelidikan";
+                        $data['message'] = "Gagal menambah penyelidikan";
                         return $this->output->set_content_type('application/json')->set_output(json_encode($data));
                     }
                 }
@@ -1036,7 +1036,7 @@ class Penyelidikan extends MX_Controller
 
 
                 $data['status'] = TRUE;
-                $data['message'] = "Success to add penyelidikan";
+                $data['message'] = "Berhasil menambah penyelidikan";
                 $this->output->set_content_type('application/json')->set_output(json_encode($data));
             }
         }
@@ -1047,7 +1047,7 @@ class Penyelidikan extends MX_Controller
         if (!in_array('CPENYELIDIKAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -1112,7 +1112,7 @@ class Penyelidikan extends MX_Controller
             if ($this->db->trans_status() === FALSE) {
                 $this->db->trans_rollback();
                 $data['status'] = FALSE;
-                $data['message'] = "Failed to add penyelidikan";
+                $data['message'] = "Gagal menambah penyelidikan";
                 return $this->output->set_content_type('application/json')->set_output(json_encode($data));
             }
             $tugas_id = $this->session->userdata('tugas_id');
@@ -1123,7 +1123,7 @@ class Penyelidikan extends MX_Controller
             if ($this->db->trans_status() === FALSE) {
                 $this->db->trans_rollback();
                 $data['status'] = FALSE;
-                $data['message'] = "Failed to add penyelidikan";
+                $data['message'] = "Gagal menambah penyelidikan";
                 return $this->output->set_content_type('application/json')->set_output(json_encode($data));
             }
 
@@ -1144,7 +1144,7 @@ class Penyelidikan extends MX_Controller
                 if ($this->db->trans_status() === FALSE || $kegiatan == FALSE) {
                     $this->db->trans_rollback();
                     $data['status'] = FALSE;
-                    $data['message'] = "Failed to add penyelidikan";
+                    $data['message'] = "Gagal menambah penyelidikan";
                     return $this->output->set_content_type('application/json')->set_output(json_encode($data));
                 }
                 $kegiatan_id = $this->db->insert_id();
@@ -1160,7 +1160,7 @@ class Penyelidikan extends MX_Controller
                 if ($this->db->trans_status() === FALSE || $pegawai_detail_tugas == FALSE) {
                     $this->db->trans_rollback();
                     $data['status'] = FALSE;
-                    $data['message'] = "Failed to add penyelidikan";
+                    $data['message'] = "Gagal menambah penyelidikan";
                     return $this->output->set_content_type('application/json')->set_output(json_encode($data));
                 }
 
@@ -1179,7 +1179,7 @@ class Penyelidikan extends MX_Controller
                 if ($this->db->trans_status() === FALSE || $kelengkapan == FALSE) {
                     $this->db->trans_rollback();
                     $data['status'] = FALSE;
-                    $data['message'] = "Failed to add penyelidikan";
+                    $data['message'] = "Gagal menambah penyelidikan";
                     return $this->output->set_content_type('application/json')->set_output(json_encode($data));
                 }
 
@@ -1197,14 +1197,14 @@ class Penyelidikan extends MX_Controller
                 if ($this->db->trans_status() === FALSE || $hasil == FALSE) {
                     $this->db->trans_rollback();
                     $data['status'] = FALSE;
-                    $data['message'] = "Failed to add penyelidikan";
+                    $data['message'] = "Gagal menambah penyelidikan";
                     return $this->output->set_content_type('application/json')->set_output(json_encode($data));
                 }
             }
             $this->db->trans_commit();
 
             $data['status'] = TRUE;
-            $data['message'] = "Success to add penyelidikan";
+            $data['message'] = "Berhasil menambah penyelidikan";
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
     }
@@ -1218,7 +1218,7 @@ class Penyelidikan extends MX_Controller
         if (!in_array('RDETAILPENYELIDIKAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -1305,7 +1305,7 @@ class Penyelidikan extends MX_Controller
         if (!in_array('RDETAILPENYELIDIKAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -1368,7 +1368,7 @@ class Penyelidikan extends MX_Controller
         if (!in_array('RDETAILPENYELIDIKAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }

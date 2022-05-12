@@ -1,6 +1,5 @@
-<div class="d-flex justify-content-start">
-    <div class="row">
-        <div class="col-6 col-md-6 col-sm-12 pt-3">
+    <div class="row mt-2">
+        <div class="col-md-6 col-sm-12 col-12">
             <h6 class="d-flex my-auto">Kelengkapan <?php echo ((in_array('CKELENGKAPANKEGIATAN', $userPermission)) ? '<i class="my-auto ri-add-circle-line ri-xl text-success" role="button" title="Create" onclick="addKelengkapanKegiatan(' . $kegiatan_id . ')"></i>' : '') ?></h6>
             <ul class="mt-3">
                 <?php foreach ($kelengkapan as $k) { ?>
@@ -12,8 +11,8 @@
                 <?php } ?>
             </ul>
         </div>
-        <div class="col-6 col-md-6 col-sm-12 pt-3">
-        <h6 class="d-flex my-auto">Hasil <?php echo ((in_array('CHASILKEGIATAN', $userPermission)) ? '<i class="my-auto ri-add-circle-line ri-xl text-success" role="button" title="Create" onclick="addHasilKegiatan(' . $kegiatan_id . ')"></i>' : '') ?></h6>
+        <div class="col-md-6 col-sm-12 col-12">
+            <h6 class="d-flex my-auto">Hasil <?php echo ((in_array('CHASILKEGIATAN', $userPermission)) ? '<i class="my-auto ri-add-circle-line ri-xl text-success" role="button" title="Create" onclick="addHasilKegiatan(' . $kegiatan_id . ')"></i>' : '') ?></h6>
             <ul class="mt-3">
                 <?php foreach ($hasil as $h) { ?>
                     <li>
@@ -25,149 +24,148 @@
             </ul>
         </div>
     </div>
-</div>
 
 
 
-<script>
-    var base_url = '<?php echo base_url() ?>';
-    var save_label = "add";
+    <script>
+        var base_url = '<?php echo base_url() ?>';
+        var save_label = "add";
 
-    function addKelengkapanKegiatan(id) {
-        save_label = "add";
-        $.ajax({
-            url: base_url + 'kejati/ajax/sop/addKelengkapanHTML/' + id,
-            type: "POST",
+        function addKelengkapanKegiatan(id) {
+            save_label = "add";
+            $.ajax({
+                url: base_url + 'kejati/ajax/sop/addKelengkapanHTML/' + id,
+                type: "POST",
 
-            success: function(data) {
-                if (data.status) {
-                    $(".detailKegiatan").html(data.data);
-                } else {
-                    handleError(data);
+                success: function(data) {
+                    if (data.status) {
+                        $(".detailKegiatan").html(data.data);
+                    } else {
+                        handleError(data);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    alert("Error get data from ajax");
+                },
+            });
+        }
+
+        function editKelengkapanKegiatan(id) {
+            save_label = "update";
+            $.ajax({
+                url: base_url + 'kejati/ajax/sop/editKelengkapanHTML/' + id,
+                type: "POST",
+
+                success: function(data) {
+                    if (data.status) {
+                        $(".detailKegiatan").html(data.data);
+                    } else {
+                        handleError(data);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    alert("Error get data from ajax");
+                },
+            });
+        }
+
+        function deleteKelengkapanKegiatan(id) {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!",
+            }).then((result) => {
+                if (result.value) {
+                    $.ajax({
+                        url: base_url + 'kejati/ajax/sop/deleteKelengkapan/' + id,
+                        type: "POST",
+
+                        success: function(data) {
+                            if (data.status) {
+                                infoDetailKegiatan(<?php echo $kegiatan_id ?>);
+                                handleToast("success", data.message);
+                            } else {
+                                handleError(data);
+                            }
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            alert("Error get data from ajax");
+                        },
+                    });
                 }
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                alert("Error get data from ajax");
-            },
-        });
-    }
+            });
+        }
 
-    function editKelengkapanKegiatan(id) {
-        save_label = "update";
-        $.ajax({
-            url: base_url + 'kejati/ajax/sop/editKelengkapanHTML/' + id,
-            type: "POST",
+        function addHasilKegiatan(id) {
+            save_label = "add";
+            $.ajax({
+                url: base_url + 'kejati/ajax/sop/addHasilHTML/' + id,
+                type: "POST",
 
-            success: function(data) {
-                if (data.status) {
-                    $(".detailKegiatan").html(data.data);
-                } else {
-                    handleError(data);
+                success: function(data) {
+                    if (data.status) {
+                        $(".detailKegiatan").html(data.data);
+                    } else {
+                        handleError(data);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    alert("Error get data from ajax");
+                },
+            });
+        }
+
+        function editHasilKegiatan(id) {
+            save_label = "update";
+            $.ajax({
+                url: base_url + 'kejati/ajax/sop/editHasilHTML/' + id,
+                type: "POST",
+
+                success: function(data) {
+                    if (data.status) {
+                        $(".detailKegiatan").html(data.data);
+                    } else {
+                        handleError(data);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    alert("Error get data from ajax");
+                },
+            });
+        }
+
+        function deleteHasilKegiatan(id) {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!",
+            }).then((result) => {
+                if (result.value) {
+                    $.ajax({
+                        url: base_url + 'kejati/ajax/sop/deleteHasil/' + id,
+                        type: "POST",
+
+                        success: function(data) {
+                            if (data.status) {
+                                infoDetailKegiatan(<?php echo $kegiatan_id ?>);
+                                handleToast("success", data.message);
+                            } else {
+                                handleError(data);
+                            }
+                        },
+                        error: function(jqXHR, textStatus, errorThrown) {
+                            alert("Error get data from ajax");
+                        },
+                    });
                 }
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                alert("Error get data from ajax");
-            },
-        });
-    }
-
-    function deleteKelengkapanKegiatan(id) {
-        Swal.fire({
-            title: "Are you sure?",
-            text: "You won't be able to revert this!",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, delete it!",
-        }).then((result) => {
-            if (result.value) {
-                $.ajax({
-                    url: base_url + 'kejati/ajax/sop/deleteKelengkapan/' + id,
-                    type: "POST",
-
-                    success: function(data) {
-                        if (data.status) {
-                            infoDetailKegiatan(<?php echo $kegiatan_id?>);
-                            handleToast("success", data.message);
-                        } else {
-                            handleError(data);
-                        }
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        alert("Error get data from ajax");
-                    },
-                });
-            }
-        });
-    }
-
-    function addHasilKegiatan(id) {
-        save_label = "add";
-        $.ajax({
-            url: base_url + 'kejati/ajax/sop/addHasilHTML/' + id,
-            type: "POST",
-
-            success: function(data) {
-                if (data.status) {
-                    $(".detailKegiatan").html(data.data);
-                } else {
-                    handleError(data);
-                }
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                alert("Error get data from ajax");
-            },
-        });
-    }
-
-    function editHasilKegiatan(id) {
-        save_label = "update";
-        $.ajax({
-            url: base_url + 'kejati/ajax/sop/editHasilHTML/' + id,
-            type: "POST",
-
-            success: function(data) {
-                if (data.status) {
-                    $(".detailKegiatan").html(data.data);
-                } else {
-                    handleError(data);
-                }
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                alert("Error get data from ajax");
-            },
-        });
-    }
-
-    function deleteHasilKegiatan(id) {
-        Swal.fire({
-            title: "Are you sure?",
-            text: "You won't be able to revert this!",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, delete it!",
-        }).then((result) => {
-            if (result.value) {
-                $.ajax({
-                    url: base_url + 'kejati/ajax/sop/deleteHasil/' + id,
-                    type: "POST",
-
-                    success: function(data) {
-                        if (data.status) {
-                            infoDetailKegiatan(<?php echo $kegiatan_id?>);
-                            handleToast("success", data.message);
-                        } else {
-                            handleError(data);
-                        }
-                    },
-                    error: function(jqXHR, textStatus, errorThrown) {
-                        alert("Error get data from ajax");
-                    },
-                });
-            }
-        });
-    }
-</script>
+            });
+        }
+    </script>

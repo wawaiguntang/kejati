@@ -20,7 +20,7 @@ class Tugas extends MX_Controller
         if (isLogin() == false) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You must login first!"
+                'message'         => "Anda harus login terlebih dahulu!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -36,7 +36,7 @@ class Tugas extends MX_Controller
         if (!in_array('RTUGASSELF', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -105,7 +105,7 @@ class Tugas extends MX_Controller
         if (!in_array('RDETAILTUGASSELF', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -217,7 +217,7 @@ class Tugas extends MX_Controller
         if (!in_array('RDETAILTUGASSELF', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -275,7 +275,7 @@ class Tugas extends MX_Controller
         if (!in_array('RDETAILTUGASSELF', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -335,7 +335,7 @@ class Tugas extends MX_Controller
         if (!in_array('RDETAILTUGASSELF', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -401,7 +401,7 @@ class Tugas extends MX_Controller
         if (!in_array('RDETAILTUGASSELF', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -458,7 +458,7 @@ class Tugas extends MX_Controller
         if (!in_array('RDETAILTUGASSELF', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -589,7 +589,7 @@ class Tugas extends MX_Controller
         if (!in_array('RDETAILTUGASSELF', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -633,7 +633,7 @@ class Tugas extends MX_Controller
         if (!in_array('RDETAILTUGASSELF', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -715,7 +715,7 @@ class Tugas extends MX_Controller
         if (!in_array('RDETAILTUGASSELF', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }

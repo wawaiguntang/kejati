@@ -13,7 +13,7 @@ class Pengaduan extends MX_Controller
         if (isLogin() == false) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You must login first!"
+                'message'         => "Anda harus login terlebih dahulu!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -29,7 +29,7 @@ class Pengaduan extends MX_Controller
         if (!in_array('RPENGADUAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -71,8 +71,8 @@ class Pengaduan extends MX_Controller
 
             $row[] = "
                 <div class='d-flex justify-content-center'>
-                " . ((in_array('UPENGADUAN', $userPermission)) ? '<i class="ri-edit-2-line ri-lg text-warning m-1" role="button" title="Update" onclick="editData(' . $pengaduan->id . ')"></i>' : '') . "
-                " . ((in_array('DPENGADUAN', $userPermission)) ? '<i class="ri-delete-bin-line ri-lg text-danger m-1" role="button" title="Delete" onclick="deleteData(' . $pengaduan->id . ')"></i>' : '') . "
+                " . ((in_array('UPENGADUAN', $userPermission)) ? '<i class="ri-edit-2-line ri-lg text-warning m-1" role="button" title="Ubah" onclick="editData(' . $pengaduan->id . ')"></i>' : '') . "
+                " . ((in_array('DPENGADUAN', $userPermission)) ? '<i class="ri-delete-bin-line ri-lg text-danger m-1" role="button" title="Hapus" onclick="deleteData(' . $pengaduan->id . ')"></i>' : '') . "
                 </div>
                 ";
 
@@ -95,13 +95,13 @@ class Pengaduan extends MX_Controller
         if (!in_array('CPENGADUAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
             $data['status'] = TRUE;
             $params = [
-                'title' => 'Add Data',
+                'title' => 'Tambah Data',
                 'id' => NULL,
                 'no' => NULL,
                 'tanggal_surat' => NULL,
@@ -120,9 +120,9 @@ class Pengaduan extends MX_Controller
                     "action" => "back()"
                 ],
                 [
-                    "text" => "Add Data"
+                    "text" => "Tambah Data"
                 ]
-            ], 'Add Data');
+            ], 'Tambah Data');
             $data['data'] = $this->load->view($this->module . '/pengaduan/form', $params, TRUE);
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -134,7 +134,7 @@ class Pengaduan extends MX_Controller
         if (!in_array('UPENGADUAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -153,7 +153,7 @@ class Pengaduan extends MX_Controller
                     );
                 } else {
                     $params = [
-                        'title' => 'Edit Data',
+                        'title' => 'Ubah Data',
                         'id' => $pengaduan->id,
                         'no' => $pengaduan->no,
                         'tanggal_surat' => $pengaduan->tanggal_surat,
@@ -176,7 +176,7 @@ class Pengaduan extends MX_Controller
         if (!in_array('CPENGADUAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -212,10 +212,10 @@ class Pengaduan extends MX_Controller
                 $insert = $this->pengaduan->save($insert);
                 if ($insert) {
                     $data['status'] = TRUE;
-                    $data['message'] = "Success to add pengaduan";
+                    $data['message'] = "Berhasil menambah pengaduan";
                 } else {
                     $data['status'] = FALSE;
-                    $data['message'] = "Failed to add pengaduan";
+                    $data['message'] = "Gagal menambah pengaduan";
                 }
                 $this->output->set_content_type('application/json')->set_output(json_encode($data));
             }
@@ -228,7 +228,7 @@ class Pengaduan extends MX_Controller
         if (!in_array('UPENGADUAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -276,10 +276,10 @@ class Pengaduan extends MX_Controller
                         $up = $this->pengaduan->update(array('id' => $this->input->post('id')), $update);
                         if ($up) {
                             $data['status'] = TRUE;
-                            $data['message'] = "Success to update pengaduan";
+                            $data['message'] = "Berhasil mengubah pengaduan";
                         } else {
                             $data['status'] = FALSE;
-                            $data['message'] = "Failed to update pengaduan";
+                            $data['message'] = "Gagal mengubah pengaduan";
                         }
                         $this->output->set_content_type('application/json')->set_output(json_encode($data));
                     }
@@ -294,7 +294,7 @@ class Pengaduan extends MX_Controller
         if (!in_array('DPENGADUAN', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "You don't have access!"
+                'message'         => "Anda tidak memiliki akses!"
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
@@ -315,10 +315,10 @@ class Pengaduan extends MX_Controller
                     $del = $this->pengaduan->delete_by_id($id);
                     if ($del) {
                         $data['status'] = TRUE;
-                        $data['message'] = "Success to delete pengaduan";
+                        $data['message'] = "Berhasil menghapus pengaduan";
                     } else {
                         $data['status'] = FALSE;
-                        $data['message'] = "Failed to delete pengaduan";
+                        $data['message'] = "Gagal menghapus pengaduan";
                     }
                     $this->output->set_content_type('application/json')->set_output(json_encode($data));
                 }
