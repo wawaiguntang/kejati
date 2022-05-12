@@ -1345,6 +1345,7 @@ class Penyelidikan extends MX_Controller
                         'action' => 'detail(' . $tugas['id'] . ');'
                     ], true)
                 ];
+                $this->db->where('pegawai_detail_tugas_id', $pegawai['id'])->update('konsultasi', ['waktu_selesai' => date('Y-m-d H:i:s')]);
             }
 
             $notif = $this->db->insert_batch('notifikasi', $notifParam);
