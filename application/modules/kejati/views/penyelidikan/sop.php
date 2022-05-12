@@ -306,7 +306,7 @@
             },
             success: function(data) {
                 if (data.status) {
-                    getPegawai(3);
+                    getPegawai(data.kegiatan_id);
                     handleToast("success", data.message);
                 } else {
                     handleError(data);
