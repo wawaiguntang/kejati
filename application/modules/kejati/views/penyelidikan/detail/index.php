@@ -60,7 +60,7 @@
                         <div class="card card-body p-2" style="border: 1px solid #D4D4D4;">
                             <div class="d-flex justify-content-between my-0 py-0 mb-1">
                                 <span class="text-uppercase text-sm font-weight-bold" title="SOP">PERMINTAAN DAN PENERIMAAN DOKUMEN</span>
-                                <span class="text-uppercase text-sm font-weight-bold" title="Waktu"><span class="badge bg-warning"><?php echo $tugas->status ?></span> <?php echo formatWaktu($tugas->waktu) ?></span>
+                                <span class="text-uppercase text-sm font-weight-bold" title="Waktu"><?php echo formatWaktu($tugas->waktu) ?></span>
                             </div>
                             <?php $this->session->set_userdata('tugas_id', $detail_tugas[0]['tugas_id']);
                             foreach ($detail_tugas as $k => $v) { ?>

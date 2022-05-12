@@ -6,7 +6,7 @@
     var save_label = "add";
 
     $(document).ready(function() {
-        getData();
+        <?php echo (isset($action)) ? $action : 'getData()' ?>
     });
 
     function back() {

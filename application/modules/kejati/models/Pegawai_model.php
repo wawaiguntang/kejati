@@ -18,7 +18,9 @@ class Pegawai_model extends CI_Model
 	private function _get_datatables_query()
 	{
 
-		$this->db->from($this->table)
+		$this->db
+			->select('*,pegawai.id as pegawai_id')
+			->from($this->table)
 			->join('golongan', 'golongan.id = pegawai.golongan_id')
 			->join('pangkat', 'pangkat.id = pegawai.pangkat_id')
 			->join('jabatan', 'jabatan.id = pegawai.jabatan_id')

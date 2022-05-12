@@ -11,11 +11,16 @@ class Users extends MX_Controller
         (isLogin() == false) ? redirect('authentication/logout') : '';
     }
 
-    public function index()
+    public function index($action = '', $id = '')
     {
         $userPermission = getPermissionFromUser();
         (!in_array('RU', $userPermission)) ? redirect('authentication/logout') : '';
-        $data['bearer'] = '';
+        if ($action != '') {
+            if ($id != '') {
+                $this->db->where('id', $id)->update('notifikasi', ['isRead' => 1]);
+            }
+            $data['action'] = decrypt($action);
+        }
         $data['_view'] = $this->module . '/users';
         $this->load->view('layouts/back/main', $data);
     }

@@ -1,4 +1,3 @@
-
 <div class="data">
 </div>
 
@@ -7,10 +6,9 @@
     var save_label = "add";
 
     $(document).ready(function() {
-        getData();
+        <?php echo (isset($action)) ? $action : 'getData();' ?>
         $("#noPengaduan").select2({});
         $(".select2-container").addClass('form-control');
-
     });
 
     function back() {
@@ -141,5 +139,4 @@
             },
         });
     }
-
 </script>

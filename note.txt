@@ -1,0 +1,10 @@
+- penempatan no pengaduan, dipindah ke atas
+- responsive notifikasi (penting)
+- reject dari ketua tim ke anggota
+- report kegiatan dari masing masing jaksa (waktu)
+- konsultasi dari anggota ke ketua dan ketua ke pimpinan (penting)
+
+- input semua data SOP (penting)
+
+- identitas aplikasi berupa nama dan keterangan (di login)
+- konsistensi pengguna bahasa (penting)
