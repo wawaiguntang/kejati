@@ -61,6 +61,7 @@ class Pegawai extends MX_Controller
     {
         $userPermission = getPermissionFromUser();
         $list = $this->pegawai->get_datatables();
+
         $data = array();
         foreach ($list as $pegawai) {
             $row = array();
@@ -79,8 +80,8 @@ class Pegawai extends MX_Controller
 
             $row[] = "
                 <div class='d-flex justify-content-center'>
-                " . ((in_array('UPEGAWAI', $userPermission)) ? '<i class="ri-edit-2-line ri-lg text-warning m-1" role="button" title="Update" onclick="editData(' . $pegawai->id . ')"></i>' : '') . "
-                " . ((in_array('DPEGAWAI', $userPermission)) ? '<i class="ri-delete-bin-line ri-lg text-danger m-1" role="button" title="Delete" onclick="deleteData(' . $pegawai->id . ')"></i>' : '') . "
+                " . ((in_array('UPEGAWAI', $userPermission)) ? '<i class="ri-edit-2-line ri-lg text-warning m-1" role="button" title="Update" onclick="editData(' . $pegawai->pegawai_id . ')"></i>' : '') . "
+                " . ((in_array('DPEGAWAI', $userPermission)) ? '<i class="ri-delete-bin-line ri-lg text-danger m-1" role="button" title="Delete" onclick="deleteData(' . $pegawai->pegawai_id . ')"></i>' : '') . "
                 </div>
                 ";
 
@@ -142,7 +143,11 @@ class Pegawai extends MX_Controller
 
             $inUse = array_values(array_column($this->pegawai->get_all(), 'userCode'));
             $user = [];
-            $getUser = $this->db->select('userCode, email')->where_not_in('userCode', (empty($inUse) ? [] : $inUse))->get_where('user', ['deleteAt' => NULL])->result();
+            $this->db->select('userCode, email');
+            if ($inUse != NULL) {
+                $this->db->where_not_in('userCode', $inUse);
+            }
+            $getUser = $this->db->get_where('user', ['deleteAt' => NULL])->result();
             foreach ($getUser as $k) {
                 $user[$k->userCode] = $k->email;
             }
@@ -230,7 +235,11 @@ class Pegawai extends MX_Controller
 
                     $inUse = array_values(array_column($this->pegawai->get_all(), 'userCode'));
                     $user = [];
-                    $getUser = $this->db->select('userCode, email')->where_not_in('userCode', [0])->get_where('user', ['deleteAt' => NULL])->result();
+                    $this->db->select('userCode, email');
+                    if ($inUse != NULL) {
+                        $this->db->where_not_in('userCode', $inUse);
+                    }
+                    $getUser = $this->db->get_where('user', ['deleteAt' => NULL])->result();
                     foreach ($getUser as $k) {
                         $user[$k->userCode] = $k->email;
                     }

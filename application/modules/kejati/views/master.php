@@ -31,7 +31,9 @@
     var base_url = '<?php echo base_url() ?>';
     var save_label = "add";
 
-    $(document).ready(function() {});
+    $(document).ready(function() {
+        <?php echo (isset($action)) ? $action : '' ?>
+    });
 
     $('.forActive').click((e) => {
         $('.forActive').removeClass('active');

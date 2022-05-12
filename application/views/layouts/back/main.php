@@ -216,6 +216,7 @@ $profile = getProfileWeb();
             }
             Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
         }
+     
     </script>
     <!-- Github buttons -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
@@ -226,6 +227,7 @@ $profile = getProfileWeb();
         // navbarFixed(true);
         $('form').bind('keypress', false);
     </script>
+
 </body>
 
 </html>

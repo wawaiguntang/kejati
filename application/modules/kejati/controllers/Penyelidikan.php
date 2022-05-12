@@ -12,7 +12,7 @@ class Penyelidikan extends MX_Controller
         $this->load->model($this->module . '/pengaduan_model', 'pengaduan');
     }
 
-    public function index()
+    public function index($action = '', $id = '')
     {
         $userPermission = getPermissionFromUser();
         (count(array_intersect($userPermission, ["RPENYELIDIKAN"])) > 0) ? '' : redirect('authentication/logout');
@@ -22,8 +22,15 @@ class Penyelidikan extends MX_Controller
         foreach ($getPengaduan as $k) {
             $pengaduan[$k->id] = $k->no;
         }
+        if ($action != '') {
+            if($id != ''){
+                $this->db->where('id',$id)->update('notifikasi',['isRead' => 1]);
+            }
+            $data['action'] = decrypt($action);
+        }
         $data['pengaduan'] = $pengaduan;
         $data['userPermission'] = $userPermission;
+
         $data['_view'] = $this->module . '/penyelidikan';
         $this->load->view('layouts/back/main', $data);
     }
@@ -32,6 +39,6 @@ class Penyelidikan extends MX_Controller
     {
         $this->load->helper('download');
 
-        force_download($name, file_get_contents(DIR.decrypt($path)));
+        force_download($name, file_get_contents(DIR . decrypt($path)));
     }
 }

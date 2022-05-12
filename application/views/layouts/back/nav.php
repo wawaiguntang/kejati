@@ -14,6 +14,14 @@
 
             </div>
             <ul class="navbar-nav  justify-content-end">
+                <li class="nav-item dropdown pe-2 d-flex align-items-center mr-1">
+                    <a href="javascript:;" class="nav-link text-body p-0" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fa fa-bell cursor-pointer" aria-hidden="true"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end px-2 py-3 me-sm-n4 notif" aria-labelledby="dropdownMenuButton">
+                        <?php echo checkNotif(); ?>
+                    </ul>
+                </li>
                 <li class="nav-item d-flex align-items-center">
                     <a href="<?php echo base_url('authentication/logout') ?>" class="nav-link text-body font-weight-bold px-0">
                         <span class="d-sm-inline d-none mr-1">Sign Out</span>

@@ -362,13 +362,36 @@ class Tugas extends MX_Controller
         }
         $update = $this->db->where('id', $this->input->post('detail_tugas_id'))->update('detail_tugas', ['dibuka' => '2']);
         if ($update) {
+            $notifParam = [];
+            $pegawai = $this->db->get_where('pegawai_detail_tugas', ['detail_tugas_id' => $this->input->post('detail_tugas_id'), 'deleteAt' => NULL])->result_array();
+            foreach ($pegawai as $p => $i) {
+                $p = $this->db->get_where('pegawai', ['pegawai.deleteAt' => NULL, 'pegawai.id' => $i['pegawai_id']])->row_array();
+                if ($this->session->userdata('userCode') != $p['userCode']) {
+                    $notifParam[] = [
+                        'from' => $this->session->userdata('userCode'),
+                        'to' => $p['userCode'],
+                        'description' => "Anda diberi tugas oleh ketua tim dalam kegiatan " . $tugas['kegiatan'] . " dengan no surat tugas " . $tugas['no_surat_tugas'],
+                        'data' => json_encode([
+                            'link' => base_url('kejati/tugas/index/' . encrypt('detail(' . $tugas['id'] . ');')),
+                            'action' => 'detail(' . $tugas['id'] . ');'
+                        ], true)
+                    ];
+                }
+            }
+
+            $notif = $this->db->insert_batch('notifikasi', $notifParam);
+            if ($notif == FALSE) {
+                $data['status'] = FALSE;
+                $data['message'] = "Gagal memberikan tugas ke anggota";
+                return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+            }
             $data['status'] = TRUE;
             $data['message'] = "Berhasil membagikan tugas ke anggota";
         } else {
             $data['status'] = FALSE;
             $data['message'] = "Berhasil membagikan tugas ke anggota";
         }
-        $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        return $this->output->set_content_type('application/json')->set_output(json_encode($data));
     }
 
 
@@ -521,6 +544,25 @@ class Tugas extends MX_Controller
 
                     $update = $this->db->where('id', $this->input->post('id'))->update('pegawai_detail_tugas', ['dokumen' => json_encode($dokumen, TRUE)]);
                     if ($update) {
+                        $leader = $this->db->get_where('pegawai_detail_tugas', ['detail_tugas_id' => $pegawai_detail_tugas['detail_tugas_id'], 'leader' => 1])->row_array();
+                        $p = $this->db->get_where('pegawai', ['pegawai.deleteAt' => NULL, 'pegawai.id' => $pegawai_detail_tugas['pegawai_id']])->row_array();
+                        $l = $this->db->get_where('pegawai', ['pegawai.deleteAt' => NULL, 'pegawai.id' => $leader['pegawai_id']])->row_array();
+                        $notifParam = [
+                            'from' => $this->session->userdata('userCode'),
+                            'to' => $l['userCode'],
+                            'description' => $p['nama'] . ' mengunggah dokumen ' . $this->input->post('nama') . ' dalam kegiatan ' . $tugas['kegiatan'],
+                            'data' => json_encode([
+                                'link' => base_url('kejati/tugas/index/' . encrypt('detail(' . $tugas['id'] . ');')),
+                                'action' => 'detail(' . $tugas['id'] . ');'
+                            ], true)
+                        ];
+
+                        $notif = $this->db->insert('notifikasi', $notifParam);
+                        if ($notif == FALSE) {
+                            $data['status'] = FALSE;
+                            $data['message'] = "Gagal mengunggah dokumen";
+                            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                        }
                         $data['status'] = TRUE;
                         $data['message'] = "Berhasil mengunggah dokumen";
                     } else {
@@ -685,7 +727,7 @@ class Tugas extends MX_Controller
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
         $tugas = $this->db
-            ->select('detail_tugas.id as id, detail_tugas.dibuka, sop.sop, sop.kategori, sop.waktu as sopWaktu, tugas.no_surat_tugas, tugas.no_nota_dinas, tugas.tanggal_nota_dinas, tugas.perihal_nota_dinas, tugas.status as tugasStatus, kegiatan.kegiatan, detail_tugas.waktu, detail_tugas.satuan, detail_tugas.waktu_mulai, detail_tugas.waktu_selesai, detail_tugas.status as detail_tugasStatus, tugas.pengaduan_id, kegiatan.keterangan')
+            ->select('detail_tugas.id as id, detail_tugas.dibuka, detail_tugas.tugas_id, tugas.userCode as pembuatTugas, sop.sop, sop.kategori, sop.waktu as sopWaktu, tugas.no_surat_tugas, tugas.no_nota_dinas, tugas.tanggal_nota_dinas, tugas.perihal_nota_dinas, tugas.status as tugasStatus, kegiatan.kegiatan, detail_tugas.waktu, detail_tugas.satuan, detail_tugas.waktu_mulai, detail_tugas.waktu_selesai, detail_tugas.status as detail_tugasStatus, tugas.pengaduan_id, kegiatan.keterangan')
             ->join('tugas', 'tugas.id=detail_tugas.tugas_id')
             ->join('sop', 'sop.id=tugas.sop_id')
             ->join('kegiatan', 'kegiatan.id=detail_tugas.kegiatan_id')
@@ -701,11 +743,29 @@ class Tugas extends MX_Controller
         }
         $update = $this->db->where('id', $this->input->post('detail_tugas_id'))->update('detail_tugas', ['status' => 'Ditinjau atasan', 'waktu_selesai' => date('Y-m-d H:i:s')]);
         if ($update) {
+            $leader = $this->db->get_where('pegawai_detail_tugas', ['detail_tugas_id' => $tugas['id'], 'leader' => 1])->row_array();
+            $l = $this->db->get_where('pegawai', ['pegawai.deleteAt' => NULL, 'pegawai.id' => $leader['pegawai_id']])->row_array();
+            $notifParam = [
+                'from' => $this->session->userdata('userCode'),
+                'to' => $tugas['pembuatTugas'],
+                'description' => $l['nama'] . ' mengirim hasil dokumen kegiatan ' . $tugas['kegiatan'],
+                'data' => json_encode([
+                    'link' => base_url('kejati/penyelidikan/index/' . encrypt('detail(' . $tugas['tugas_id'] . ');')),
+                    'action' => 'detail(' . $tugas['tugas_id'] . ');'
+                ], true)
+            ];
+
+            $notif = $this->db->insert('notifikasi', $notifParam);
+            if ($notif == FALSE) {
+                $data['status'] = FALSE;
+                $data['message'] = "Gagal mengirim tugas ke atasan";
+                return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+            }
             $data['status'] = TRUE;
             $data['message'] = "Berhasil mengirim tugas ke atasan";
         } else {
             $data['status'] = FALSE;
-            $data['message'] = "Berhasil mengirim tugas ke atasan";
+            $data['message'] = "Gagal mengirim tugas ke atasan";
         }
         $this->output->set_content_type('application/json')->set_output(json_encode($data));
     }
