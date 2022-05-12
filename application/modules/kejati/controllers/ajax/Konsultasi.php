@@ -82,8 +82,9 @@ class Konsultasi extends MX_Controller
         foreach ($d as $k => $v) {
             $r = $v;
             $r['postedOn'] = nice_date($v['createAt'], 'F d, Y');
-            $temp[] = $r;
+            $temp['konsultasi'][] = $r;
         }
+        $temp['total'] = count($d);
         $data['status'] = TRUE;
         $data['message'] = "";
         $data['data'] = $temp;
@@ -177,7 +178,7 @@ class Konsultasi extends MX_Controller
         // }
         if ($konsultasi_id == '') {
             $data['status'] = FALSE;
-            $data['message'] = "Tugas tidak ditemukan";
+            $data['message'] = "Konsultasi tidak ditemukan";
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
         if ($this->checkKonsultasiDone($konsultasi_id) == TRUE) {
@@ -204,7 +205,7 @@ class Konsultasi extends MX_Controller
                 'judul' => $this->input->post('judul'),
                 'deskripsi' => $this->input->post('deskripsi')
             );
-            $insert = $this->db->where('id',$konsultasi_id)->update('konsultasi', $insert);
+            $insert = $this->db->where('id', $konsultasi_id)->update('konsultasi', $insert);
             if ($insert) {
                 $data['status'] = TRUE;
                 $data['message'] = "Berhasil mengubah konsultasi";
@@ -215,4 +216,70 @@ class Konsultasi extends MX_Controller
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
     }
+
+    public function allChat($konsultasi_id = '')
+    {
+        // $userPermission = getPermissionFromUser();
+        // if (!in_array('UJABATAN', $userPermission)) {
+        //     $data = array(
+        //         'status'         => FALSE,
+        //         'message'         => "Anda tidak memiliki akses!"
+        //     );
+        //     return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        // }
+        if ($konsultasi_id == '') {
+            $data['status'] = FALSE;
+            $data['message'] = "Konsultasi tidak ditemukan";
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        }
+        $d = $this->db->get_where('detail_konsultasi', ['deleteAt' => NULL, 'konsultasi_id' => $konsultasi_id])->result_array();
+        $temp = [];
+        foreach ($d as $k => $v) {
+            $r = $v;
+            $r['createAt'] = nice_date($v['createAt'], 'F d, Y, g:i a');
+            $temp['chat'][] = $r;
+        }
+        $temp['total'] = count($d);
+        $data['status'] = TRUE;
+        $data['message'] = "";
+        $data['data'] = $temp;
+        return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+    }
+
+    public function newChat($konsultasi_id = '', $count = '')
+    {
+        // $userPermission = getPermissionFromUser();
+        // if (!in_array('UJABATAN', $userPermission)) {
+        //     $data = array(
+        //         'status'         => FALSE,
+        //         'message'         => "Anda tidak memiliki akses!"
+        //     );
+        //     return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        // }
+        if ($konsultasi_id == '') {
+            $data['status'] = FALSE;
+            $data['message'] = "Konsultasi tidak ditemukan";
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        }
+        if ($count == '') {
+            $data['status'] = FALSE;
+            $data['message'] = "Jumlah pesan diperlukan";
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        }
+        $d = $this->db->get_where('detail_konsultasi', ['deleteAt' => NULL, 'konsultasi_id' => $konsultasi_id])->result_array();
+        if ($count < count($d)) {
+            $d = $this->db->order_by('createAt', 'DESC')->get_where('detail_konsultasi', ['deleteAt' => NULL, 'konsultasi_id' => $konsultasi_id])->row_array();
+            $d['createAt'] = nice_date($d['createAt'], 'F d, Y, g:i a');
+            $data['status'] = TRUE;
+            $data['new'] = TRUE;
+            $data['data'] = $d;
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        } else {
+            $data['status'] = TRUE;
+            $data['new'] = FALSE;
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        }
+    }
+
+
 }
