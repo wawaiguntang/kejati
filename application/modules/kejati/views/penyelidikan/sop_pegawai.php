@@ -1,4 +1,3 @@
-
 <?php
 $data = $this->session->userdata('temp')['kegiatan'][$kegiatan_id];
 foreach ($data as $k => $v) {

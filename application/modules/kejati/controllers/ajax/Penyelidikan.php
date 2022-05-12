@@ -308,8 +308,86 @@ class Penyelidikan extends MX_Controller
         }
     }
 
+    public function editKegiatanHTML()
+    {
+        $userPermission = getPermissionFromUser();
+        if (!in_array('CPENYELIDIKAN', $userPermission)) {
+            $data = array(
+                'status'         => FALSE,
+                'message'         => "You don't have access!"
+            );
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        } else {
+            if ($this->input->post('kegiatan_id') == NULL) {
+                $data = array(
+                    'status'         => FALSE,
+                    'message'         => "Kegiatan is required"
+                );
+                return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+            }
+            $data['status'] = TRUE;
+            // $kegiatan = [];
+
+            // echo json_encode($this->session->userdata('temp')['kegiatan']);
+
+            if (isset($this->session->userdata('temp')['kegiatan'])) {
+                $kegiatan = $this->session->userdata('temp')['kegiatan'];
+                foreach ($kegiatan as $k => $v) {
+                    if ($k == $this->input->post('kegiatan_id')) {
+                        $data = array(
+                            'status'         => FALSE,
+                            'message'         => "Kegiatan has been added"
+                        );
+                        // $this->session->unset_userdata('temp');
+                        return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                    }
+                }
+            }
+
+
+
+            $tugas = $this->session->userdata('tugas_id');
+            $cek_tugas = $this->db->get_where('detail_tugas', array('tugas_id' => $tugas))->result();
+            foreach ($cek_tugas as $k) {
+                if ($k->kegiatan_id == $this->input->post('kegiatan_id')) {
+                    $data = array(
+                        'status'         => FALSE,
+                        'message'         => "Kegiatan has been added"
+                    );
+                    return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                }
+            }
+            $kelengkapan = [];
+            $kelengkapanData = $this->kelengkapan->get_all($this->input->post('kegiatan_id'));
+            foreach ($kelengkapanData as $k) {
+                $kelengkapan[$k->id] = [];
+            }
+            $kegiatan[$this->input->post('kegiatan_id')] = [];
+            $kegiatan_kelengkapan = [];
+            $kegiatan_kelengkapan[$this->input->post('kegiatan_id')] = $kelengkapan;
+            $this->session->set_userdata([
+                'temp' => [
+                    'kegiatan' => $kegiatan,
+                    'kegiatan_kelengkapan' => $kegiatan_kelengkapan
+                ]
+            ]);
+
+            $kegiatanData = $this->kegiatan->get_by_id($this->input->post('kegiatan_id'));
+            $kegiatanData->kelengkapan = $this->kelengkapan->get_all($this->input->post('kegiatan_id'));
+
+            $params = [
+                'kegiatan' => $kegiatanData,
+            ];
+            $data['data'] = $this->load->view($this->module . '/penyelidikan/sop_kegiatan', $params, TRUE);
+            $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        }
+    }
+
     public function deleteKegiatanHTML()
     {
+        if (isset($this->session->userdata('temp')['kegiatan'])) {
+            $this->session->unset_userdata('temp');
+        }
         $userPermission = getPermissionFromUser();
         if (!in_array('CPENYELIDIKAN', $userPermission)) {
             $data = array(
@@ -337,7 +415,6 @@ class Penyelidikan extends MX_Controller
                 $insert = array(
                     'kegiatan_id' => $this->input->post('kegiatan_id'),
                 );
-
                 $temp = $this->session->userdata('temp')['kegiatan'];
                 unset($temp[$insert['kegiatan_id']]);
                 unset($this->session->userdata('temp')['kegiatan_kelengkapan'][$insert['kegiatan_id']]);
@@ -721,7 +798,8 @@ class Penyelidikan extends MX_Controller
 
             $data = array(
                 'status'         => TRUE,
-                'message'         => "Success to set leader"
+                'message'         => "Success to set leader",
+                'kegiatan_id' => $ex[0],
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -835,6 +913,7 @@ class Penyelidikan extends MX_Controller
                     return $this->output->set_content_type('application/json')->set_output(json_encode($data));
                 }
                 $tugas_id = $this->db->insert_id();
+
                 $tembusanParams = [];
                 $no = 1;
                 $tembusanData = $this->input->post('tembusan') == NULL ? [] : $this->input->post('tembusan');
@@ -959,9 +1038,179 @@ class Penyelidikan extends MX_Controller
             }
         }
     }
+    public function saveEdit()
+    {
+        $userPermission = getPermissionFromUser();
+        if (!in_array('CPENYELIDIKAN', $userPermission)) {
+            $data = array(
+                'status'         => FALSE,
+                'message'         => "You don't have access!"
+            );
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        } else {
+            $this->validation_for = 'add';
+            $data = array();
+            $data['status'] = TRUE;
+
+
+
+
+            // cek kelengkapan
+            $temp = $this->session->userdata('temp');
+            // var_dump($temp);
+            // die;
+            foreach ($temp['kegiatan_kelengkapan'] as $k => $v) {
+                if ($v == NULL || $v == '') {
+                    $data = array(
+                        'status'         => FALSE,
+                        'message'         => 'Lengkapi file kelengkapan terlebih dahulu'
+                    );
+                    return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                } else {
+                    foreach ($v as $t => $y) {
+                        if ($y == NULL || $y == '') {
+                            $data = array(
+                                'status'         => FALSE,
+                                'message'         => 'Lengkapi file kelengkapan terlebih dahulu'
+                            );
+                            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                        }
+                    }
+                }
+            }
+
+            // cek pegawai dan leader
+            foreach ($temp['kegiatan'] as $k => $v) {
+                if ($v == NULL || $v == '') {
+                    $data = array(
+                        'status'         => FALSE,
+                        'message'         => 'Setiap tugas minimal 1 jaksa'
+                    );
+                    return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                } else {
+                    $leader = FALSE;
+                    foreach ($v as $kk => $x) {
+                        if ($x['leader'] == 1) {
+                            $leader = TRUE;
+                        }
+                    }
+                    if ($leader == FALSE) {
+                        $data = array(
+                            'status'         => FALSE,
+                            'message'         => 'Setiap tugas harus mempunyai ketua tim jaksa'
+                        );
+                        return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                    }
+                }
+            }
+
+            $this->db->trans_start();
+
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                $data['status'] = FALSE;
+                $data['message'] = "Failed to add penyelidikan";
+                return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+            }
+            $tugas_id = $this->session->userdata('tugas_id');
+
+
+
+
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                $data['status'] = FALSE;
+                $data['message'] = "Failed to add penyelidikan";
+                return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+            }
+
+            foreach ($temp['kegiatan'] as $k => $v) {
+                // var_dump($v);
+                // die;
+                $kegiatanData = $this->kegiatan->get_by_id($k);
+                $kegiatanParams = [
+                    'tugas_id' => $tugas_id,
+                    'kegiatan_id' => $k,
+                    'status' => 'Dalam proses',
+                    'waktu' => $kegiatanData->waktu,
+                    'satuan' => $kegiatanData->satuan,
+                    // 'waktu_mulai' => date('Y-m-d H:i:s'),
+                    'dibuka' => 0
+                ];
+                $kegiatan = $this->db->insert('detail_tugas', $kegiatanParams);
+                if ($this->db->trans_status() === FALSE || $kegiatan == FALSE) {
+                    $this->db->trans_rollback();
+                    $data['status'] = FALSE;
+                    $data['message'] = "Failed to add penyelidikan";
+                    return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                }
+                $kegiatan_id = $this->db->insert_id();
+                $pegawai_detail_tugasParams = [];
+                foreach ($v as $k => $x) {
+                    $pegawai_detail_tugasParams[] = [
+                        'pegawai_id' => $x['pegawai']['id'],
+                        'detail_tugas_id' => $kegiatan_id,
+                        'leader' => $x['leader']
+                    ];
+                }
+                $pegawai_detail_tugas = $this->db->insert_batch('pegawai_detail_tugas', $pegawai_detail_tugasParams);
+                if ($this->db->trans_status() === FALSE || $pegawai_detail_tugas == FALSE) {
+                    $this->db->trans_rollback();
+                    $data['status'] = FALSE;
+                    $data['message'] = "Failed to add penyelidikan";
+                    return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                }
+
+                // var_dump($temp['kegiatan_kelengkapan'][$kegiatanData->id]);
+                // die;
+                $kelengkapanParams = [];
+                foreach ($temp['kegiatan_kelengkapan'][$kegiatanData->id] as $t => $y) {
+                    $kelengkapanParams[] = [
+                        'detail_tugas_id' => $kegiatan_id,
+                        'kelengkapan_id' => $t,
+                        'dokumen' => $y['file'],
+                        'tipe' => $y['type']
+                    ];
+                }
+                $kelengkapan = $this->db->insert_batch('kelengkapan_data', $kelengkapanParams);
+                if ($this->db->trans_status() === FALSE || $kelengkapan == FALSE) {
+                    $this->db->trans_rollback();
+                    $data['status'] = FALSE;
+                    $data['message'] = "Failed to add penyelidikan";
+                    return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                }
+
+                $hasilData = $this->db->get_where('hasil', ['deleteAt' => NULL, 'kegiatan_id' => $kegiatanData->id])->result_array();
+
+
+                $hasilParams = [];
+                foreach ($hasilData as $h => $r) {
+                    $hasilParams[] = [
+                        'detail_tugas_id' => $kegiatan_id,
+                        'hasil_id' => $r['id']
+                    ];
+                }
+                $hasil = $this->db->insert_batch('hasil_data', $hasilParams);
+                if ($this->db->trans_status() === FALSE || $hasil == FALSE) {
+                    $this->db->trans_rollback();
+                    $data['status'] = FALSE;
+                    $data['message'] = "Failed to add penyelidikan";
+                    return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                }
+            }
+            $this->db->trans_commit();
+
+            $data['status'] = TRUE;
+            $data['message'] = "Success to add penyelidikan";
+            $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        }
+    }
 
     public function detail()
     {
+        if (isset($this->session->userdata('temp')['kegiatan'])) {
+            $this->session->unset_userdata('temp');
+        }
         $userPermission = getPermissionFromUser();
         if (!in_array('RDETAILPENYELIDIKAN', $userPermission)) {
             $data = array(
@@ -970,6 +1219,7 @@ class Penyelidikan extends MX_Controller
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
+        $this->session->set_userdata('tugas_id', $this->input->post('tugas_id'));
         if ($this->input->post('tugas_id') == NULL) {
             $data = array(
                 'status'         => FALSE,

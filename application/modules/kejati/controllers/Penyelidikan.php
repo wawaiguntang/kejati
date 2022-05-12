@@ -10,6 +10,7 @@ class Penyelidikan extends MX_Controller
         parent::__construct();
         (isLogin() == false) ? redirect('authentication/logout') : '';
         $this->load->model($this->module . '/pengaduan_model', 'pengaduan');
+        $this->session->unset_userdata('temp_edit');
     }
 
     public function index($action = '', $id = '')
