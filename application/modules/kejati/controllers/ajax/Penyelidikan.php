@@ -416,7 +416,10 @@ class Penyelidikan extends MX_Controller
                 $insert = array(
                     'kegiatan_id' => $this->input->post('kegiatan_id'),
                 );
-                $temp = $this->session->userdata('temp')['kegiatan'];
+                $temp = [];
+                if (isset($this->session->userdata('temp')['kegiatan'])) {
+                    $temp = $this->session->userdata('temp')['kegiatan'];
+                }
                 unset($temp[$insert['kegiatan_id']]);
                 unset($this->session->userdata('temp')['kegiatan_kelengkapan'][$insert['kegiatan_id']]);
                 $this->session->set_userdata([

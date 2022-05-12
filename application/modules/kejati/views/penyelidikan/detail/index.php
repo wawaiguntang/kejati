@@ -236,7 +236,7 @@
     }
 
     function editKegiatanHTML() {
-        $('#simpan').show();
+
         $.ajax({
             url: base_url + 'kejati/ajax/penyelidikan/editKegiatanHTML',
             type: "POST",
@@ -247,6 +247,7 @@
                 if (data.status) {
                     $("#test").append(data.data);
                     getKelengkapan($("#kegiatan").val());
+                    $('#simpan').show();
 
                 } else {
                     handleError(data);
