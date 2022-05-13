@@ -1,5 +1,8 @@
 <div id="chat-konsul" class="container" style="display: none;">
-    <span id="tutup-chat" class="badge bg-gradient-danger" style="cursor: pointer;">X</span>
+    <div class="text-end">
+
+        <span id="tutup-chat" onclick="tutupChat()" class="badge bg-gradient-danger" style="cursor: pointer;">X</span>
+    </div>
     <div class="row clearfix mb-1">
         <div class="col-lg-12">
             <div class="card chat-app">
@@ -53,7 +56,5 @@
     </div>
 </div>
 <script>
-    $('#tutup-chat').click(function() {
-        tutupChat()
-    })
+
 </script>

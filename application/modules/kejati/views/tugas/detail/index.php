@@ -267,14 +267,15 @@
                                                                         </button>
                                                                     </div>
                                                                     <div class="modal-body">
-                                                                        <input id="pegawai-detail-tugas-id" type="hidden" value="<?= $a['pegawai_id'] ?>">
+                                                                        <input id="pegawai-detail-tugas-id" type="hidden" value="<?= $a['pdtId'] ?>">
                                                                         <input id="detail-tugas-id" type="hidden" value="<?= $a['detail_tugas_id'] ?>">
                                                                         <div id="list-konsultasi"></div>
                                                                         <div id="chat-konsultasi"></div>
                                                                         <div id="tambah-konsultasi"></div>
+                                                                        <div id="edit-konsultasi"></div>
                                                                     </div>
                                                                     <div class="modal-footer">
-                                                                        <button id="tombol-tambah" type="button" class="btn bg-gradient-primary" onclick="toTambahKonsultasi(<?= $a['pegawai_id'] ?>)">Tambah</button>
+                                                                        <button id="tombol-tambah" type="button" class="btn bg-gradient-primary" onclick="toTambahKonsultasi(<?= $a['pdtId'] ?>)">Buat Konsultasi</button>
                                                                         <button type="button" class="btn btn-link  ml-auto" data-bs-dismiss="modal">Close</button>
                                                                     </div>
 
@@ -551,10 +552,26 @@
                 url: base_url + 'kejati/ajax/Konsultasi/cardTambahKonsultasi/' + id_pegawai,
                 type: "GET",
                 success: function(data) {
-                    $('#chat-konsultasi').hide()
+
+                    $('#chat-konsul').hide()
                     $('#list-konsultasi').hide()
                     $('#tombol-tambah').hide()
-                    $('#tambah-konsultasi').html(data)
+                    $('#tambah-konsultasi').show('fast')
+                    $('[id=tambah-konsultasi]').html(data)
+                }
+            })
+        }
+
+        function toEditKonsul(id_konsul) {
+            $.ajax({
+                url: base_url + 'kejati/ajax/Konsultasi/cardEditKonsultasi/' + id_konsul,
+                type: 'GET',
+                success: function(data) {
+                    $('#chat-konsul').hide()
+                    $('#list-konsultasi').hide()
+                    $('#tombol-tambah').hide()
+                    $('#edit-konsultasi').show('fast')
+                    $('[id=edit-konsultasi]').html(data)
                 }
             })
         }
@@ -563,6 +580,40 @@
 
             $('#list-konsul' + id).siblings().hide('fast')
             $('#chat-konsul').show('fast')
+
+        }
+
+        function tutupChat() {
+            $('#chat-konsul').hide('fast')
+            $('[id^="list-konsul"]').show()
+        }
+
+        function tutupTambah() {
+            $.ajax({
+                url: base_url + 'kejati/ajax/Konsultasi/cardListKonsultasi/' + $('#pegawai-detail-tugas-id').val() + '/' + $('#detail-tugas-id').val(),
+                type: "GET",
+                success: function(data) {
+                    $('#list-konsultasi').html(data)
+                }
+            })
+            $('#tambah-konsultasi').hide('fast')
+            $('#tombol-tambah').show()
+            $('[id^="list-konsul"]').show()
+
+        }
+
+        function tutupEdit() {
+            $.ajax({
+                url: base_url + 'kejati/ajax/Konsultasi/cardListKonsultasi/' + $('#pegawai-detail-tugas-id').val() + '/' + $('#detail-tugas-id').val(),
+                type: "GET",
+                success: function(data) {
+                    $('#list-konsultasi').html(data)
+                }
+            })
+
+            $('#edit-konsultasi').hide('fast')
+            $('#tombol-tambah').show()
+            $('[id^="list-konsul"]').show()
 
         }
     </script>
