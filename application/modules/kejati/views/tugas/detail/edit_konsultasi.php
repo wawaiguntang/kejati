@@ -1,6 +1,6 @@
 <div class="card p-4 shadow-lg">
     <div class="text-end mb-2">
-        <span id="tutup-edit" class="badge bg-gradient-danger " onclick="tutupEdit()" style="cursor: pointer;">X</span>
+        <span id="tutup-edit" class="badge bg-gradient-danger " onclick="backList()" style="cursor: pointer;">X</span>
 
     </div>
     <div class="row">
@@ -38,16 +38,21 @@
             type: 'POST',
             data: $('#form-edit-konsul').serialize(),
             success: function(data) {
-
-                if (data.status == false) {
-                    $('#alert').html(data.message)
-
-                    $('#alerts').show('slow')
+                if (data.status) {
+                    handleToast("success", data.message);
+                } else {
+                    handleError(data);
                 }
-                tutupEdit()
+                backList()
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert("Error get data from ajax");
+                $("#btnSave").text("Kirim ke atasan");
+                $("#btnSave").attr("disabled", false);
+            },
+            complete: function() {
 
-
-            }
+            },
         })
     }
     // $('#from-tambah-konsul').submit(function() {

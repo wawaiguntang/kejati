@@ -1,4 +1,4 @@
-<div id="chat-konsul" class="container" style="display: none;">
+<div id="chat-konsul" class="container">
     <div class="text-end">
 
         <span id="tutup-chat" onclick="tutupChat()" class="badge bg-gradient-danger" style="cursor: pointer;">X</span>
