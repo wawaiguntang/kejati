@@ -130,7 +130,7 @@ class Konsultasi extends MX_Controller
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
-            $getData = $this->db->join('pegawai', 'pegawai.id=pegawai_detail_tugas.pegawai_id')->get_where('pegawai_detail_tugas', ['pegawai_detail_tugas.deleteAt' => NULL, 'pegawai_detail_tugas.pegawai_id' => $pegawai_detail_tugas_id])->row_array();
+            $getData = $this->db->join('pegawai', 'pegawai.id=pegawai_detail_tugas.pegawai_id')->get_where('pegawai_detail_tugas', ['pegawai_detail_tugas.deleteAt' => NULL, 'pegawai_detail_tugas.id' => $pegawai_detail_tugas_id])->row_array();
             if ($getData == NULL) {
                 $data['status'] = FALSE;
                 $data['message'] = "Data tidak ditemukan";
@@ -155,7 +155,8 @@ class Konsultasi extends MX_Controller
             $insert = array(
                 'judul' => $this->input->post('judul'),
                 'deskripsi' => $this->input->post('deskripsi'),
-                'tipe' => $tipe
+                'tipe' => $tipe,
+                'pegawai_detail_tugas_id' => $pegawai_detail_tugas_id
             );
             $insert = $this->db->insert('konsultasi', $insert);
             if ($insert) {
@@ -300,5 +301,10 @@ class Konsultasi extends MX_Controller
         $data['id_pegawai'] = $id_pegawai;
 
         $this->load->view($this->module . '/tugas/detail/tambah_konsultasi', $data);
+    }
+    public function cardEditKonsultasi($id_konsultasi)
+    {
+        $data['konsultasi'] = $this->db->get_where('konsultasi', ['id' => $id_konsultasi])->row_array();
+        $this->load->view($this->module . '/tugas/detail/edit_konsultasi', $data);
     }
 }
