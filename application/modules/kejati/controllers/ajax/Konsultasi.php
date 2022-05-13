@@ -130,12 +130,15 @@ class Konsultasi extends MX_Controller
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
-            $getData = $this->db->join('pegawai', 'pegawai.id=pegawai_detail_tugas.pegawai_id')->get_where('pegawai_detail_tugas', ['pegawai_detail_tugas.deleteAt' => NULL, 'pegawai_detail_tugas.id' => $pegawai_detail_tugas_id])->row_array();
+
+            $tipe = 0;
+            $getData = $this->db->join('pegawai', 'pegawai.id=pegawai_detail_tugas.pegawai_id')->get_where('pegawai_detail_tugas', ['pegawai_detail_tugas.deleteAt' => NULL, 'pegawai_detail_tugas.pegawai_id' => $pegawai_detail_tugas_id])->row_array();
             if ($getData == NULL) {
                 $data['status'] = FALSE;
                 $data['message'] = "Data tidak ditemukan";
                 return $this->output->set_content_type('application/json')->set_output(json_encode($data));
             } else {
+       
                 if ($this->checkStatusKegiatan($getData['detail_tugas_id']) == 'Diterima') {
                     $data['status'] = FALSE;
                     $data['message'] = "Gagal menambah konsultasi, kegiatan sudah diterima";

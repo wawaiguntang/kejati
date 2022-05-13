@@ -1,18 +1,17 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 
 class Index extends MX_Controller
 {
-	private $module = 'authentication';
-	public function __construct()
-	{
-		parent::__construct();
-		
-	}
+    private $module = 'authentication';
+    public function __construct()
+    {
+        parent::__construct();
+    }
 
-	public function index()
-	{
+    public function index()
+    {
         $data['breadcrumb'] = breadcrumb([
             [
                 "text" => "Dashboard",
@@ -21,7 +20,25 @@ class Index extends MX_Controller
             [
                 "text" => "Home",
             ]
-        ],'Home');
-		$this->load->view('layouts/back/main', $data);
-	}
+        ], 'Home');
+
+        $view = [];
+        $setting = APPPATH . 'modules\dashboard\dashboard.json';
+        if (file_exists($setting)) {
+            $setting = json_decode(file_get_contents($setting), TRUE);
+            foreach ($setting as $k => $v) {
+                $viewPerModule = APPPATH . 'modules\\' . $v['modules'] . '\dashboard.json';
+                if (file_exists($viewPerModule)) {
+                    $viewPerModule = json_decode(file_get_contents($viewPerModule), TRUE);
+                    foreach ($v['view'] as $s => $d) {
+                        if (isset($viewPerModule[$d])) {
+                            $view[] = ["path" => $v['modules'] . $viewPerModule[$d]['view'], "params" => $viewPerModule[$d]['params']];
+                        }
+                    }
+                }
+            }
+        }
+        $data['_view'] = $view;
+        $this->load->view('layouts/back/main', $data);
+    }
 }

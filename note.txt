@@ -8,3 +8,13 @@
 
 - identitas aplikasi berupa nama dan keterangan (di login)
 - konsistensi pengguna bahasa (penting)
+
+
+
+
+
+
+13-05-2022
+- semua jaksa bisa upload tugas ke atasan //
+- perapihan menu tugas
+- jumlah kegiatan 

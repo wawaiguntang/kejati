@@ -181,7 +181,13 @@ $profile = getProfileWeb();
                 if (!isset($_view)) {
                     echo "Content not set";
                 } else {
-                    $this->load->view($_view);
+                    if (!is_array($_view)) {
+                        $this->load->view($_view);
+                    } else {
+                        foreach ($_view as $k => $v) {
+                            $this->load->view($v['path'], $v['params']);
+                        }
+                    }
                 }
                 ?>
 
