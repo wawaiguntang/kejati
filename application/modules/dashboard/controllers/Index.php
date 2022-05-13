@@ -22,7 +22,7 @@ class Index extends MX_Controller
             ]
         ], 'Home');
 
-        $view = '';
+        $view = [];
         $setting = APPPATH . 'modules\dashboard\dashboard.json';
         if (file_exists($setting)) {
             $setting = json_decode(file_get_contents($setting), TRUE);
@@ -32,7 +32,7 @@ class Index extends MX_Controller
                     $viewPerModule = json_decode(file_get_contents($viewPerModule), TRUE);
                     foreach ($v['view'] as $s => $d) {
                         if (isset($viewPerModule[$d])) {
-                            $view .= $this->load->view($v['modules'] . $viewPerModule[$d]['view'], $viewPerModule[$d]['params'], TRUE);
+                            $view[] = ["path" => $v['modules'] . $viewPerModule[$d]['view'], "params" => $viewPerModule[$d]['params']];
                         }
                     }
                 }
