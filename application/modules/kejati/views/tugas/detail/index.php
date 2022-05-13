@@ -230,6 +230,7 @@
                                         <div class="col-10"></div>
                                         <span class="text-sm"><b>Tugas Dari Ketua Tim</b></span>
                                         <?php
+
                                         foreach ($tugas['pegawai'] as $w => $a) {
                                             if ($a['userCode'] == $this->session->userdata('userCode')) {
                                         ?>
@@ -254,6 +255,34 @@
                                                                 <span class="visually-hidden">unread messages</span>
                                                             </span>
                                                         </button>
+
+                                                        <!-- Modal Konsultasi -->
+                                                        <div class="modal fade " id="modal-default" tabindex="-1" role="dialog" data-bs-backdrop="static" aria-labelledby="modal-default" aria-hidden="true">
+                                                            <div class="modal-dialog modal-dialog-scrollable modal-xl modal-danger modal-dialog-centered modal-" role="document">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h6 class="modal-title" id="modal-title-notification">Konsultasi</h6>
+                                                                        <button type="button" class="btn-close text-dark" data-bs-dismiss="modal" aria-label="Close">
+                                                                            <span aria-hidden="true">×</span>
+                                                                        </button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <input id="pegawai-detail-tugas-id" type="hidden" value="<?= $a['pegawai_id'] ?>">
+                                                                        <input id="detail-tugas-id" type="hidden" value="<?= $a['detail_tugas_id'] ?>">
+                                                                        <div id="list-konsultasi"></div>
+                                                                        <div id="chat-konsultasi"></div>
+                                                                        <div id="tambah-konsultasi"></div>
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <button id="tombol-tambah" type="button" class="btn bg-gradient-primary" onclick="toTambahKonsultasi(<?= $a['pegawai_id'] ?>)">Tambah</button>
+                                                                        <button type="button" class="btn btn-link  ml-auto" data-bs-dismiss="modal">Close</button>
+                                                                    </div>
+
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+                                                        <!-- Akhir Modal Konsultasi -->
 
                                                     </div>
                                                 </div>
@@ -296,96 +325,8 @@
                                                 </button>
                                             </div>
                                             <div class="modal-body">
-                                                <!-- jika belum ada pesan -->
-                                                <!-- <div class="py-3 text-center">
-                                                    <i class="ni ni-bell-55 ni-3x"></i>
-                                                    <h4 class="text-gradient text-danger mt-3">Belum ada pesan</h4>
-                                                    <p>Mulai konsultasi dengan ketua Tim</p>
-                                                </div> -->
-                                                <!-- jika sudah ada pesan -->
-                                                <div id="list-konsul" class="card shadow-lg mb-1">
-                                                    <div class="card-body pt-1">
-                                                        <span class="badge bg-gradient-warning">Proses</span>
-
-                                                        <a href="javascript:;" class="card-title h5 mt-3 d-block text-darker mb-0">
-                                                            Tersangka Kabur
-                                                        </a>
-                                                        <p class="card-description mb-0">
-                                                            Semalam Tersangka kbur dan belum ditemukan
-                                                        </p>
-                                                        <div class="row">
-                                                            <small class="text-end">Posted on 28 February</small>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div id="list-konsul" class="card shadow-lg mb-1">
-                                                    <div class="card-body pt-1">
-                                                        <span class="badge bg-gradient-success">Selesai</span>
-                                                        <a href="javascript:;" class="card-title h5 mt-3 d-block text-darker mb-0">
-                                                            Tersangka Kabur
-                                                        </a>
-                                                        <p class="card-description mb-0">
-                                                            Semalam Tersangka kbur dan belum ditemukan
-                                                        </p>
-                                                        <div class="row">
-                                                            <small class="text-end">Posted on 28 February</small>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div id="chat-konsul" class="container" style="display: none;">
-                                                    <span id="tutup-chat" class="badge bg-gradient-danger" style="cursor: pointer;">X</span>
-                                                    <div class="row clearfix mb-1">
-                                                        <div class="col-lg-12">
-                                                            <div class="card chat-app">
-                                                                <div class="chat">
-                                                                    <div class="chat-header clearfix mb-1">
-                                                                        <div class="row">
-                                                                            <div class="col-lg-6">
-                                                                                <a href="javascript:void(0);" data-toggle="modal" data-target="#view_info">
-                                                                                    <img src="https://bootdey.com/img/Content/avatar/avatar2.png" alt="avatar">
-                                                                                </a>
-                                                                                <div class="chat-about">
-                                                                                    <h6 class="m-b-0">Aiden Chavez</h6>
-                                                                                    <small>Ketua Tim</small>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="chat-history">
-                                                                        <ul class="m-b-0">
-                                                                            <li class="clearfix mb-1">
-                                                                                <div class="message-data text-end">
-                                                                                    <span class="message-data-time">10:10 AM, Today</span>
-                                                                                </div>
-                                                                                <div class="message other-message float-right"> Hi Aiden, how are you? How is the project coming along? </div>
-                                                                            </li>
-                                                                            <li class="clearfix mb-1">
-                                                                                <div class="message-data">
-                                                                                    <span class="message-data-time">10:12 AM, Today</span>
-                                                                                </div>
-                                                                                <div class="message my-message">Are we meeting today?</div>
-                                                                            </li>
-                                                                            <li class="clearfix mb-1">
-                                                                                <div class="message-data">
-                                                                                    <span class="message-data-time">10:15 AM, Today</span>
-                                                                                </div>
-                                                                                <div class="message my-message">Project has been already finished and I have results to show you.</div>
-                                                                            </li>
-                                                                        </ul>
-                                                                    </div>
-                                                                    <div class="chat-message clearfix mb-1">
-                                                                        <div class="input-group mb-0">
-                                                                            <div class="input-group-prepend">
-                                                                                <span class="input-group-text"><i class="fa fa-send"></i></span>
-                                                                            </div>
-                                                                            <input type="text" class="form-control" placeholder="Enter text here...">
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                <div id="list-konsultasi"></div>
+                                                <div id="chat-konsultasi"></div>
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-white">Ok, Got it</button>
@@ -589,12 +530,39 @@
             });
         }
 
-        $('[id="list-konsul"]').click(function() {
-            $(this).siblings().hide('fast')
+        $.ajax({
+            url: base_url + 'kejati/ajax/Konsultasi/cardListKonsultasi/' + $('#pegawai-detail-tugas-id').val() + '/' + $('#detail-tugas-id').val(),
+            type: "GET",
+            success: function(data) {
+                $('#list-konsultasi').html(data)
+            }
+        })
+        $.ajax({
+            url: base_url + 'kejati/ajax/Konsultasi/cardChatKonsultasi/',
+            type: "GET",
+            success: function(data) {
+                $('#chat-konsultasi').html(data)
+            }
+        })
+
+        function toTambahKonsultasi(id_pegawai) {
+
+            $.ajax({
+                url: base_url + 'kejati/ajax/Konsultasi/cardTambahKonsultasi/' + id_pegawai,
+                type: "GET",
+                success: function(data) {
+                    $('#chat-konsultasi').hide()
+                    $('#list-konsultasi').hide()
+                    $('#tombol-tambah').hide()
+                    $('#tambah-konsultasi').html(data)
+                }
+            })
+        }
+
+        function tampilChat(id) {
+
+            $('#list-konsul' + id).siblings().hide('fast')
             $('#chat-konsul').show('fast')
-        })
-        $('#tutup-chat').click(function() {
-            $('#chat-konsul').hide('fast')
-            $('[id="list-konsul"]').show()
-        })
+
+        }
     </script>

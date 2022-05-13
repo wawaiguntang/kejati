@@ -1,4 +1,7 @@
 <?php
+
+use function GuzzleHttp\Promise\all;
+
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Konsultasi extends MX_Controller
@@ -127,7 +130,7 @@ class Konsultasi extends MX_Controller
             );
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
-            $getData = $this->db->join('pegawai', 'pegawai.pegawai_id=pegawai_detail_tugas.pegawai_id')->get_where('pegawai_detail_tugas', ['pegawai_detail_tugas.deleteAt' => NULL, 'pegawai_detail_tugas_id' => $pegawai_detail_tugas_id])->row_array();
+            $getData = $this->db->join('pegawai', 'pegawai.id=pegawai_detail_tugas.pegawai_id')->get_where('pegawai_detail_tugas', ['pegawai_detail_tugas.deleteAt' => NULL, 'pegawai_detail_tugas.pegawai_id' => $pegawai_detail_tugas_id])->row_array();
             if ($getData == NULL) {
                 $data['status'] = FALSE;
                 $data['message'] = "Data tidak ditemukan";
@@ -281,5 +284,21 @@ class Konsultasi extends MX_Controller
         }
     }
 
+    public function cardListKonsultasi($id, $detail_tugas_id)
+    {
+        $data['id'] = $id;
+        $data['detail_tugas_id'] = $detail_tugas_id;
+        $this->load->view($this->module . '/tugas/detail/list_konsultasi', $data);
+    }
+    public function cardChatKonsultasi()
+    {
 
+        $this->load->view($this->module . '/tugas/detail/chat_konsultasi');
+    }
+    public function cardTambahKonsultasi($id_pegawai)
+    {
+        $data['id_pegawai'] = $id_pegawai;
+
+        $this->load->view($this->module . '/tugas/detail/tambah_konsultasi', $data);
+    }
 }
