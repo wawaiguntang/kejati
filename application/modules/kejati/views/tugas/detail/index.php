@@ -486,7 +486,7 @@
 
     </div>
     <!-- Akhir Modal Konsultasi -->
-    <div id="forModal">sss</div>
+    <div id="forModal"></div>
     <script>
         function addTugasUntukAnggota(id, detail_tugas_id) {
             $.ajax({
@@ -693,7 +693,7 @@
                 success: function(data) {
                     if (data.status) {
                         $("#forModal").html(data.data);
-                        $("#modal-default").modal("show");
+                        $("#addFile").modal("show");
                     } else {
                         handleError(data);
                     }
