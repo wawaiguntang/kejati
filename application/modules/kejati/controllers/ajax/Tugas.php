@@ -10,6 +10,7 @@ class Tugas extends MX_Controller
     public function __construct()
     {
         parent::__construct();
+        $this->load->model($this->module . '/penyelidikan_model', 'penyelidikan');
         $this->load->model($this->module . '/pengaduan_model', 'pengaduan');
         $this->load->model($this->module . '/tugas_model', 'tugas');
         $this->load->model($this->module . '/pegawai_model', 'pegawai');
@@ -64,35 +65,43 @@ class Tugas extends MX_Controller
     public function list()
     {
         $userPermission = getPermissionFromUser();
-        $list = $this->tugas->get_datatables();
+        $list = $this->penyelidikan->get_datatables();
         $data = array();
-        foreach ($list as $tugas) {
-            $row = array();
-            $row[] = '  <p class="text-sm d-flex py-auto my-auto"><b><span class="badge ' . (($tugas->detail_tugasStatus == 'Ditinjau atasan' || $tugas->detail_tugasStatus == 'Dalam proses') ? 'bg-warning' : (($tugas->detail_tugasStatus == 'Ditolak') ? 'bg-danger' : 'bg-success')) . '">' . $tugas->detail_tugasStatus . '</span>' . '</b></p>
-            <p class="text-sm d-flex py-auto my-auto">' . $tugas->waktu . ' ' . $tugas->satuan . '</p>
-            <p class="text-xs d-flex py-auto my-auto">Mulai: ' . $tugas->waktu_mulai . '</p>
-            <p class="text-xs d-flex py-auto my-auto">Selesai: ' . $tugas->waktu_selesai . '</p>';
+        foreach ($list as $penyelidikan) {
+            $check = $this->db
+                ->join('pegawai_detail_tugas', 'pegawai_detail_tugas.detail_tugas_id=detail_tugas.id')
+                ->join('pegawai', 'pegawai.id=pegawai_detail_tugas.pegawai_id')
+                ->get_where('detail_tugas', ['detail_tugas.deleteAt' => NULL, 'detail_tugas.tugas_id' => $penyelidikan->id, 'pegawai.userCode' => $this->session->userdata('userCode')])->result_array();
+            if ($check != NULL) {
+                $row = array();
+                $row[] = '  <p class="text-sm d-flex py-auto my-auto"><b>' . $penyelidikan->no_surat_tugas . '</b></p>
+                            <p class="text-sm d-flex py-auto my-auto">Jumlah Tugas : ' . count($check) . '</p>';
+                $row[] = '  <p class="text-sm d-flex py-auto my-auto"><b>' . $penyelidikan->no_nota_dinas . '</b></p>';
+                $row[] = '  <p class="text-sm d-flex py-auto my-auto"><b>' . $penyelidikan->sop . '</b></p>';
+                $row[] = '  <p class="text-sm d-flex py-auto my-auto"><b>' . character_limiter($penyelidikan->perihal, 25) . '</b></p>';
 
-            $row[] = '  <p class="text-sm d-flex py-auto my-auto"><b>' . $tugas->no_surat_tugas . '</b></p>
-            <p class="text-xs d-flex py-auto my-auto">' . $tugas->sop . '</p>
-            <p class="text-xs d-flex py-auto my-auto">' . $tugas->kategori . '</p>';
+                // $row[] = "
+                //     <div class='d-flex justify-content-center'>
+                //     " . ((in_array('UPENYELIDIKAN', $userPermission)) ? '<i class="ri-edit-2-line ri-lg text-warning m-1" role="button" title="Ubah" onclick="editData(' . $penyelidikan->id . ')"></i>' : '') . "
+                //     " . ((in_array('DPENYELIDIKAN', $userPermission)) ? '<i class="ri-delete-bin-line ri-lg text-danger m-1" role="button" title="Hapus" onclick="deleteData(' . $penyelidikan->id . ')"></i>' : '') . "
+                //     " . ((in_array('RDETAILPENYELIDIKAN', $userPermission)) ? '<i class="ri-information-line ri-lg text-primary m-1" role="button" title="Info" onclick="detail(' . $penyelidikan->id . ')"></i>' : '') . "
+                //     </div>
+                //     ";
 
-            $row[] = '  <p class="text-sm d-flex py-auto my-auto"><b>' . $tugas->no . '</b>' . $tugas->asal_surat . '</p>
-            <p class="text-xs d-flex py-auto my-auto" title="' . $tugas->perihal . '">' . character_limiter($tugas->perihal, 25) . '</p>';
-
-            $row[] = "
+                $row[] = "
                 <div class='d-flex justify-content-center'>
-                " . ((in_array('RDETAILTUGASSELF', $userPermission)) ? '<i class="ri-information-line ri-lg text-primary m-1" role="button" title="Info" onclick="detail(' . $tugas->id . ')"></i>' : '') . "
+                " . ((in_array('RDETAILTUGASSELF', $userPermission)) ? '<i class="ri-information-line ri-lg text-primary m-1" role="button" title="Info" onclick="detail(' . $penyelidikan->id . ')"></i>' : '') . "
                 </div>
-                ";
+            ";
 
-            $data[] = $row;
+                $data[] = $row;
+            }
         }
 
         $output = array(
             "draw" => @$_POST['draw'],
-            "recordsTotal" => $this->tugas->count_all(),
-            "recordsFiltered" => $this->tugas->count_filtered(),
+            "recordsTotal" => $this->penyelidikan->count_all(),
+            "recordsFiltered" => $this->penyelidikan->count_filtered(),
             "data" => $data,
         );
         //output to json format
@@ -109,20 +118,21 @@ class Tugas extends MX_Controller
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
-        if ($this->input->post('detail_tugas_id') == NULL) {
+        if ($this->input->post('tugas_id') == NULL) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "Tugas is required"
+                'message'         => "Kode tugas dibutuhkan"
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
+        $temp = [];
         $tugas = $this->db
             ->select('detail_tugas.id as id, detail_tugas.dibuka, sop.sop, sop.kategori, sop.waktu as sopWaktu, tugas.no_surat_tugas, tugas.no_nota_dinas, tugas.tanggal_nota_dinas, tugas.perihal_nota_dinas, tugas.status as tugasStatus, kegiatan.kegiatan, detail_tugas.waktu, detail_tugas.satuan, detail_tugas.waktu_mulai, detail_tugas.waktu_selesai, detail_tugas.status as detail_tugasStatus, tugas.pengaduan_id, kegiatan.keterangan')
             ->join('tugas', 'tugas.id=detail_tugas.tugas_id')
             ->join('sop', 'sop.id=tugas.sop_id')
             ->join('kegiatan', 'kegiatan.id=detail_tugas.kegiatan_id')
-            ->get_where('detail_tugas', ['detail_tugas.deleteAt' => NULL, 'detail_tugas.id' => $this->input->post('detail_tugas_id')])
-            ->row_array();
+            ->get_where('detail_tugas', ['detail_tugas.deleteAt' => NULL, 'tugas.id' => $this->input->post('tugas_id')])
+            ->result_array();
         if ($tugas == NULL) {
             $data = array(
                 'status'         => FALSE,
@@ -131,52 +141,71 @@ class Tugas extends MX_Controller
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
 
-        $tugas['pegawai'] = $this->db
-            ->select('*,pegawai_detail_tugas.id as pdtId')
-            ->join('pegawai', 'pegawai.id=pegawai_detail_tugas.pegawai_id')
-            ->join('user', 'user.userCode=pegawai.userCode', 'left')
-            ->where(['pegawai.deleteAt' => NULL, 'pegawai_detail_tugas.deleteAt' => NULL, 'pegawai_detail_tugas.detail_tugas_id' => $this->input->post('detail_tugas_id')])
-            ->get('pegawai_detail_tugas')
-            ->result_array();
-        $tugas['leader'] = $this->db
-            ->select('pegawai.userCode')
-            ->join('pegawai', 'pegawai.id=pegawai_detail_tugas.pegawai_id')
-            ->where(['pegawai.deleteAt' => NULL, 'pegawai_detail_tugas.deleteAt' => NULL, 'pegawai_detail_tugas.leader' => 1, 'pegawai_detail_tugas.detail_tugas_id' => $this->input->post('detail_tugas_id')])
-            ->get('pegawai_detail_tugas')
-            ->row_array();
-        if ($tugas['dibuka'] == '0') {
-            if ($this->session->userdata('userCode') == $tugas['leader']['userCode']) {
-                $this->db->where(['id' => $this->input->post('detail_tugas_id')])->update('detail_tugas', ['dibuka' => '1', 'waktu_mulai' => date('Y-m-d H:i:s')]);
-            } else {
-                $data = array(
-                    'status'         => FALSE,
-                    'message'         => "Tugas harus dibuka pertama kali oleh ketua tim"
-                );
-                return $this->output->set_content_type('application/json')->set_output(json_encode($data));
-            }
-        } else {
-            if ($tugas['dibuka'] == '1') {
-                if ($this->session->userdata('userCode') != $tugas['leader']['userCode']) {
-                    $data = array(
-                        'status'         => FALSE,
-                        'message'         => "Ketua tim belum membagi tugas"
-                    );
-                    return $this->output->set_content_type('application/json')->set_output(json_encode($data));
-                }
-            }
+        foreach ($tugas as $t => $v) {
+            $r = $v;
+            $r['pegawai'] = $this->db
+                ->select('*,pegawai_detail_tugas.id as pdtId')
+                ->join('pegawai', 'pegawai.id=pegawai_detail_tugas.pegawai_id')
+                ->join('user', 'user.userCode=pegawai.userCode', 'left')
+                ->where(['pegawai.deleteAt' => NULL, 'pegawai_detail_tugas.deleteAt' => NULL, 'pegawai_detail_tugas.detail_tugas_id' => $v['id']])
+                ->get('pegawai_detail_tugas')
+                ->result_array();
+            $r['leader'] = $this->db
+                ->select('pegawai.userCode')
+                ->join('pegawai', 'pegawai.id=pegawai_detail_tugas.pegawai_id')
+                ->where(['pegawai.deleteAt' => NULL, 'pegawai_detail_tugas.deleteAt' => NULL, 'pegawai_detail_tugas.leader' => 1, 'pegawai_detail_tugas.detail_tugas_id' => $v['id']])
+                ->get('pegawai_detail_tugas')
+                ->row_array();
+            // if (count($tugas) == 1) {
+            //     if ($r['dibuka'] == '0') {
+            //         if ($this->session->userdata('userCode') == $r['leader']['userCode']) {
+            //             $this->db->where(['id' => $v['id']])->update('detail_tugas', ['dibuka' => '1', 'waktu_mulai' => date('Y-m-d H:i:s')]);
+            //         } else {
+            //             $data = array(
+            //                 'status'         => FALSE,
+            //                 'message'         => "Tugas harus dibuka pertama kali oleh ketua tim"
+            //             );
+            //             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+            //         }
+            //     } else {
+            //         if ($r['dibuka'] == '1') {
+            //             if ($this->session->userdata('userCode') != $r['leader']['userCode']) {
+            //                 $data = array(
+            //                     'status'         => FALSE,
+            //                     'message'         => "Ketua tim belum membagi tugas"
+            //                 );
+            //                 return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+            //             }
+            //         }
+            //     }
+            // }else{
+            //     $open = FALSE;
+            //     foreach($tugas as $t => $i){
+            //         if($i['dibuka'] == '2'){
+            //             $open = TRUE;
+            //         }
+            //     }
+            //     if($open == FALSE){
+            //         $data = array(
+            //             'status'         => FALSE,
+            //             'message'         => "Tugas harus dibuka pertama kali oleh ketua tim"
+            //         );
+            //         return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+            //     }
+            // }
+            $r['kelengkapan'] = $this->db->join('kelengkapan', 'kelengkapan.id=kelengkapan_data.kelengkapan_id')
+                ->where(['kelengkapan.deleteAt' => NULL, 'kelengkapan_data.deleteAt' => NULL, 'kelengkapan_data.detail_tugas_id' => $v['id']])
+                ->get('kelengkapan_data')
+                ->result_array();
+            $r['hasil'] = $this->db
+                ->join('hasil', 'hasil.id=hasil_data.hasil_id')
+                ->where(['hasil.deleteAt' => NULL, 'hasil_data.deleteAt' => NULL, 'hasil_data.detail_tugas_id' => $v['id']])
+                ->get('hasil_data')
+                ->result_array();
+            $temp[] = $r;
         }
-        $tugas['kelengkapan'] = $this->db->join('kelengkapan', 'kelengkapan.id=kelengkapan_data.kelengkapan_id')
-            ->where(['kelengkapan.deleteAt' => NULL, 'kelengkapan_data.deleteAt' => NULL, 'kelengkapan_data.detail_tugas_id' => $this->input->post('detail_tugas_id')])
-            ->get('kelengkapan_data')
-            ->result_array();
-        $tugas['hasil'] = $this->db
-            ->join('hasil', 'hasil.id=hasil_data.hasil_id')
-            ->where(['hasil.deleteAt' => NULL, 'hasil_data.deleteAt' => NULL, 'hasil_data.detail_tugas_id' => $this->input->post('detail_tugas_id')])
-            ->get('hasil_data')
-            ->result_array();
-
-
-        $pengaduan = $this->pengaduan->get_by_id($tugas['pengaduan_id']);
+        $tug = $this->db->join('sop', 'sop.id=tugas.sop_id')->get_where('tugas', ['tugas.deleteAt' => NULL, 'tugas.id' => $this->input->post('tugas_id')])->row_array();
+        $pengaduan = $this->pengaduan->get_by_id($tug['pengaduan_id']);
         if ($pengaduan == NULL) {
             $data = array(
                 'status'         => FALSE,
@@ -188,8 +217,9 @@ class Tugas extends MX_Controller
         $data['status'] = TRUE;
         $params = [
             'title' => 'Detail tugas',
-            'detail_tugas_id' => $this->input->post('detail_tugas_id'),
-            'tugas' => $tugas,
+            'tugas_id' => $this->input->post('tugas_id'),
+            'tugas' => $tug,
+            'detail_tugas' => $temp,
             'pengaduan' => $this->load->view($this->module . '/tugas/pengaduan', $pengaduan, TRUE),
         ];
         $data['breadcrumb'] = breadcrumb([
@@ -596,7 +626,7 @@ class Tugas extends MX_Controller
         if ($this->input->post('detail_tugas_id') == NULL) {
             $data = array(
                 'status'         => FALSE,
-                'message'         => "Tugas is required"
+                'message'         => "Kode tugas dibutuhkan"
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -660,6 +690,20 @@ class Tugas extends MX_Controller
                     'hasil_id' => $this->input->post('hasil_id')
                 );
 
+                $tugas = $this->db
+                    ->select('tugas.id as tugas_id')
+                    ->join('tugas', 'tugas.id=detail_tugas.tugas_id')
+                    ->join('sop', 'sop.id=tugas.sop_id')
+                    ->join('kegiatan', 'kegiatan.id=detail_tugas.kegiatan_id')
+                    ->get_where('detail_tugas', ['detail_tugas.deleteAt' => NULL, 'detail_tugas.id' => $this->input->post('detail_tugas_id')])
+                    ->row_array();
+                if ($tugas == NULL) {
+                    $data = array(
+                        'status'         => FALSE,
+                        'message'         => "Tugas tidak ditemukan"
+                    );
+                    return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                }
                 if (isset($_FILES['dokumen']['name'])) {
                     $config['upload_path'] = './assets/kejati/files/';
                     $config['allowed_types'] = 'jpg|png|pdf|doc|docx|xls|xlsx';
@@ -688,7 +732,7 @@ class Tugas extends MX_Controller
                         ])->update('hasil_data', $insert);
                         if ($update) {
                             $data['status'] = TRUE;
-                            $data['detail_tugas_id'] = $this->input->post('detail_tugas_id');
+                            $data['tugas_id'] = $tugas['tugas_id'];
                             $data['message'] = "Berhasil mengunggah dokumen";
                         } else {
                             $data['status'] = FALSE;

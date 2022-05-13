@@ -1,6 +1,5 @@
 <?php
 
-use function GuzzleHttp\Promise\all;
 
 defined('BASEPATH') or exit('No direct script access allowed');
 
@@ -128,9 +127,8 @@ class Konsultasi extends MX_Controller
                 'status'         => FALSE,
                 'errors'         => $errors
             );
-            $this->output->set_content_type('application/json')->set_output(json_encode($data));
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
-
             $tipe = 0;
             $getData = $this->db->join('pegawai', 'pegawai.id=pegawai_detail_tugas.pegawai_id')->get_where('pegawai_detail_tugas', ['pegawai_detail_tugas.deleteAt' => NULL, 'pegawai_detail_tugas.pegawai_id' => $pegawai_detail_tugas_id])->row_array();
             if ($getData == NULL) {
@@ -138,7 +136,7 @@ class Konsultasi extends MX_Controller
                 $data['message'] = "Data tidak ditemukan";
                 return $this->output->set_content_type('application/json')->set_output(json_encode($data));
             } else {
-       
+
                 if ($this->checkStatusKegiatan($getData['detail_tugas_id']) == 'Diterima') {
                     $data['status'] = FALSE;
                     $data['message'] = "Gagal menambah konsultasi, kegiatan sudah diterima";
@@ -253,7 +251,7 @@ class Konsultasi extends MX_Controller
         return $this->output->set_content_type('application/json')->set_output(json_encode($data));
     }
 
-    public function newChat($konsultasi_id = '', $count = '')
+    public function newChat($konsultasi_id = '', $count = '', $last_id = '')
     {
         // $userPermission = getPermissionFromUser();
         // if (!in_array('UJABATAN', $userPermission)) {
@@ -273,13 +271,23 @@ class Konsultasi extends MX_Controller
             $data['message'] = "Jumlah pesan diperlukan";
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
+        if ($last_id == '') {
+            $data['status'] = FALSE;
+            $data['message'] = "Kode pesan terakhir diperlukan";
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        }
         $d = $this->db->get_where('detail_konsultasi', ['deleteAt' => NULL, 'konsultasi_id' => $konsultasi_id])->result_array();
         if ($count < count($d)) {
-            $d = $this->db->order_by('createAt', 'DESC')->get_where('detail_konsultasi', ['deleteAt' => NULL, 'konsultasi_id' => $konsultasi_id])->row_array();
-            $d['createAt'] = nice_date($d['createAt'], 'F d, Y, g:i a');
+            $d = $this->db->order_by('createAt', 'DESC')->get_where('detail_konsultasi', ['deleteAt' => NULL, 'konsultasi_id' => $konsultasi_id, 'id >' => $last_id])->result_array();
+            $temp = [];
+            foreach ($d as $k => $v) {
+                $r = $v;
+                $r['createAt'] = nice_date($v['createAt'], 'F d, Y, g:i a');
+                $temp[] = $r;
+            }
             $data['status'] = TRUE;
             $data['new'] = TRUE;
-            $data['data'] = $d;
+            $data['data'] = $temp;
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         } else {
             $data['status'] = TRUE;
@@ -288,15 +296,14 @@ class Konsultasi extends MX_Controller
         }
     }
 
-    public function cardListKonsultasi($id, $detail_tugas_id)
+    public function cardListKonsultasi($id)
     {
         $data['id'] = $id;
-        $data['detail_tugas_id'] = $detail_tugas_id;
+
         $this->load->view($this->module . '/tugas/detail/list_konsultasi', $data);
     }
     public function cardChatKonsultasi()
     {
-
         $this->load->view($this->module . '/tugas/detail/chat_konsultasi');
     }
     public function cardTambahKonsultasi($id_pegawai)

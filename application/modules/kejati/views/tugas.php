@@ -48,12 +48,12 @@
     }
 
 
-    function detail(detail_tugas_id = '') {
+    function detail(tugas_id = '') {
         $.ajax({
             url: base_url + 'kejati/ajax/tugas/detail',
             type: "POST",
             data: {
-                detail_tugas_id: detail_tugas_id,
+                tugas_id: tugas_id,
             },
             success: function(data) {
                 if (data.status) {
@@ -111,7 +111,7 @@
             success: function(data) {
                 if (data.status) {
                     $("#upload_hasil").modal("hide");
-                    detail(data.detail_tugas_id);
+                    detail(data.tugas_id);
                     handleToast("success", data.message);
                 } else {
                     handleError(data);

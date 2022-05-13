@@ -1,7 +1,7 @@
 <ul class="nav nav-tabs">
     <?php echo ((in_array('RJABATAN', $userPermission)) ? '
     <li class="nav-item">
-        <a class="forActive nav-link" href="javascript:void(0)" onclick="jabatan()">Jabatan</a>
+        <a class="forActive nav-link" id="menu-jabatan" href="javascript:void(0)" onclick="jabatan()">Jabatan</a>
     </li>' : '') ?>
     <?php echo ((in_array('RPANGKAT', $userPermission)) ? '
     <li class="nav-item">
@@ -32,7 +32,9 @@
     var save_label = "add";
 
     $(document).ready(function() {
-        <?php echo (isset($action)) ? $action : '' ?>
+        <?php echo (isset($action)) ? $action : 'jabatan();' ?>
+        $("#menu-jabatan").addClass('active');
+
     });
 
     $('.forActive').click((e) => {

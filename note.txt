@@ -2,7 +2,7 @@
 - responsive notifikasi (penting)
 - reject dari ketua tim ke anggota
 - report kegiatan dari masing masing jaksa (waktu)
-- konsultasi dari anggota ke ketua dan ketua ke pimpinan (penting)
+- konsultasi dari anggota ke ketua dan ketua ke pimpinan (penting) -- hiskia
 
 - input semua data SOP (penting)
 
@@ -15,6 +15,6 @@
 
 
 13-05-2022
-- semua jaksa bisa upload tugas ke atasan //
-- perapihan menu tugas
-- jumlah kegiatan 
+- semua jaksa bisa upload tugas ke atasan -- diki
+- perapihan menu tugas -- diki (done)
+- jumlah kegiatan -- diki

@@ -13,7 +13,7 @@
             </div>
         </div>
     </div>
-    <form method="POST" id="form-tambah-konsul">
+    <form method="POST" id="form-tambah-konsul<?= $id_pegawai; ?>">
         <div class="form-group">
             <div class="input-group">
                 <span class="input-group-text bg-gradient-faded-dark text-white" id="inputGroup-sizing-default">Judul</span>
@@ -31,27 +31,3 @@
         <button id='tombol-simpan' onclick="simpanKonsul(<?= $id_pegawai; ?>)" class="btn btn-primary" type="button">Simpan</button>
     </form>
 </div>
-<script>
-    function simpanKonsul(id_pegawai) {
-        $.ajax({
-            url: base_url + 'kejati/ajax/konsultasi/add/' + id_pegawai,
-            type: 'POST',
-            data: $('#form-tambah-konsul').serialize(),
-            success: function(data) {
-
-                if (data.status == false) {
-                    $('#alert').html(data.message)
-
-                    $('#alerts').show('slow')
-                }
-
-
-
-
-            }
-        })
-    }
-    // $('#from-tambah-konsul').submit(function() {
-
-    // })
-</script>

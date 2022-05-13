@@ -59,6 +59,7 @@ class Penyelidikan_model extends CI_Model
 	function get_datatables()
 	{
 		$this->_get_datatables_query();
+		
 		if (isset($_POST['length'])) {
 			if ($_POST['length'] != -1) $this->db->limit($_POST['length'], $_POST['start']);
 		}

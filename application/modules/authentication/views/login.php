@@ -39,7 +39,7 @@ $profile = getProfileWeb();
             <div class="container">
                 <div class="row justify-content-center">
                     <div class="col-lg-5 text-center mx-auto">
-                        <h1 class="text-white mb-2 mt-5">Welcome!</h1>
+                        <h1 class="text-white mb-2 mt-5">SISKORMONEV</h1>
                     </div>
                 </div>
             </div>
@@ -49,7 +49,7 @@ $profile = getProfileWeb();
                 <div class="col-xl-4 col-lg-5 col-md-7 mx-auto">
                     <div class="card z-index-0">
                         <div class="text-center pt-4">
-                            <h5>Sign In</h5>
+                            <h5>Login</h5>
                         </div>
                         <div class="card-body">
                             <?php
@@ -72,7 +72,7 @@ $profile = getProfileWeb();
                                 </label>
                             </div>
                             <div class="text-center">
-                                <button type="submit" class="btn bg-gradient-dark w-100 my-4 mb-2">Sign In</button>
+                                <button type="submit" class="btn bg-gradient-dark w-100 my-4 mb-2">Masuk</button>
                             </div>
                             <?php
                             echo form_close();

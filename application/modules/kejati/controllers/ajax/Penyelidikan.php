@@ -974,8 +974,8 @@ class Penyelidikan extends MX_Controller
                             'to' => $x['pegawai']['userCode'],
                             'description' => $description,
                             'data' => json_encode([
-                                'link' => base_url('kejati/tugas/index/' . encrypt('detail(' . $kegiatan_id . ');')),
-                                'action' => 'detail(' . $kegiatan_id . ');'
+                                'link' => base_url('kejati/tugas/index/' . encrypt('detail(' . $tugas_id . ');')),
+                                'action' => 'detail(' . $tugas_id . ');'
                             ], true)
                         ];
 
@@ -1345,7 +1345,7 @@ class Penyelidikan extends MX_Controller
                         'action' => 'detail(' . $tugas['id'] . ');'
                     ], true)
                 ];
-                $this->db->where('pegawai_detail_tugas_id', $pegawai['id'])->update('konsultasi', ['waktu_selesai' => date('Y-m-d H:i:s')]);
+                $this->db->where('pegawai_detail_tugas_id', $i['id'])->update('konsultasi', ['waktu_selesai' => date('Y-m-d H:i:s')]);
             }
 
             $notif = $this->db->insert_batch('notifikasi', $notifParam);
@@ -1355,6 +1355,7 @@ class Penyelidikan extends MX_Controller
                 return $this->output->set_content_type('application/json')->set_output(json_encode($data));
             }
             $data['status'] = TRUE;
+            $data['tugas_id'] = $tugas['tugas_id'];
             $data['message'] = "Berhasil menerima tugas dari ketua tim";
         } else {
             $data['status'] = FALSE;
@@ -1418,6 +1419,7 @@ class Penyelidikan extends MX_Controller
                 return $this->output->set_content_type('application/json')->set_output(json_encode($data));
             }
             $data['status'] = TRUE;
+            $data['tugas_id'] = $tugas['tugas_id'];
             $data['message'] = "Berhasil menolak tugas dari ketua tim";
         } else {
             $data['status'] = FALSE;

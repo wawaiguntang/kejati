@@ -191,7 +191,7 @@
             success: function(data) {
                 if (data.status) {
                     handleToast("success", data.message);
-                    detail(detail_tugas_id);
+                    detail(data.tugas_id);
                     breadcrumb(data.breadcrumb);
                 } else {
                     handleError(data);
@@ -219,7 +219,7 @@
             success: function(data) {
                 if (data.status) {
                     handleToast("success", data.message);
-                    detail(detail_tugas_id);
+                    detail(data.tugas_id);
                     breadcrumb(data.breadcrumb);
                 } else {
                     handleError(data);

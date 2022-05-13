@@ -1,5 +1,5 @@
  <!-- jika belum ada pesan -->
-
+ <div>lkjhsdllkasdjlaslk</div>
  <!-- jika sudah ada pesan -->
  <!-- <div id="list-konsul" class="card shadow-lg mb-1">
      <div class="card-body pt-1">
@@ -36,16 +36,17 @@
          url: base_url + 'kejati/ajax/Konsultasi/all/' + <?= $id ?>,
          type: 'GET',
          success: function(data) {
-             let html = ``
-             let konsultasi = data.data['konsultasi']
+
+             let html = ``;
+             let konsultasi = data.data['konsultasi'];
 
              if (konsultasi === undefined) {
                  html += `<div class="py-3 text-center">
         <i class="ni ni-bell-55 ni-3x"></i>
         <h4 class="text-gradient text-danger mt-3">Belum ada pesan</h4>
         <p>Mulai konsultasi dengan ketua Tim</p>
-    </div>`
-                 $('#content').html(html)
+    </div>`;
+                 $('#content').html(html);
              } else {
                  konsultasi.forEach(k => {
                      html += `<div id="list-konsul` + k['id'] + `" onclick="tampilChat(` + k['id'] + `)" class="card shadow-lg mb-1">
@@ -53,9 +54,9 @@
                                 <div class="row">
                                 <div class="col-10">`;
                      if (k['waktu_selesai'] === null) {
-                         html += '<span class="badge bg-gradient-warning">Proses</span>'
+                         html += '<span class="badge bg-gradient-warning">Proses</span>';
                      } else {
-                         html += '<span class="badge bg-gradient-success">Selesai</span>'
+                         html += '<span class="badge bg-gradient-success">Selesai</span>';
 
                      }
 
@@ -74,11 +75,14 @@
                                         <small class="col-2">` + k['postedOn'] + `</small>
                                     </div>
                                 </div>
-                            </div>`
+                            </div>`;
                  });
 
-                 $('#content').html(html)
+                 $('#content').html(html);
              }
+         },
+         error: function(e) {
+             console.log(e);
          }
      })
  </script>
