@@ -16,13 +16,13 @@
     <form method="POST" id="form-edit-konsul">
         <div class="form-group">
             <div class="input-group">
-                <span class="input-group-text bg-gradient-faded-dark text-white" id="inputGroup-sizing-default">Judul</span>
+                <span class="input-group-text " id="inputGroup-sizing-default">Judul</span>
                 <input type="text" name="judul" class="form-control" aria-label="Sizing example input" value="<?= $konsultasi['judul']; ?>" aria-describedby="inputGroup-sizing-default" placeholder="Masukkan judul...">
             </div>
         </div>
         <div class="form-group">
             <div class="input-group">
-                <span class="input-group-text bg-gradient-faded-dark text-white">Deskripsi</span>
+                <span class="input-group-text ">Deskripsi</span>
                 <textarea class="form-control" name="deskripsi" aria-label="With textarea" placeholder="Masukkan deskripsi..."><?= $konsultasi['deskripsi']; ?></textarea>
             </div>
         </div>

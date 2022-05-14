@@ -220,6 +220,18 @@
                                                                     <?php
                                                                     }
                                                                     ?>
+
+                                                                </td>
+                                                                <td>
+                                                                    <div class="col-2">
+                                                                        <button type="button" class="btn  p-2 bg-gradient-info position-relative" onclick="cardKonsulKetua(<?= $a['pdtId']; ?>,<?= $g['id'] ?>)">
+                                                                            Konsultasi
+                                                                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-gradient-danger">
+                                                                                99+
+                                                                                <span class="visually-hidden">unread messages</span>
+                                                                            </span>
+                                                                        </button>
+                                                                    </div>
                                                                 </td>
                                                             </tr>
 
@@ -706,6 +718,23 @@
             });
         }
 
+        function cardKonsulKetua(pdtId, tugasId) {
+
+            $.ajax({
+                url: base_url + 'kejati/ajax/konsultasi/cardListKonsultasiKetua/' + pdtId + '/' + tugasId,
+                type: "GET",
+                success: function(data) {
+
+                    $('.data').empty()
+                    $('.data').html(data)
+
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    alert("Error get data from ajax");
+                },
+            });
+        }
+
 
         function toTambahKonsultasi(id_pegawai) {
 
@@ -732,10 +761,6 @@
                 }
             })
         }
-
-
-
-
 
         function tutupTambah() {
             $.ajax({
@@ -772,11 +797,15 @@
                 type: 'POST',
                 data: $('#form-tambah-konsul' + pegawai_detail_id).serialize(),
                 success: function(data) {
+
                     if (data.status) {
-                        handleToast("success", data.message);
+                        handleToast("success", data.message)
+
                     } else {
                         handleError(data);
                     }
+                    backList()
+
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     alert("Error get data from ajax");

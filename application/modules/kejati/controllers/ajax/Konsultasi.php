@@ -296,9 +296,24 @@ class Konsultasi extends MX_Controller
         }
     }
 
-    public function cardListKonsultasi($id, $tugas_id)
+    public function selesaiKonsul($id)
     {
-        $data['id'] = $id;
+        $today = date("Y-m-d h:i:s ");
+
+        $insert = $this->db->where('id', $id)->update('konsultasi', ['waktu_selesai' => $today]);
+        if ($insert) {
+            $data['status'] = TRUE;
+            $data['message'] = "Berhasil mengubah konsultasi";
+        } else {
+            $data['status'] = FALSE;
+            $data['message'] = "Gagal mengubah konsultasi";
+        }
+        $this->output->set_content_type('application/json')->set_output(json_encode($data));
+    }
+
+    public function cardListKonsultasi($pdtId, $tugas_id)
+    {
+        $data['id'] = $pdtId;
         $data['tugas_id'] = $tugas_id;
 
         $this->load->view($this->module . '/tugas/detail/list_konsultasi', $data);
@@ -317,5 +332,12 @@ class Konsultasi extends MX_Controller
     {
         $data['konsultasi'] = $this->db->get_where('konsultasi', ['id' => $id_konsultasi])->row_array();
         $this->load->view($this->module . '/tugas/detail/edit_konsultasi', $data);
+    }
+    public function cardListKonsultasiKetua($pdtId, $tugas_id)
+    {
+        $data['id'] = $pdtId;
+        $data['tugas_id'] = $tugas_id;
+
+        $this->load->view($this->module . '/tugas/detail/list_konsultasi_ketua', $data);
     }
 }
