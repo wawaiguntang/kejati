@@ -18,3 +18,29 @@
 - semua jaksa bisa upload tugas ke atasan -- diki
 - perapihan menu tugas -- diki (done)
 - jumlah kegiatan -- diki
+
+
+
+14-05-2022
+- nama navbar diganti ke kejaksaan tinggi lampung
+- pengaduan maks 14 hari
+- upload file di pengaduan
+
+
+- No Surat Tugas replace jadi No Surat Perintah Penyelidikan (menu penyelidikan) 
+- status tindakan di pengaduan
+- pimpinan hanya memantau
+- buat instruksi umum
+
+- pimpinan all access
+- detail tugas bisa dilihat semua
+
+- pimpinan dapat melihat semua kejadian
+- pimpinan bisa melihat isi aktivitas konsultasi
+- penekakanan di monitoring kegiatan secara konten bukan waktu
+- kolom evaluasi setiap selesai kegiatan
+
+- kolom catatan di pimpinan saat tolak/terima
+
+- konsultasi di replace jadi koordinasi
+- dashboard pimpinan (penting)

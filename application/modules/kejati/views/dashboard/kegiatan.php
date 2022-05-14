@@ -22,7 +22,7 @@
                         <div class="col-2">
                             <div class="card card-body p-1" style="border-radius: 0.3rem;"><i style="color: black;" class="fa fa-bars"></i></div>
                         </div>
-                        <p class="card-title text-bold fs-1 mt-7" style="color: black;">35</p>
+                        <p class="card-title text-bold fs-1 mt-4" style="color: black;">35</p>
                         <p class="card-text text-bold mt-0 pt-0" style="color: black;">Semua tugas</p>
                     </div>
                 </div>
@@ -34,7 +34,7 @@
                         <div class="col-2">
                             <div class="card card-body p-1" style="border-radius: 0.3rem;"><i style="color: black;" class="fa fa-check"></i></div>
                         </div>
-                        <p class="card-title text-bold fs-1 mt-7" style="color: black;">4</p>
+                        <p class="card-title text-bold fs-1 mt-4" style="color: black;">4</p>
                         <p class="card-text text-bold mt-0 pt-0" style="color: black;">Tugas selesai</p>
                     </div>
                 </div>
@@ -46,7 +46,7 @@
                         <div class="col-2">
                             <div class="card card-body p-1" style="border-radius: 0.3rem;"><i style="color: black;" class="fa fa-regular fa-clock"></i></div>
                         </div>
-                        <p class="card-title text-bold fs-1 mt-7" style="color: black;">6</p>
+                        <p class="card-title text-bold fs-1 mt-4" style="color: black;">6</p>
                         <p class="card-text text-bold mt-0 pt-0" style="color: black;">Tugas berjalan</p>
                     </div>
                 </div>
@@ -58,7 +58,7 @@
                         <div class="col-2">
                             <div class="card card-body p-1" style="border-radius: 0.3rem;"><i style="color: black;" class="fa fa-ban"></i></div>
                         </div>
-                        <p class="card-title text-bold fs-1 mt-7" style="color: black;">9</p>
+                        <p class="card-title text-bold fs-1 mt-4" style="color: black;">9</p>
                         <p class="card-text text-bold mt-0 pt-0" style="color: black;">Tugas ditolak</p>
                     </div>
                 </div>
