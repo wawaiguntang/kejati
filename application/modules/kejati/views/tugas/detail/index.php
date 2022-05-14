@@ -11,6 +11,7 @@
                 <div class="row mb-2">
                     <div class="col-md-6">
                         <div class="table-responsive">
+
                             <table class="table table-sm">
                                 <tr>
                                     <td><span class="text-md" for="No Surat Tugas"><b>No Surat Tugas</b></span></td>
@@ -54,6 +55,7 @@
                                 <span class="text-uppercase text-sm font-weight-bold" title="Waktu"><?php echo formatWaktu($tugas['waktu']) ?></span>
                             </div>
                             <?php
+
                             foreach ($detail_tugas as $k => $g) {
                             ?>
                                 <div class="card card-body py-1 mb-1 mx-1 px-2" style="border: 1px solid #D4D4D4;" id="kegiatan3">
@@ -218,6 +220,18 @@
                                                                     <?php
                                                                     }
                                                                     ?>
+
+                                                                </td>
+                                                                <td>
+                                                                    <div class="col-2">
+                                                                        <button type="button" class="btn  p-2 bg-gradient-info position-relative" onclick="cardKonsulKetua(<?= $a['pdtId']; ?>,<?= $g['id'] ?>)">
+                                                                            Konsultasi
+                                                                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-gradient-danger">
+                                                                                99+
+                                                                                <span class="visually-hidden">unread messages</span>
+                                                                            </span>
+                                                                        </button>
+                                                                    </div>
                                                                 </td>
                                                             </tr>
 
@@ -384,6 +398,7 @@
 
 
                                                     foreach ($g['pegawai'] as $w => $a) {
+
                                                         if ($a['userCode'] == $this->session->userdata('userCode')) {
                                                     ?>
                                                             <div class="row list-konsultasi" id="list-<?= $a['pdtId']; ?>">
@@ -401,7 +416,7 @@
                                                                 </div>
 
                                                                 <div class="col-2">
-                                                                    <button type="button" class="btn  p-2 bg-gradient-info position-relative" onclick="modalKonsul(<?= $a['pdtId']; ?>)">
+                                                                    <button type="button" class="btn  p-2 bg-gradient-info position-relative" onclick="cardKonsul(<?= $a['pdtId']; ?>,<?= $g['id'] ?>)">
                                                                         Konsultasi
                                                                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-gradient-danger">
                                                                             99+
@@ -459,7 +474,7 @@
         </div>
     </div>
     <!-- Modal Konsultasi -->
-    <div class="modal fade " id="modal-default" tabindex="-1" role="dialog" data-bs-backdrop="static" aria-labelledby="modal-default" aria-hidden="true">
+    <!-- <div class="modal fade " id="modal-default" tabindex="-1" role="dialog" data-bs-backdrop="static" aria-labelledby="modal-default" aria-hidden="true">
         <div class="modal-dialog modal-dialog-scrollable modal-xl modal-danger modal-dialog-centered modal-" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -484,7 +499,7 @@
             </div>
         </div>
 
-    </div>
+    </div> -->
     <!-- Akhir Modal Konsultasi -->
     <div id="forModal"></div>
     <script>
@@ -686,23 +701,40 @@
         //     }
         // })
 
-        function modalKonsul(pdtId) {
+        function cardKonsul(pdtId, tugasId) {
+
             $.ajax({
-                url: base_url + 'kejati/ajax/konsultasi/cardListKonsultasi/' + pdtId,
+                url: base_url + 'kejati/ajax/konsultasi/cardListKonsultasi/' + pdtId + '/' + tugasId,
                 type: "GET",
                 success: function(data) {
-                    if (data.status) {
-                        $("#forModal").html(data.data);
-                        $("#addFile").modal("show");
-                    } else {
-                        handleError(data);
-                    }
+
+                    $('.data').empty()
+                    $('.data').html(data)
+
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     alert("Error get data from ajax");
                 },
             });
         }
+
+        function cardKonsulKetua(pdtId, tugasId) {
+
+            $.ajax({
+                url: base_url + 'kejati/ajax/konsultasi/cardListKonsultasiKetua/' + pdtId + '/' + tugasId,
+                type: "GET",
+                success: function(data) {
+
+                    $('.data').empty()
+                    $('.data').html(data)
+
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    alert("Error get data from ajax");
+                },
+            });
+        }
+
 
         function toTambahKonsultasi(id_pegawai) {
 
@@ -711,11 +743,9 @@
                 type: "GET",
                 success: function(data) {
 
-                    $('#chat-konsul').hide()
-                    $('#list-konsultasi').hide()
+                    $('#content').html(data)
+                    $('#tutup-list').hide()
                     $('#tombol-tambah').hide()
-                    $('#tambah-konsultasi').show('fast')
-                    $('[id=tambah-konsultasi]').html(data)
                 }
             })
         }
@@ -725,25 +755,11 @@
                 url: base_url + 'kejati/ajax/Konsultasi/cardEditKonsultasi/' + id_konsul,
                 type: 'GET',
                 success: function(data) {
-                    $('#chat-konsul').hide()
-                    $('#list-konsultasi').hide()
+                    $('#content').html(data)
+                    $('#tutup-list').hide()
                     $('#tombol-tambah').hide()
-                    $('#edit-konsultasi').show('fast')
-                    $('[id=edit-konsultasi]').html(data)
                 }
             })
-        }
-
-        function tampilChat(id) {
-
-            $('#list-konsul' + id).siblings().hide('fast')
-            $('#chat-konsul').show('fast')
-
-        }
-
-        function tutupChat() {
-            $('#chat-konsul').hide('fast')
-            $('[id^="list-konsul"]').show()
         }
 
         function tutupTambah() {
@@ -781,11 +797,15 @@
                 type: 'POST',
                 data: $('#form-tambah-konsul' + pegawai_detail_id).serialize(),
                 success: function(data) {
+
                     if (data.status) {
-                        handleToast("success", data.message);
+                        handleToast("success", data.message)
+
                     } else {
                         handleError(data);
                     }
+                    backList()
+
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     alert("Error get data from ajax");

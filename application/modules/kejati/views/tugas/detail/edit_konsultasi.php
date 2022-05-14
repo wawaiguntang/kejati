@@ -1,6 +1,6 @@
 <div class="card p-4 shadow-lg">
     <div class="text-end mb-2">
-        <span id="tutup-edit" class="badge bg-gradient-danger " onclick="tutupEdit()" style="cursor: pointer;">X</span>
+        <span id="tutup-edit" class="badge bg-gradient-danger " onclick="backList()" style="cursor: pointer;">X</span>
 
     </div>
     <div class="row">
@@ -16,13 +16,13 @@
     <form method="POST" id="form-edit-konsul">
         <div class="form-group">
             <div class="input-group">
-                <span class="input-group-text bg-gradient-faded-dark text-white" id="inputGroup-sizing-default">Judul</span>
+                <span class="input-group-text " id="inputGroup-sizing-default">Judul</span>
                 <input type="text" name="judul" class="form-control" aria-label="Sizing example input" value="<?= $konsultasi['judul']; ?>" aria-describedby="inputGroup-sizing-default" placeholder="Masukkan judul...">
             </div>
         </div>
         <div class="form-group">
             <div class="input-group">
-                <span class="input-group-text bg-gradient-faded-dark text-white">Deskripsi</span>
+                <span class="input-group-text ">Deskripsi</span>
                 <textarea class="form-control" name="deskripsi" aria-label="With textarea" placeholder="Masukkan deskripsi..."><?= $konsultasi['deskripsi']; ?></textarea>
             </div>
         </div>
@@ -38,16 +38,21 @@
             type: 'POST',
             data: $('#form-edit-konsul').serialize(),
             success: function(data) {
-
-                if (data.status == false) {
-                    $('#alert').html(data.message)
-
-                    $('#alerts').show('slow')
+                if (data.status) {
+                    handleToast("success", data.message);
+                } else {
+                    handleError(data);
                 }
-                tutupEdit()
+                backList()
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert("Error get data from ajax");
+                $("#btnSave").text("Kirim ke atasan");
+                $("#btnSave").attr("disabled", false);
+            },
+            complete: function() {
 
-
-            }
+            },
         })
     }
     // $('#from-tambah-konsul').submit(function() {
