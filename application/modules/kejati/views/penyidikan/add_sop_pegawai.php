@@ -1,6 +1,3 @@
-<pre>
-    <?php //var_dump($this->session->userdata('temp'))?>
-</pre>
 <div class="row mb-3">
     <div class="d-flex justify-content-between mt-2 py-auto">
         <p class="pl-4 my-auto fw-bolder"> <?php echo $title ?></p>

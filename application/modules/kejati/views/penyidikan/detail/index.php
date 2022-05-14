@@ -53,28 +53,29 @@
                             <?php echo selectWithFormGroup('kegiatan', 'Kegiatan', 'kegiatan', $kegiatan, '', ['form-control-sm']) ?>
                         </div>
                         <div class="col-md-2 d-flex align-items-end">
-                            <button type="button" class="btn btn-sm btn-primary" onclick="addKegiatanHTML()"><i class="fa fa-plus"></i></button>
+                            <button type="button" class="btn btn-sm btn-primary" onclick="editKegiatanHTML()"><i class="fa fa-plus"></i></button>
                         </div>
                     </div>
                     <div class="mx-2">
                         <div class="card card-body p-2" style="border: 1px solid #D4D4D4;">
                             <div class="d-flex justify-content-between my-0 py-0 mb-1">
                                 <span class="text-uppercase text-sm font-weight-bold" title="SOP">PERMINTAAN DAN PENERIMAAN DOKUMEN</span>
-                                <span class="text-uppercase text-sm font-weight-bold" title="Waktu"><span class="badge bg-warning"><?php echo $tugas->status ?></span> <?php echo formatWaktu($tugas->waktu) ?></span>
+                                <span class="text-uppercase text-sm font-weight-bold" title="Waktu"><?php echo formatWaktu($tugas->waktu) ?></span>
                             </div>
-                            <?php foreach ($detail_tugas as $k => $v) { ?>
-                                <div class="card card-body py-1 mb-1 mx-1 px-2" style="border: 1px solid #D4D4D4;" id="kegiatan3">
+                            <?php $this->session->set_userdata('tugas_id', $detail_tugas[0]['tugas_id']);
+                            foreach ($detail_tugas as $k => $v) { ?>
+                                <div class="card card-body py-1 mb-1 mx-1 px-2" style="border: 1px solid #D4D4D4;" id="kegiatan">
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="row">
-                                                <span class="text-sm"><span class="badge bg-warning"><?php echo $v['status'] ?></span></span>
+                                                <span class="text-sm"><span class="badge <?php echo ($v['status'] == 'Ditinjau atasan' || $v['status'] == 'Dalam proses') ? 'bg-warning' : (($v['status'] == 'Ditolak') ? 'bg-danger' : 'bg-success') ?>"><?php echo $v['status'] ?></span></span>
                                                 <span class="text-sm" title="Kegiatan"><b>Kegiatan: </b><?php echo $v['kegiatan'] ?></span>
                                                 <span class="text-xs" title="Waktu"><b>Waktu: </b><?php echo $v['waktu'] ?> <?php echo $v['satuan'] ?></span>
                                                 <div class="row">
                                                     <div class="col-md-6">
-                                                        <span class="text-xs" title="Ket">
+                                                        <span class="text-xs">
                                                             <b>Kelengkapan: </b>
-                                                            <div id="kelengkapanHTML3">
+                                                            <div id="kelengkapanHTML">
                                                                 <ul class="mt-1">
                                                                     <?php
                                                                     foreach ($v['kelengkapan'] as $n => $m) {
@@ -93,9 +94,9 @@
                                                         </span>
                                                     </div>
                                                     <div class="col-md-6">
-                                                        <span class="text-xs" title="Ket">
+                                                        <span class="text-xs">
                                                             <b>Hasil: </b>
-                                                            <div id="kelengkapanHTML3">
+                                                            <div id="hasilHtml">
                                                                 <ul class="mt-1">
                                                                     <?php
                                                                     foreach ($v['hasil'] as $n => $z) {
@@ -116,13 +117,21 @@
                                                 </div>
                                                 <span class="text-xs" title="Ket"><b>Ket: </b><?php echo $v['keterangan'] ?></span>
                                             </div>
+                                            <?php
+                                            if (($v['status'] == 'Ditinjau atasan')) {
+                                            ?>
+                                                <div class="d-flex justify-content-end">
+                                                    <button class="btn btn-sm btn-danger mr-1" onclick="tolak(<?php echo $v['detail_tugas_id'] ?>)" title="Tolak">Tolak</button>
+                                                    <button class="btn btn-sm btn-primary" onclick="terima(<?php echo $v['detail_tugas_id'] ?>)" title="Terima">Terima</button>
+                                                </div>
+                                            <?php } ?>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="d-flex justify-content-between">
                                                 <span class="text-md">Jaksa</span>
                                             </div>
                                             <table class="table table-sm">
-                                                <tbody id="detail_tugas3">
+                                                <tbody id="detail_tugas">
                                                     <?php
                                                     foreach ($v['pegawai'] as $w => $a) {
                                                     ?>
@@ -148,6 +157,12 @@
                                     </div>
                                 </div>
                             <?php } ?>
+                            <div id="test"></div>
+                            <div class="row ">
+                                <div class="col align-self-end">
+                                    <button class="btn btn-primary btn-sm" id="simpan" type="button" style="display: none; " onclick="saveEditPenyidikan()">Simpan</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -156,10 +171,392 @@
     </div>
 </div>
 </div>
+<div id="forModal"></div>
 
 
 <script>
     function addTugas() {
         $("#addTugas").css('display', '');
+    }
+
+    function terima(detail_tugas_id = '') {
+        $("#btnSave").text("mengirim...");
+        $("#btnSave").attr("disabled", true);
+        $.ajax({
+            url: base_url + 'kejati/ajax/penyidikan/terima',
+            type: "POST",
+            data: {
+                detail_tugas_id: detail_tugas_id,
+            },
+            success: function(data) {
+                if (data.status) {
+                    handleToast("success", data.message);
+                    detail(data.tugas_id);
+                    breadcrumb(data.breadcrumb);
+                } else {
+                    handleError(data);
+                    $("#btnSave").text("Kirim ke atasan");
+                    $("#btnSave").attr("disabled", false);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert("Error get data from ajax");
+                $("#btnSave").text("Kirim ke atasan");
+                $("#btnSave").attr("disabled", false);
+            },
+        });
+    }
+
+    function tolak(detail_tugas_id = '') {
+        $("#btnSave").text("mengirim...");
+        $("#btnSave").attr("disabled", true);
+        $.ajax({
+            url: base_url + 'kejati/ajax/penyidikan/tolak',
+            type: "POST",
+            data: {
+                detail_tugas_id: detail_tugas_id,
+            },
+            success: function(data) {
+                if (data.status) {
+                    handleToast("success", data.message);
+                    detail(data.tugas_id);
+                    breadcrumb(data.breadcrumb);
+                } else {
+                    handleError(data);
+                    $("#btnSave").text("Kirim ke atasan");
+                    $("#btnSave").attr("disabled", false);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert("Error get data from ajax");
+                $("#btnSave").text("Kirim ke atasan");
+                $("#btnSave").attr("disabled", false);
+            }
+        });
+    }
+
+    function editKegiatanHTML() {
+
+        $.ajax({
+            url: base_url + 'kejati/ajax/penyidikan/editKegiatanHTML',
+            type: "POST",
+            data: {
+                kegiatan_id: $("#kegiatan").val()
+            },
+            success: function(data) {
+                if (data.status) {
+                    $("#test").append(data.data);
+                    getKelengkapan($("#kegiatan").val());
+                    $('#simpan').show();
+
+                } else {
+                    handleError(data);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert("Error get data from ajax");
+            },
+        });
+    }
+
+    function deleteKegiatanHTML(kegiatan_id) {
+        $.ajax({
+            url: base_url + 'kejati/ajax/penyidikan/deleteKegiatanHTML',
+            type: "POST",
+            data: {
+                kegiatan_id: kegiatan_id
+            },
+            success: function(data) {
+                if (data.status) {
+                    $("#kegiatan" + kegiatan_id).remove();
+                } else {
+                    handleError(data);
+                }
+                $('#simpan').hide()
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert("Error get data from ajax");
+            },
+        });
+    }
+
+    function getKelengkapan(kegiatan_id) {
+        id = kegiatan_id;
+
+        $.ajax({
+            url: base_url + 'kejati/ajax/penyidikan/getKelengkapan',
+            type: "POST",
+            data: {
+                kegiatan_id: id
+            },
+            success: function(data) {
+                if (data.status) {
+                    $("#kelengkapanHTML" + id).html(data.data);
+                } else {
+                    handleError(data);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert("Error get data from ajax");
+            },
+        });
+    }
+
+    function uploadKelengkapan(kegiatan_id, kelengkapan_id) {
+        $.ajax({
+            url: base_url + 'kejati/ajax/penyidikan/uploadKelengkapanHTML',
+            type: "POST",
+            data: {
+                kegiatan_id: kegiatan_id,
+                kelengkapan_id: kelengkapan_id,
+            },
+            success: function(data) {
+                if (data.status) {
+                    $("#forModal").html(data.data);
+                    $("#upload_kelengkapan").modal("show");
+                } else {
+                    handleError(data);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert("Error get data from ajax");
+            },
+        });
+    }
+
+    function saveKelengkapan() {
+        $("#btnSave").text("saving...");
+        $("#btnSave").attr("disabled", true);
+        var url, method;
+
+        url = base_url + 'kejati/ajax/penyidikan/uploadKelengkapan';
+        method = "saved";
+
+        var formData = new FormData(this.form);
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: formData,
+            async: false,
+            cache: false,
+            processData: false,
+            contentType: false,
+            success: function(data) {
+                if (data.status) {
+                    $("#upload_kelengkapan").modal("hide");
+                    getKelengkapan(data.kegiatan_id);
+                    handleToast("success", data.message);
+                } else {
+                    handleError(data);
+                }
+                $("#btnSave").text("save");
+                $("#btnSave").attr("disabled", false);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert("Error adding / update data");
+                $("#btnSave").text("save");
+                $("#btnSave").attr("disabled", false);
+            },
+        });
+
+        $("#form input, #form textarea").on("keyup", function() {
+            $(this).removeClass("is-valid is-invalid");
+        });
+        $("#form select").on("change", function() {
+            $(this).removeClass("is-valid is-invalid");
+        });
+    }
+
+    function addPegawaiHTML(kegiatan_id) {
+        $.ajax({
+            url: base_url + 'kejati/ajax/penyidikan/addPegawaiHTML',
+            type: "POST",
+            data: {
+                kegiatan_id: kegiatan_id
+            },
+            success: function(data) {
+                if (data.status) {
+                    $("#forModal").html(data.data);
+                    $("#add_sop_pegawai").modal("show");
+                } else {
+                    handleError(data);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert("Error get data from ajax");
+            },
+        });
+    }
+
+    function savePegawai() {
+        $("#btnSave").text("saving...");
+        $("#btnSave").attr("disabled", true);
+        var url, method;
+
+        url = base_url + 'kejati/ajax/penyidikan/addPegawai';
+        method = "saved";
+
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: {
+                kegiatan_id: $("#kegiatan_id").val(),
+                jaksa: $("#jaksa").val(),
+            },
+            dataType: "json",
+            success: function(data) {
+                if (data.status) {
+
+                    getPegawai($("#kegiatan_id").val());
+                    $("#add_sop_pegawai").modal("hide");
+                    handleToast("success", data.message);
+                } else {
+                    handleError(data);
+                }
+                $("#btnSave").text("save");
+                $("#btnSave").attr("disabled", false);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert("Error adding / update data");
+                $("#btnSave").text("save");
+                $("#btnSave").attr("disabled", false);
+            },
+        });
+
+        $("#form input, #form textarea").on("keyup", function() {
+            $(this).removeClass("is-valid is-invalid");
+        });
+        $("#form select").on("change", function() {
+            $(this).removeClass("is-valid is-invalid");
+        });
+    }
+
+    function getPegawai(kegiatan_id) {
+        $.ajax({
+            url: base_url + 'kejati/ajax/penyidikan/getPegawai',
+            type: "POST",
+            data: {
+                kegiatan_id: kegiatan_id
+            },
+            success: function(data) {
+                if (data.status) {
+
+                    $("#detail_tugas" + kegiatan_id).html(data.data);
+                } else {
+                    handleError(data);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert("Error get data from ajax");
+            },
+        });
+    }
+
+    function deletePegawai(kegiatan_id, jaksa) {
+        $("#btnSave").text("saving...");
+        $("#btnSave").attr("disabled", true);
+        var url, method;
+
+        url = base_url + 'kejati/ajax/penyidikan/deletePegawai';
+        method = "saved";
+
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: {
+                kegiatan_id: kegiatan_id,
+                jaksa: jaksa,
+            },
+            dataType: "json",
+            success: function(data) {
+                if (data.status) {
+                    getPegawai(kegiatan_id);
+                    $("#add_sop_pegawai").modal("hide");
+                    handleToast("success", data.message);
+                } else {
+                    handleError(data);
+                }
+                $("#btnSave").text("save");
+                $("#btnSave").attr("disabled", false);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert("Error adding / update data");
+                $("#btnSave").text("save");
+                $("#btnSave").attr("disabled", false);
+            },
+        });
+
+        $("#form input, #form textarea").on("keyup", function() {
+            $(this).removeClass("is-valid is-invalid");
+        });
+        $("#form select").on("change", function() {
+            $(this).removeClass("is-valid is-invalid");
+        });
+    }
+
+    function saveEditPenyidikan() {
+        $("#simpan").text("saving...");
+        $("#simpan").attr("disabled", true);
+        var url, method;
+
+        url = base_url + 'kejati/ajax/penyidikan/saveEdit';
+        method = "saved";
+
+        var formData = $("#kegiatan").serialize();
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: formData,
+            success: function(data) {
+                if (data.status) {
+                    back();
+                    handleToast("success", data.message);
+                } else {
+                    handleError(data);
+                }
+                $("#simpan").text("save");
+                $("#simpan").attr("disabled", false);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert("Error adding / update data");
+                $("#simpan").text("save");
+                $("#simpan").attr("disabled", false);
+            },
+        });
+
+        $("#form input, #form textarea").on("keyup", function() {
+            $(this).removeClass("is-valid is-invalid");
+        });
+        $("#form select").on("change", function() {
+            $(this).removeClass("is-valid is-invalid");
+        });
+    }
+
+    $("body").delegate("#setLeader", "click", (e) => {
+        id = e.target.value;
+
+        setLeader(id);
+    });
+
+    function setLeader(id) {
+        $.ajax({
+            url: base_url + 'kejati/ajax/penyidikan/setLeader',
+            type: "POST",
+            data: {
+                id: id
+            },
+            success: function(data) {
+                if (data.status) {
+
+                    getPegawai(data.kegiatan_id);
+                    handleToast("success", data.message);
+                } else {
+                    handleError(data);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert("Error get data from ajax");
+            },
+        });
     }
 </script>
