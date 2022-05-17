@@ -1,4 +1,5 @@
 <div class="card p-4 shadow-lg">
+    <h3>Edit Konsultasi</h3>
     <div class="text-end mb-2">
         <span id="tutup-edit" class="badge bg-gradient-danger " onclick="backList()" style="cursor: pointer;">X</span>
 
@@ -22,8 +23,8 @@
         </div>
         <div class="form-group">
             <div class="input-group">
-                <span class="input-group-text ">Deskripsi</span>
-                <textarea class="form-control" name="deskripsi" aria-label="With textarea" placeholder="Masukkan deskripsi..."><?= $konsultasi['deskripsi']; ?></textarea>
+                <span class="input-group-text">Deskripsi</span>
+                <textarea class="form-control" name="deskripsi" aria-label="With textarea" cols="1" rows="1" placeholder="Masukkan deskripsi..."><?= $konsultasi['deskripsi']; ?></textarea>
             </div>
         </div>
         <input type="hidden" name='id_pegawai' value="<?= $konsultasi['id']; ?>">

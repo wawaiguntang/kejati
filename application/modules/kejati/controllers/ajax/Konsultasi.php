@@ -79,7 +79,8 @@ class Konsultasi extends MX_Controller
             $data['message'] = "Tugas tidak ditemukan";
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
-        $d = $this->db->get_where('konsultasi', ['deleteAt' => NULL, 'pegawai_detail_tugas_id' => $pegawai_detail_tugas_id])->result_array();
+        $d = $this->db->order_by("id", "desc")->get_where('konsultasi', ['deleteAt' => NULL, 'pegawai_detail_tugas_id' => $pegawai_detail_tugas_id])->result_array();
+
         $temp = [];
         foreach ($d as $k => $v) {
             $r = $v;
@@ -311,16 +312,27 @@ class Konsultasi extends MX_Controller
         $this->output->set_content_type('application/json')->set_output(json_encode($data));
     }
 
-    public function cardListKonsultasi($pdtId, $tugas_id)
+    public function cardListKonsultasi($pdtId, $tugas_id, $pegawai_id_leader)
     {
         $data['id'] = $pdtId;
         $data['tugas_id'] = $tugas_id;
+        $data['pegawai_id_leader'] = $pegawai_id_leader;
 
         $this->load->view($this->module . '/tugas/detail/list_konsultasi', $data);
     }
-    public function cardChatKonsultasi()
+    public function cardChatKonsultasi($id_konsultasi, $pegawai_id_leader)
     {
-        $this->load->view($this->module . '/tugas/detail/chat_konsultasi');
+        $data['id_konsultasi'] = $id_konsultasi;
+        $data['leader'] = $this->db->get_where('pegawai', ['id' => $pegawai_id_leader])->result_array()[0];
+
+        $this->load->view($this->module . '/tugas/detail/chat_konsultasi', $data);
+    }
+    public function cardChatKonsultasiKetua($id_konsultasi, $id_pegawai)
+    {
+        $data['id_konsultasi'] = $id_konsultasi;
+        $pegawai = $this->db->get_where('pegawai', ['id' => $id_pegawai])->result_array()[0];
+        $data['pegawai'] = $pegawai;
+        $this->load->view($this->module . '/tugas/detail/chat_konsultasi_ketua', $data);
     }
     public function cardTambahKonsultasi($id_pegawai)
     {
@@ -333,10 +345,11 @@ class Konsultasi extends MX_Controller
         $data['konsultasi'] = $this->db->get_where('konsultasi', ['id' => $id_konsultasi])->row_array();
         $this->load->view($this->module . '/tugas/detail/edit_konsultasi', $data);
     }
-    public function cardListKonsultasiKetua($pdtId, $tugas_id)
+    public function cardListKonsultasiKetua($pdtId, $tugas_id, $id_pegawai)
     {
         $data['id'] = $pdtId;
         $data['tugas_id'] = $tugas_id;
+        $data['id_pegawai'] = $id_pegawai;
 
         $this->load->view($this->module . '/tugas/detail/list_konsultasi_ketua', $data);
     }

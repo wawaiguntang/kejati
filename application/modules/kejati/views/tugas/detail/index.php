@@ -55,11 +55,10 @@
                                 <span class="text-uppercase text-sm font-weight-bold" title="Waktu"><?php echo formatWaktu($tugas['waktu']) ?></span>
                             </div>
                             <?php
-
+                            $pegawai = '';
                             foreach ($detail_tugas as $k => $g) {
                             ?>
                                 <div class="card card-body py-1 mb-1 mx-1 px-2" style="border: 1px solid #D4D4D4;" id="kegiatan3">
-
                                     <?php if ($g['leader']['userCode'] == $this->session->userdata('userCode')) {
                                         if ($g['dibuka'] == '0') {
                                             $this->db->where(['id' => $g['id']])->update('detail_tugas', ['dibuka' => '1', 'waktu_mulai' => date('Y-m-d H:i:s')]);
@@ -179,7 +178,9 @@
                                             <table class="table table-sm">
                                                 <tbody id="detail_tugas3">
                                                     <?php
+
                                                     foreach ($g['pegawai'] as $w => $a) {
+
                                                         if ($a['leader'] == 0) {
                                                     ?>
                                                             <tr>
@@ -224,7 +225,7 @@
                                                                 </td>
                                                                 <td>
                                                                     <div class="col-2">
-                                                                        <button type="button" class="btn  p-2 bg-gradient-info position-relative" onclick="cardKonsulKetua(<?= $a['pdtId']; ?>,<?= $g['id'] ?>)">
+                                                                        <button type="button" class="btn  p-2 bg-gradient-info position-relative" onclick="cardKonsulKetua(<?= $a['pdtId']; ?>,<?= $g['id'] ?>,<?= $a['pegawai_id']; ?>)">
                                                                             Konsultasi
                                                                             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-gradient-danger">
                                                                                 99+
@@ -249,8 +250,10 @@
                                         <?php } ?>
                                         <?php
                                     } else {
+
                                         if ($g['dibuka'] == '0') {
                                         ?>
+
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="row">
@@ -267,6 +270,7 @@
                                         } else {
                                             if ($g['dibuka'] == '1') {
                                             ?>
+
                                                 <div class="row">
                                                     <div class="col-md-6">
                                                         <div class="row">
@@ -282,6 +286,7 @@
                                             <?php
                                             } else {
                                             ?>
+
                                                 <div class="row">
                                                     <div class="col-md-6">
                                                         <div class="row">
@@ -369,7 +374,12 @@
                                                             <tbody id="detail_tugas3">
                                                                 <?php
                                                                 foreach ($g['pegawai'] as $w => $a) {
+
                                                                 ?>
+
+                                                                    <?php if ($a['leader'] == 1) {
+                                                                        $leader = $a['pegawai_id'];
+                                                                    } ?>
                                                                     <tr>
                                                                         <td class="d-flex">
                                                                             <div class="author align-items-center mb-1">
@@ -397,8 +407,9 @@
                                                     <?php
 
 
-                                                    foreach ($g['pegawai'] as $w => $a) {
 
+
+                                                    foreach ($g['pegawai'] as $w => $a) {
                                                         if ($a['userCode'] == $this->session->userdata('userCode')) {
                                                     ?>
                                                             <div class="row list-konsultasi" id="list-<?= $a['pdtId']; ?>">
@@ -416,16 +427,13 @@
                                                                 </div>
 
                                                                 <div class="col-2">
-                                                                    <button type="button" class="btn  p-2 bg-gradient-info position-relative" onclick="cardKonsul(<?= $a['pdtId']; ?>,<?= $g['id'] ?>)">
+                                                                    <button type="button" class="btn  p-2 bg-gradient-info position-relative" onclick="cardKonsul(<?= $a['pdtId']; ?>,<?= $g['id'] ?>,<?= $leader; ?>)">
                                                                         Konsultasi
                                                                         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-gradient-danger">
                                                                             99+
                                                                             <span class="visually-hidden">unread messages</span>
                                                                         </span>
                                                                     </button>
-
-
-
                                                                 </div>
                                                             </div>
                                                             <hr>
@@ -474,8 +482,8 @@
         </div>
     </div>
     <!-- Modal Konsultasi -->
-    <!-- <div class="modal fade " id="modal-default" tabindex="-1" role="dialog" data-bs-backdrop="static" aria-labelledby="modal-default" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-scrollable modal-xl modal-danger modal-dialog-centered modal-" role="document">
+    <div class="modal fade " id="modal-konsultasi" role="dialog">
+        <div class="modal-dialog modal-dialog-scrollable modal-xl modal-danger modal-dialog-centered " role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h6 class="modal-title" id="modal-title-notification">Konsultasi</h6>
@@ -483,23 +491,24 @@
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
-                <div class="modal-body">
-                    <input id="pegawai-detail-tugas-id" type="hidden" value="">
+                <div class="modal-body" id="modal-body">
+                    <!-- <input id="pegawai-detail-tugas-id" type="hidden" value="">
                     <input id="detail-tugas-id" type="hidden" value="<?= $a['detail_tugas_id'] ?>">
                     <div id="list-konsultasi"></div>
                     <div id="chat-konsultasi"></div>
                     <div id="tambah-konsultasi"></div>
                     <div id="edit-konsultasi"></div>
+                 -->
+
                 </div>
                 <div class="modal-footer">
-                    <button id="tombol-tambah" type="button" class="btn bg-gradient-primary" onclick="toTambahKonsultasi()">Buat Konsultasi</button>
                     <button type="button" class="btn btn-link  ml-auto" data-bs-dismiss="modal">Close</button>
                 </div>
 
             </div>
         </div>
 
-    </div> -->
+    </div>
     <!-- Akhir Modal Konsultasi -->
     <div id="forModal"></div>
     <script>
@@ -701,15 +710,18 @@
         //     }
         // })
 
-        function cardKonsul(pdtId, tugasId) {
+        function cardKonsul(pdtId, tugasId, pegawai_id_leader) {
+
 
             $.ajax({
-                url: base_url + 'kejati/ajax/konsultasi/cardListKonsultasi/' + pdtId + '/' + tugasId,
+                url: base_url + 'kejati/ajax/konsultasi/cardListKonsultasi/' + pdtId + '/' + tugasId + '/' + pegawai_id_leader,
                 type: "GET",
                 success: function(data) {
 
-                    $('.data').empty()
-                    $('.data').html(data)
+                    $('#modal-body').empty()
+                    $('#modal-body').html(data)
+                    $('#modal-konsultasi').modal('show');
+
 
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
@@ -718,15 +730,16 @@
             });
         }
 
-        function cardKonsulKetua(pdtId, tugasId) {
+        function cardKonsulKetua(pdtId, tugasId, idPegawai) {
 
             $.ajax({
-                url: base_url + 'kejati/ajax/konsultasi/cardListKonsultasiKetua/' + pdtId + '/' + tugasId,
+                url: base_url + 'kejati/ajax/konsultasi/cardListKonsultasiKetua/' + pdtId + '/' + tugasId + '/' + idPegawai,
                 type: "GET",
                 success: function(data) {
 
-                    $('.data').empty()
-                    $('.data').html(data)
+                    $('#modal-body').empty()
+                    $('#modal-body').html(data)
+                    $('#modal-konsultasi').modal('show');
 
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
