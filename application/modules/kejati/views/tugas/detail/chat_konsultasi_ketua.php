@@ -7,11 +7,11 @@
                         <div class="row">
                             <div class="col-lg-6">
                                 <a href="javascript:void(0);" data-toggle="modal" data-target="#view_info">
-                                    <img src="<?php echo base_url('assets/img/pegawai/foto/' . $leader['foto']) ?>" alt="avatar">
+                                    <img src="<?php echo base_url('assets/img/pegawai/foto/' . $pegawai['foto']) ?>" alt="avatar">
                                 </a>
                                 <div class="chat-about">
-                                    <h6 class="m-b-0"><?= $leader['nama']; ?></h6>
-                                    <small>Ketua Tim</small>
+                                    <h6 class="m-b-0"><?= $pegawai['nama']; ?></h6>
+
                                 </div>
                             </div>
                         </div>
@@ -25,7 +25,7 @@
                                 <div class="message other-message float-right"> Hi Aiden, how are you? How is the project coming along? </div>
                             </li>
                             <li class="clearfix mb-1">
-                                <div class="message-data">
+                                <div class="message-data text-end">
                                     <span class="message-data-time">10:12 AM, Today</span>
                                 </div>
                                 <div class="message my-message">Are we meeting today?</div>

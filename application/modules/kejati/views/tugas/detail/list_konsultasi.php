@@ -30,17 +30,15 @@
      </div>
  </div> -->
  <div class="card p-2">
-     <div class="text-end ml-2 mb-2">
-         <span id="tutup-list" class="badge bg-gradient-danger " onclick="detail(<?= $tugas_id ?>)" style="cursor: pointer;">X</span>
-     </div>
-     <div id="content"></div>
 
      <div class="row">
          <div class="col">
 
-             <button id="tombol-tambah" type="button" class="btn bg-gradient-primary" onclick="toTambahKonsultasi(<?= $id ?>,<?= $tugas_id ?>)">Buat Konsultasi</button>
+             <button id="tombol-tambah" type="button" class="btn bg-gradient-primary" onclick="toTambahKonsultasi(<?= $id ?>,<?= $tugas_id ?>)"><i class="fa-solid fa-circle-plus"></i> Buat Konsultasi</button>
          </div>
      </div>
+     <div id="content"></div>
+
  </div>
  <script>
      list()
@@ -64,8 +62,8 @@
                      $('#content').html(html);
                  } else {
                      konsultasi.forEach(k => {
-                         html += `<div id="list-konsul` + k['id'] + `" onclick="tampilChat(` + k['id'] + `)" class="card shadow-lg mb-1">
-                                    <div class="card-body pt-1"> 
+                         html += `<div id="list-konsul` + k['id'] + `"  class="card shadow-lg mb-1">
+                                    <div class="card-body  pt-1" onclick="tampilChat(` + k['id'] + `,` + <?= $pegawai_id_leader; ?> + `)"> 
                                     <div class="row">
                                     <div class="col-10">`;
                          if (k['waktu_selesai'] === null) {
@@ -90,9 +88,9 @@
                                             <small class="col-2">` + k['postedOn'] + `</small>
                                         </div>
                                     </div>
-                                    
+                                    <div id="chat-konsultasi` + k['id'] + `" style="display : none"></div>
                                 </div>
-                                <div id="chat-konsultasi` + k['id'] + `"></div>`;
+                                `;
                      });
 
                      $('#content').html(html);
@@ -104,15 +102,16 @@
          })
      }
 
-     function tampilChat(id) {
+     function tampilChat(id, pegawai_id_leader) {
          $.ajax({
-             url: base_url + 'kejati/ajax/Konsultasi/cardChatKonsultasi/',
+             url: base_url + 'kejati/ajax/Konsultasi/cardChatKonsultasi/' + id + '/' + pegawai_id_leader,
              type: "GET",
              success: function(data) {
                  $('#chat-konsultasi' + id).html(data)
+                 $('#chat-konsultasi' + id).toggle('slow')
+                 $('#list-konsul' + id).siblings().toggle()
              }
          })
-         // $('#list-konsul' + id).siblings().hide('fast')
 
 
      }

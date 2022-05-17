@@ -30,9 +30,6 @@
      </div>
  </div> -->
  <div class="card p-2">
-     <div class="text-end ml-2 mb-2">
-         <span id="tutup-list" class="badge bg-gradient-danger " onclick="detail(<?= $tugas_id ?>)" style="cursor: pointer;">X</span>
-     </div>
      <div id="content"></div>
 
  </div>
@@ -59,17 +56,20 @@
                      $('#content').html(html);
                  } else {
                      konsultasi.forEach(k => {
-                         html += `<div id="list-konsul` + k['id'] + `" onclick="tampilChat(` + k['id'] + `)" class="card shadow-lg mb-1">
-                                    <div class="card-body pt-1"> 
+                         html += `<div id="list-konsul` + k['id'] + `"  class="card shadow-lg mb-1">
+                                    <div class="card-body pt-1" onclick="tampilChat(` + k['id'] + `, ` + <?= $id_pegawai; ?> + `)"> 
                                     <div class="row">
                                     <div class="col-12">`;
                          if (k['waktu_selesai'] === null) {
-                             html += `<span class="badge bg-gradient-warning">Proses</span>
-                             <div class="text-end">
-                             <button class="btn btn-primary mt-2 btn-sm text-end" onclick="selesai(` + k['id'] + `)">selesai</button>
+                             html += ` <div class="row"> 
+                             <div class="col-8">
+                                <span class="badge bg-gradient-warning">Proses</span>
+                             </div>
+                             <div class=" col-4 text-end">
+                                <button class="btn bg-gradient-success mt-2 btn-sm text-end" onclick="selesai(` + k['id'] + `)"> <i class="fa-solid fa-circle-check"></i> Selesaikan Konsultasi</button>
                              </div>
                                     
-                                    `;
+                                   </div> `;
                          } else {
                              html += '<span class="badge bg-gradient-success">Selesai</span>';
 
@@ -88,9 +88,9 @@
                                             <small class="col-2">` + k['postedOn'] + `</small>
                                         </div>
                                     </div>
-                                    
+                                    <div id="chat-konsultasi` + k['id'] + `" style="display : none"></div>
                                 </div>
-                                <div id="chat-konsultasi` + k['id'] + `"></div>`;
+                                `;
                      });
 
                      $('#content').html(html);
@@ -102,13 +102,14 @@
          })
      }
 
-     function tampilChat(id) {
+     function tampilChat(id, idPegawai) {
          $.ajax({
-             url: base_url + 'kejati/ajax/Konsultasi/cardChatKonsultasi/',
+             url: base_url + 'kejati/ajax/Konsultasi/cardChatKonsultasiKetua/' + id + '/' + idPegawai,
              type: "GET",
              success: function(data) {
-                 $('#list-konsul' + id).siblings().hide()
-                 $('#chat-konsultasi' + id).html(data).show()
+                 $('#chat-konsultasi' + id).html(data)
+                 $('#chat-konsultasi' + id).toggle('slow')
+                 $('#list-konsul' + id).siblings().toggle()
 
              }
          })
