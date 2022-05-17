@@ -75,7 +75,7 @@
 
                          html += `</div>
                          <div class="col-2">
-                         <button class="btn btn-primary btn-sm" onclick="toEditKonsul(` + k['id'] + `)">edit</button>
+                         <button class="btn btn-primary btn-sm" onclick="toEditKonsul(` + k['id'] + `)"><i class="fa-solid fa-file-pen"></i>edit</button>
                          </div>
                          </div>
                          <a href="javascript:;" class="card-title h5 mt-1 d-block text-darker mb-0">` +
