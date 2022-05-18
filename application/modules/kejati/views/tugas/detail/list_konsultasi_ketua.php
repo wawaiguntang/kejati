@@ -57,7 +57,7 @@
                  } else {
                      konsultasi.forEach(k => {
                          html += `<div id="list-konsul` + k['id'] + `"  class="card shadow-lg mb-1">
-                                    <div class="card-body pt-1" onclick="tampilChat(` + k['id'] + `, ` + <?= $id_pegawai; ?> + `)"> 
+                                    <div class="card-body pt-1" onclick="tampilChat(` + k['id'] + `, ` + <?= $id_pegawai; ?> + `, ` + <?= $leader; ?> + `)"> 
                                     <div class="row">
                                     <div class="col-12">`;
                          if (k['waktu_selesai'] === null) {
@@ -102,11 +102,12 @@
          })
      }
 
-     function tampilChat(id, idPegawai) {
+     function tampilChat(id, idPegawai, leader) {
          $.ajax({
-             url: base_url + 'kejati/ajax/Konsultasi/cardChatKonsultasiKetua/' + id + '/' + idPegawai,
+             url: base_url + 'kejati/ajax/Konsultasi/cardChatKonsultasiKetua/' + id + '/' + idPegawai + '/' + leader,
              type: "GET",
              success: function(data) {
+
                  $('#chat-konsultasi' + id).html(data)
                  $('#chat-konsultasi' + id).toggle('slow')
                  $('#list-konsul' + id).siblings().toggle()

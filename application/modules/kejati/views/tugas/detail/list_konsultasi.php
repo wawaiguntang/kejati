@@ -63,7 +63,7 @@
                  } else {
                      konsultasi.forEach(k => {
                          html += `<div id="list-konsul` + k['id'] + `"  class="card shadow-lg mb-1">
-                                    <div class="card-body  pt-1" onclick="tampilChat(` + k['id'] + `,` + <?= $pegawai_id_leader; ?> + `)"> 
+                                    <div class="card-body  pt-1" onclick="tampilChat(` + k['id'] + `,` + <?= $pegawai_id_leader; ?> + `,` + <?= $pegawai_id; ?> + `)"> 
                                     <div class="row">
                                     <div class="col-10">`;
                          if (k['waktu_selesai'] === null) {
@@ -102,18 +102,22 @@
          })
      }
 
-     function tampilChat(id, pegawai_id_leader) {
+     function tampilChat(id, pegawai_id_leader, pegawai_id) { // konsultasi_id, pegawai_id_leader, id_pegawai
          $.ajax({
-             url: base_url + 'kejati/ajax/Konsultasi/cardChatKonsultasi/' + id + '/' + pegawai_id_leader,
+             url: base_url + 'kejati/ajax/Konsultasi/cardChatKonsultasi/' + id + '/' + pegawai_id_leader + '/' + pegawai_id,
              type: "GET",
              success: function(data) {
+                 //  if ($('#chat-konsultasi' + id).css('display') == 'none' || $('#chat-konsultasi' + id).css("visibility") == "hidden") {
+                 //      console.log($('#chat-konsultasi' + id).css('display'))
+                 //  } else {
+                 //      list()
+                 //  }
                  $('#chat-konsultasi' + id).html(data)
                  $('#chat-konsultasi' + id).toggle('slow')
                  $('#list-konsul' + id).siblings().toggle()
+
              }
          })
-
-
      }
 
      function tutupChat() {

@@ -17,8 +17,8 @@
                         </div>
                     </div>
                     <div class="chat-history">
-                        <ul class="m-b-0">
-                            <li class="clearfix mb-1">
+                        <ul id="list-pesan" class="m-b-0">
+                            <!-- <li class="clearfix mb-1">
                                 <div class="message-data text-end">
                                     <span class="message-data-time">10:10 AM, Today</span>
                                 </div>
@@ -35,16 +35,21 @@
                                     <span class="message-data-time">10:15 AM, Today</span>
                                 </div>
                                 <div class="message my-message">Project has been already finished and I have results to show you.</div>
-                            </li>
+                            </li> -->
                         </ul>
                     </div>
                     <div class="chat-message clearfix mb-1">
-                        <div class="input-group mb-0">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><i class="fa fa-paper-plane m-1"></i></span>
+                        <form id="form-chat" action="">
+                            <div class="input-group mb-0">
+                                <div class="input-group-prepend" onclick="kirimPesan()" style="cursor: pointer;">
+                                    <span class="input-group-text"><i class="fa fa-paper-plane m-1"></i></span>
+                                </div>
+                                <input id="pesan" type="text" class="form-control" placeholder="Enter text here...">
+                                <input id="dari" type="hidden" class="form-control" value="<?= $pegawai_id; ?>">
+                                <input id="untuk" type="hidden" class="form-control" value="<?= $leader['id']; ?>">
+                                <input id="id_konsultasi" type="hidden" class="form-control" value="<?= $id_konsultasi; ?>">
                             </div>
-                            <input type="text" class="form-control" placeholder="Enter text here...">
-                        </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -52,5 +57,70 @@
     </div>
 </div>
 <script>
+    function kirimPesan() {
+        $.ajax({
+            url: base_url + 'kejati/ajax/konsultasi/kirimPesan',
+            type: "POST",
+            data: {
+                pesan: $('#pesan').val(),
+                dari: $('#dari').val(),
+                untuk: $('#untuk').val(),
+                id_konsultasi: $('#id_konsultasi').val()
+            },
+            success: function(data) {
+                if (data.status) {
+                    handleToast("success", data.message);
+                    $('#pesan').val("");
+                    $('#list-pesan').html();
+                    allChat();
+                } else {
+                    handleError(data);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert("Error get data from ajax");
+            },
+        });
+    }
+    allChat();
+    // const myInterval = setInterval(allChat, 6000);
 
+    function allChat() {
+        $.ajax({
+            url: base_url + 'kejati/ajax/konsultasi/allChat/' + <?= $id_konsultasi; ?>,
+            type: "GET",
+            success: function(data) {
+                console.log(data)
+                var html = '';
+                if (data.status) {
+                    handleToast("success", data.message);
+                    let chat = data.data.chat;
+                    chat.forEach(c => {
+                        if (c.dari == <?= $pegawai_id; ?>) {
+                            html += `<li class="clearfix mb-1">
+                                <div class="message-data text-end">
+                                    <span class="message-data-time">` + c.createAt + `</span>
+                                </div>
+                                <div class="message other-message float-right"> ` + c.pesan + ` </div>
+                            </li>`;
+                        } else if (c.untuk == <?= $pegawai_id; ?>) {
+                            html += `<li class="clearfix mb-1">
+                                <div class="message-data">
+                                    <span class="message-data-time">` + c.createAt + `</span>
+                                </div>
+                                <div class="message my-message">` + c.pesan + `</div>
+                            </li>`
+                        }
+                    });
+
+                    $('#list-pesan').html(html);
+                } else {
+                    handleError(data);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert("Error get data from ajax");
+            },
+        });
+    }
 </script>
