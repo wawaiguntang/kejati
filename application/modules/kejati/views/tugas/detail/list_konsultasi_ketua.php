@@ -55,6 +55,7 @@
                      $('#content').html(html);
                  } else {
                      konsultasi.forEach(k => {
+                         localStorage.setItem('chatId' + k['id'], 'show');
                          html += `<div id="list-konsul` + k['id'] + `"  class="card shadow-lg mb-1">
                                     <div class="card-body pt-1" > 
                                     <div class="row">
