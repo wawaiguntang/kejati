@@ -325,6 +325,8 @@ class Konsultasi extends MX_Controller
     {
         $data['id_konsultasi'] = $id_konsultasi;
         $data['pegawai_id'] = $pegawai_id;
+        $data['waktu_selesai'] = $this->db->select('waktu_selesai')->get_where('konsultasi', ['id'=> $id_konsultasi])->result_array()[0]['waktu_selesai'];
+        
         $data['leader'] = $this->db->get_where('pegawai', ['id' => $pegawai_id_leader])->result_array()[0];
 
         $this->load->view($this->module . '/tugas/detail/chat_konsultasi', $data);
@@ -335,6 +337,7 @@ class Konsultasi extends MX_Controller
         $pegawai = $this->db->get_where('pegawai', ['id' => $id_pegawai])->result_array()[0];
         $data['pegawai'] = $pegawai;
         $data['leader'] = $leader;
+        $data['waktu_selesai'] = $this->db->select('waktu_selesai')->get_where('konsultasi', ['id'=> $id_konsultasi])->result_array()[0]['waktu_selesai'];
         $this->load->view($this->module . '/tugas/detail/chat_konsultasi_ketua', $data);
     }
     public function cardTambahKonsultasi($id_pegawai)

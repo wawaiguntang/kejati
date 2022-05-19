@@ -24,7 +24,7 @@
 14-05-2022
 - nama navbar diganti ke kejaksaan tinggi lampung (clear)
 - pengaduan maks 14 hari (on progress)
-- upload file di pengaduan (on progress)
+- upload file di pengaduan (on progress) 
 - status tindakan di pengaduan (on progress)
 
 

@@ -17,7 +17,7 @@
                         </div>
                     </div>
                     <div class="chat-history">
-                        <ul id="list-chat" class="m-b-0">
+                        <ul style="max-height: 350px; overflow-y: auto;" id="list-chat" class="m-b-0 scroll">
                             <!-- <li class="clearfix mb-1">
                                 <div class="message-data text-end">
                                     <span class="message-data-time">10:10 AM, Today</span>
@@ -38,19 +38,24 @@
                             </li> -->
                         </ul>
                     </div>
-                    <div class="chat-message clearfix mb-1">
+                    <?php if($waktu_selesai == NULL || $waktu_selesai == ''){ ?>
+                    <div class="chat-message clearfix pt-0 pb-1">
                         <form id="form-chat" action="">
                             <div class="input-group mb-0">
-                                <div class="input-group-prepend" onclick="kirimPesan()" style="cursor: pointer;">
-                                    <span class="input-group-text"><i class="fa fa-paper-plane m-1"></i></span>
-                                </div>
-                                <input id="pesan" type="text" class="form-control" placeholder="Enter text here...">
+                                
+                                <input id="pesan" type="text" class="form-control" placeholder="Ketik Pesan">
                                 <input id="untuk" type="hidden" class="form-control" value="<?= $pegawai['id']; ?>">
                                 <input id="dari" type="hidden" class="form-control" value="<?= $leader; ?>">
                                 <input id="id_konsultasi" type="hidden" class="form-control" value="<?= $id_konsultasi; ?>">
+                                
+                                    <div class="input-group-prepend" onclick="kirimPesan()" style="cursor: pointer;">
+                                        <span class="input-group-text"><i class="fa fa-paper-plane m-1"></i></span>
+                                    </div>
+                               
                             </div>
                         </form>
                     </div>
+                    <?php } ?>
                 </div>
             </div>
         </div>
@@ -63,10 +68,10 @@
     }
     // let chatId = localStorage.getItem('chatId' + <?= $id_konsultasi; ?>);
     if (localStorage.getItem('chatId' + <?= $id_konsultasi; ?>) == 'show') {
-        console.log('show');
+        // console.log('show');
         myChat = setInterval(allChat, 6000);
     } else {
-        console.log('hide');
+        // console.log('hide');
         clearInterval(myChat);
     }
     // setInterval(allChat, 6000);
@@ -79,7 +84,7 @@
                 // console.log(data)
                 var html = '';
                 if (data.status) {
-                    handleToast("success", data.message);
+                    
                     let chat = data.data.chat;
                     chat.forEach(c => {
                         if (c.dari == <?= $leader; ?>) {

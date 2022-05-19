@@ -116,17 +116,16 @@
                                                     </div>
                                                 </div>
                                                 <span class="text-xs" title="Ket"><b>Ket: </b><?php echo $v['keterangan'] ?></span>
-                                                <span class="text-xs" title="Ket"><b>Riwayat: </b>
-                                                    <ul>
+                                                <span class="text-xs" title="Ket"><b>Riwayat Evaluasi: </b>
+                                                 
                                                         <?php
                                                         $riwayat = (!json_decode($v['catatan'], TRUE) ? [] : json_decode($v['catatan'], TRUE));
                                                         foreach ($riwayat as $r => $ty) {
                                                         ?>
-                                                            <li>
-                                                                <p class="text-xs"><?php echo ($ty['tipe'] == 'tolak' ? 'Ditolak' : 'Diterima') ?> - <?php echo $ty['catatan'] ?> - <span class="text-xs text-bold"><?php echo $ty['createAt'] ?></span></p>
-                                                            </li>
+                                                            
+                                                                <p class="text-xs my-0">- <?php echo ($ty['tipe'] == 'tolak' ? 'Ditolak' : 'Diterima') ?> - <?php echo $ty['catatan'] ?> - <span class="text-xs text-bold"><?php echo $ty['createAt'] ?></span></p>
+                                                          
                                                         <?php } ?>
-                                                    </ul>
                                                 </span>
                                             </div>
                                             <?php

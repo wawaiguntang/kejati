@@ -1,6 +1,6 @@
 <div class="row mb-3">
     <div class="d-flex justify-content-between mt-2 py-auto">
-        <p class="pl-4 my-auto fw-bolder">Catatan untuk ketua dan tim</p>
+        <p class="pl-4 my-auto fw-bolder">Evaluasi kegiatan</p>
         <button type="button" class="btn-close text-dark" data-bs-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
@@ -12,7 +12,7 @@
 <div class="row">
     <div class="col-md-12">
         <div class="form-group">
-            <label for="catatan">Catatan</label>
+            <label for="catatan">Evaluasi kegiatan</label>
             <textarea class="form-control" id="catatan" rows="3"></textarea>
         </div>
     </div>

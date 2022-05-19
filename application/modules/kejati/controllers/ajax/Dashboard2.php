@@ -3,7 +3,7 @@
 
 defined('BASEPATH') or exit('No direct script access allowed');
 
-class Dashboard extends MX_Controller
+class Dashboard2 extends MX_Controller
 {
     private $module = 'kejati';
     private $validation_for = '';
@@ -35,7 +35,7 @@ class Dashboard extends MX_Controller
 
     public function get()
     {
-        $userPermission = getPermissionFromUser();
+
         $anggota = ($this->input->post('tipe') == NULL) ? 'anggota' : $this->input->post('tipe');
         if ($anggota == 'anggota') {
             $tipe = '0';
@@ -51,7 +51,6 @@ class Dashboard extends MX_Controller
             ->join('pengaduan pe', 'pe.id=t.pengaduan_id')
             ->where([
                 'pdt.deleteAt' => NULL,
-                'p.userCode' => $this->session->userdata('userCode'),
             ])
             ->get('pegawai_detail_tugas pdt')->result_array();
 
@@ -64,7 +63,6 @@ class Dashboard extends MX_Controller
             ->join('pengaduan pe', 'pe.id=t.pengaduan_id')
             ->where([
                 'pdt.deleteAt' => NULL,
-                'p.userCode' => $this->session->userdata('userCode'),
                 'pdt.leader' => $tipe
             ])
             ->order_by('dt.id', 'DESC')
@@ -112,7 +110,6 @@ class Dashboard extends MX_Controller
             ->join('pengaduan pe', 'pe.id=t.pengaduan_id')
             ->where([
                 'pdt.deleteAt' => NULL,
-                'p.userCode' => $this->session->userdata('userCode'),
                 'dt.status' => 'Diterima'
             ])
             ->get('pegawai_detail_tugas pdt')->result_array();
@@ -125,7 +122,6 @@ class Dashboard extends MX_Controller
             ->join('pengaduan pe', 'pe.id=t.pengaduan_id')
             ->where([
                 'pdt.deleteAt' => NULL,
-                'p.userCode' => $this->session->userdata('userCode'),
                 'pdt.leader' => $tipe,
                 'dt.status' => 'Diterima'
             ])
@@ -174,7 +170,6 @@ class Dashboard extends MX_Controller
             ->where_in('dt.status', ['Dalam proses', 'Ditinjau atasan'])
             ->where([
                 'pdt.deleteAt' => NULL,
-                'p.userCode' => $this->session->userdata('userCode'),
             ])
             ->get('pegawai_detail_tugas pdt')->result_array();
         $runningData = $this->db
@@ -187,7 +182,6 @@ class Dashboard extends MX_Controller
             ->where_in('dt.status', ['Dalam proses', 'Ditinjau atasan'])
             ->where([
                 'pdt.deleteAt' => NULL,
-                'p.userCode' => $this->session->userdata('userCode'),
                 'pdt.leader' => $tipe
             ])
             ->order_by('dt.id', 'DESC')
@@ -235,7 +229,6 @@ class Dashboard extends MX_Controller
             ->join('pengaduan pe', 'pe.id=t.pengaduan_id')
             ->where([
                 'pdt.deleteAt' => NULL,
-                'p.userCode' => $this->session->userdata('userCode'),
                 'dt.status' => 'Ditolak'
             ])
             ->get('pegawai_detail_tugas pdt')->result_array();
@@ -248,7 +241,6 @@ class Dashboard extends MX_Controller
             ->join('pengaduan pe', 'pe.id=t.pengaduan_id')
             ->where([
                 'pdt.deleteAt' => NULL,
-                'p.userCode' => $this->session->userdata('userCode'),
                 'pdt.leader' => $tipe,
                 'dt.status' => 'Ditolak'
             ])
@@ -314,14 +306,7 @@ class Dashboard extends MX_Controller
 
     public function detail()
     {
-        $userPermission = getPermissionFromUser();
-        if (!in_array('RDETAILTUGASSELF', $userPermission)) {
-            $data = array(
-                'status'         => FALSE,
-                'message'         => "Anda tidak memiliki akses!"
-            );
-            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
-        }
+
         if ($this->input->post('id') == NULL) {
             $data = array(
                 'status'         => FALSE,
@@ -340,7 +325,6 @@ class Dashboard extends MX_Controller
             ->where([
                 'pdt.deleteAt' => NULL,
                 'dt.id' => $this->input->post('id'),
-                'p.userCode' => $this->session->userdata('userCode')
             ])
             ->get('pegawai_detail_tugas pdt')->row_array();
         if ($tugas == NULL) {
@@ -376,7 +360,8 @@ class Dashboard extends MX_Controller
         }
         $params['id'] = $this->input->post('id');
         $params['pdtId'] = $tugas['pdtId'];
-
+        $params['pimpinan'] = TRUE;
+        
 
         $data['status'] = TRUE;
         $data['data'] = $this->load->view($this->module . '/dashboard/detail', $params, TRUE);
@@ -386,14 +371,7 @@ class Dashboard extends MX_Controller
 
     public function koordinasi()
     {
-        $userPermission = getPermissionFromUser();
-        if (!in_array('RDETAILTUGASSELF', $userPermission)) {
-            $data = array(
-                'status'         => FALSE,
-                'message'         => "Anda tidak memiliki akses!"
-            );
-            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
-        }
+
         if ($this->input->post('pdtId') == NULL) {
             $data = array(
                 'status'         => FALSE,
@@ -413,8 +391,11 @@ class Dashboard extends MX_Controller
         $params['konsultasi'] =  $temp;
         $params['id'] = $this->input->post('id');
         $params['pdtId'] = $this->input->post('pdtId');
+
+        $params['pimpinan'] = TRUE;
         $tugas = $this->db->get_where('pegawai_detail_tugas', ['id' => $this->input->post('pdtId')])->row_array();
         $params['tugas'] = json_decode($tugas['tugas'], TRUE);
+
         $data['status'] = TRUE;
         $data['data'] = $this->load->view($this->module . '/dashboard/koordinasi', $params, TRUE);
         $this->output->set_content_type('application/json')->set_output(json_encode($data));
@@ -423,14 +404,7 @@ class Dashboard extends MX_Controller
 
     public function chat()
     {
-        $userPermission = getPermissionFromUser();
-        if (!in_array('RDETAILTUGASSELF', $userPermission)) {
-            $data = array(
-                'status'         => FALSE,
-                'message'         => "Anda tidak memiliki akses!"
-            );
-            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
-        }
+
         if ($this->input->post('pdtId') == NULL) {
             $data = array(
                 'status'         => FALSE,
@@ -477,73 +451,12 @@ class Dashboard extends MX_Controller
         $params['id'] = $this->input->post('id');
         $params['pdtId'] = $this->input->post('pdtId');
 
-
+        $params['pimpinan'] = TRUE;
+        $tugas = $this->db->get_where('pegawai_detail_tugas', ['id' => $this->input->post('pdtId')])->row_array();
+        $params['tugas'] = json_decode($tugas['tugas'], TRUE);
 
         $data['status'] = TRUE;
         $data['data'] = $this->load->view($this->module . '/dashboard/chat', $params, TRUE);
-        $this->output->set_content_type('application/json')->set_output(json_encode($data));
-    }
-
-    public function chat_self()
-    {
-        $userPermission = getPermissionFromUser();
-        if (!in_array('RDETAILTUGASSELF', $userPermission)) {
-            $data = array(
-                'status'         => FALSE,
-                'message'         => "Anda tidak memiliki akses!"
-            );
-            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
-        }
-        if ($this->input->post('pdtId') == NULL) {
-            $data = array(
-                'status'         => FALSE,
-                'message'         => "Kode koordinasi dibutuhkan"
-            );
-            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
-        }
-
-        if ($this->input->post('id') == NULL) {
-            $data = array(
-                'status'         => FALSE,
-                'message'         => "Kode koordinasi dibutuhkan"
-            );
-            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
-        }
-
-        if ($this->input->post('konsultasi_id') == NULL) {
-            $data = array(
-                'status'         => FALSE,
-                'message'         => "Kode koordinasi dibutuhkan"
-            );
-            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
-        }
-
-        $d = $this->db->order_by("id", "desc")->get_where('konsultasi', ['deleteAt' => NULL, 'id' => $this->input->post('konsultasi_id')])->row_array();
-        $d['postedOn'] = nice_date($d['createAt'], 'F d, Y');
-
-        $ad = $this->db
-            ->select('*,detail_konsultasi.createAt as postedAd')
-            ->get_where('detail_konsultasi', ['detail_konsultasi.deleteAt' => NULL, 'detail_konsultasi.konsultasi_id' => $this->input->post('konsultasi_id')])->result_array();
-        $sf = [];
-        foreach ($ad as $k => $v) {
-            $r['dari'] = $v['dari'];
-            $r['untuk'] = $v['untuk'];
-            $r['pesan'] = $v['pesan'];
-            $r['postedAd'] = nice_date($v['postedAd'], 'F d, Y, g:i a');
-            $sf[] = $r;
-        }
-
-        $self = $this->db->get_where('pegawai', ['deleteAt' => NULL, 'userCode' => $this->session->userdata('userCode')])->row_array();
-        $params['koordinasi'] =  $d;
-        $params['chat'] =  $sf;
-        $params['self'] =  $self;
-        $params['id'] = $this->input->post('id');
-        $params['pdtId'] = $this->input->post('pdtId');
-
-
-
-        $data['status'] = TRUE;
-        $data['data'] = $this->load->view($this->module . '/dashboard/chat_self', $params, TRUE);
         $this->output->set_content_type('application/json')->set_output(json_encode($data));
     }
 }

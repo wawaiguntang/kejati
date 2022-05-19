@@ -31,7 +31,6 @@
  </div> -->
  <div class="card p-2">
      <div id="content"></div>
-
  </div>
 
  <script>

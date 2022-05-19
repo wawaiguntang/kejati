@@ -260,7 +260,7 @@
                                                                 <td>
                                                                     <div class="col-2">
                                                                         <button type="button" class="btn  p-2 bg-gradient-info position-relative" onclick="cardKonsulKetua(<?= $a['pdtId']; ?>,<?= $g['id'] ?>,<?= $a['pegawai_id']; ?>,<?= $leader; ?>)">
-                                                                            Konsultasi
+                                                                        <i class="fa-solid fa-person-military-to-person"></i> Koordinasi
                                                                         </button>
                                                                     </div>
                                                                 </td>
@@ -475,7 +475,7 @@
 
                                                                 <div class="col-2">
                                                                     <button type="button" class="btn  p-2 bg-gradient-info position-relative" onclick="cardKonsul(<?= $a['pdtId']; ?>,<?= $g['id'] ?>,<?= $leader; ?>,<?= $a['pegawai_id']; ?>)">
-                                                                        Konsultasi
+                                                                    <i class="fa-solid fa-person-military-to-person"></i> Koordinasi
                                                                     </button>
                                                                 </div>
                                                             </div>
@@ -527,7 +527,7 @@
         <div class="modal-dialog modal-dialog-scrollable modal-xl  modal-dialog-centered " role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h6 class="modal-title" id="modal-title-notification">Konsultasi</h6>
+                    <h6 class="modal-title" id="modal-title-notification">Koordinasi</h6>
                     <button id="close-modal1" type="button" class="btn-close text-dark" data-bs-dismiss="modal" onclick="clearModal()" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
@@ -543,7 +543,7 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button id="close-modal2" type="button" class="btn btn-link  ml-auto" onclick="clearModal()" data-bs-dismiss="modal">Close</button>
+                    <button id="close-modal2" type="button" class="btn btn-link  ml-auto p-1" onclick="clearModal()" data-bs-dismiss="modal">Close</button>
                 </div>
 
             </div>
