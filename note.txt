@@ -31,12 +31,12 @@
 - No Surat Tugas replace jadi No Surat Perintah Penyelidikan (menu penyelidikan) (clear)
 - buat instruksi umum (clear)
 
-- pimpinan all access /dashboard (on progress)
+- pimpinan all access /dashboard (clear)
 
 - kolom catatan di pimpinan saat tolak/terima (clear)
 
-- konsultasi di replace jadi koordinasi
-- dashboard pimpinan (penting)
+- konsultasi di replace jadi koordinasi (clear)
+- dashboard pimpinan (clear)
 
 
 https://prod.liveshare.vsengsaas.visualstudio.com/join?20DD1BE14D96FE2276166EF40039E12CA2A9
