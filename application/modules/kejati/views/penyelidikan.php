@@ -19,7 +19,6 @@
         $.ajax({
             url: base_url + 'kejati/ajax/penyelidikan/data',
             type: "GET",
-
             success: function(data) {
                 $(".data").html(data.data);
                 breadcrumb(data.breadcrumb);

@@ -13,7 +13,7 @@
                         <div class="table-responsive">
                             <table class="table table-sm">
                                 <tr>
-                                    <td><span class="text-md" for="No Surat Tugas"><b>No Surat Tugas</b></span></td>
+                                    <td><span class="text-md" for="No Surat Perintah Penyidikan"><b>No Surat Perintah Penyidikan</b></span></td>
                                     <td>:</td>
                                     <td><?php echo $tugas->no_surat_tugas ?></td>
                                 </tr>

@@ -127,7 +127,7 @@ class Tugas extends MX_Controller
         }
         $temp = [];
         $tugas = $this->db
-            ->select('detail_tugas.id as id, detail_tugas.dibuka, sop.sop, sop.kategori, sop.waktu as sopWaktu, tugas.no_surat_tugas, tugas.no_nota_dinas, tugas.tanggal_nota_dinas, tugas.perihal_nota_dinas, tugas.status as tugasStatus, kegiatan.kegiatan, detail_tugas.waktu, detail_tugas.satuan, detail_tugas.waktu_mulai, detail_tugas.waktu_selesai, detail_tugas.status as detail_tugasStatus, tugas.pengaduan_id, kegiatan.keterangan')
+            ->select('detail_tugas.id as id, detail_tugas.dibuka, detail_tugas.catatan, detail_tugas.umum,sop.sop, sop.kategori, sop.waktu as sopWaktu, tugas.no_surat_tugas, tugas.no_nota_dinas, tugas.tanggal_nota_dinas, tugas.perihal_nota_dinas, tugas.status as tugasStatus, kegiatan.kegiatan, detail_tugas.waktu, detail_tugas.satuan, detail_tugas.waktu_mulai, detail_tugas.waktu_selesai, detail_tugas.status as detail_tugasStatus, tugas.pengaduan_id, kegiatan.keterangan')
             ->join('tugas', 'tugas.id=detail_tugas.tugas_id')
             ->join('sop', 'sop.id=tugas.sop_id')
             ->join('kegiatan', 'kegiatan.id=detail_tugas.kegiatan_id')
@@ -345,8 +345,16 @@ class Tugas extends MX_Controller
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
+        $tempTugas = json_decode($pegawai_detail_tugas['tugas'],TRUE);
+        if($this->input->post('tugas') != NULL){
+            $tempTugas[] = [
+                'tugas' => $this->input->post('tugas'),
+                'createAt' => date('Y-m-d H:i:s')
+            ];
+        }
+        $tempTugas = json_encode($tempTugas,TRUE);
         $params = [
-            'tugas' => $this->input->post('tugas'),
+            'tugas' => $tempTugas,
         ];
         $update = $this->db->where('id', $this->input->post('id'))->update('pegawai_detail_tugas', $params);
         if ($update) {
@@ -355,6 +363,102 @@ class Tugas extends MX_Controller
         } else {
             $data['status'] = FALSE;
             $data['message'] = "Gagal memberikan tugas ke anggota";
+        }
+        $this->output->set_content_type('application/json')->set_output(json_encode($data));
+    }
+
+
+    public function addTugasUmumUntukAnggota()
+    {
+        $userPermission = getPermissionFromUser();
+        if (!in_array('RDETAILTUGASSELF', $userPermission)) {
+            $data = array(
+                'status'         => FALSE,
+                'message'         => "Anda tidak memiliki akses!"
+            );
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        }
+        if ($this->input->post('detail_tugas_id') == NULL) {
+            $data = array(
+                'status'         => FALSE,
+                'message'         => "Tugas is required"
+            );
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        }
+        $tugas = $this->db
+            ->select('detail_tugas.id as id, detail_tugas.dibuka, sop.sop, sop.kategori, sop.waktu as sopWaktu, tugas.no_surat_tugas, tugas.no_nota_dinas, tugas.tanggal_nota_dinas, tugas.perihal_nota_dinas, tugas.status as tugasStatus, kegiatan.kegiatan, detail_tugas.waktu, detail_tugas.satuan, detail_tugas.waktu_mulai, detail_tugas.waktu_selesai, detail_tugas.status as detail_tugasStatus, tugas.pengaduan_id, kegiatan.keterangan')
+            ->join('tugas', 'tugas.id=detail_tugas.tugas_id')
+            ->join('sop', 'sop.id=tugas.sop_id')
+            ->join('kegiatan', 'kegiatan.id=detail_tugas.kegiatan_id')
+            ->get_where('detail_tugas', ['detail_tugas.deleteAt' => NULL, 'detail_tugas.id' => $this->input->post('detail_tugas_id')])
+            ->row_array();
+        if ($tugas == NULL) {
+            $data = array(
+                'status'         => FALSE,
+                'message'         => "Tugas tidak ditemukan"
+            );
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        }
+        $params = [
+            'title' => 'Bagi instruksi umum untuk anggota',
+            'detail_tugas_id' => $this->input->post('detail_tugas_id'),
+        ];
+        $data['status'] = TRUE;
+        $data['data'] = modal('addTugasUmumUntukAnggota', $this->load->view($this->module . '/tugas/detail/tugas_umum_anggota', $params, TRUE));
+        $this->output->set_content_type('application/json')->set_output(json_encode($data));
+    }
+
+
+    public function saveTugasUmumUntukAnggota()
+    {
+        $userPermission = getPermissionFromUser();
+        if (!in_array('RDETAILTUGASSELF', $userPermission)) {
+            $data = array(
+                'status'         => FALSE,
+                'message'         => "Anda tidak memiliki akses!"
+            );
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        }
+        if ($this->input->post('detail_tugas_id') == NULL) {
+            $data = array(
+                'status'         => FALSE,
+                'message'         => "Tugas is required"
+            );
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        }
+        $tugas = $this->db
+            ->select('detail_tugas.id as id, detail_tugas.dibuka,  detail_tugas.umum, sop.sop, sop.kategori, sop.waktu as sopWaktu, tugas.no_surat_tugas, tugas.no_nota_dinas, tugas.tanggal_nota_dinas, tugas.perihal_nota_dinas, tugas.status as tugasStatus, kegiatan.kegiatan, detail_tugas.waktu, detail_tugas.satuan, detail_tugas.waktu_mulai, detail_tugas.waktu_selesai, detail_tugas.status as detail_tugasStatus, tugas.pengaduan_id, kegiatan.keterangan')
+            ->join('tugas', 'tugas.id=detail_tugas.tugas_id')
+            ->join('sop', 'sop.id=tugas.sop_id')
+            ->join('kegiatan', 'kegiatan.id=detail_tugas.kegiatan_id')
+            ->get_where('detail_tugas', ['detail_tugas.deleteAt' => NULL, 'detail_tugas.id' => $this->input->post('detail_tugas_id')])
+            ->row_array();
+        if ($tugas == NULL) {
+            $data = array(
+                'status'         => FALSE,
+                'message'         => "Tugas tidak ditemukan"
+            );
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        }
+        
+        $tempTugas = json_decode($tugas['umum'],TRUE);
+        if($this->input->post('umum') != NULL){
+            $tempTugas[] = [
+                'umum' => $this->input->post('umum'),
+                'createAt' => date('Y-m-d H:i:s')
+            ];
+        }
+        $tempTugas = json_encode($tempTugas,TRUE);
+        $params = [
+            'umum' => $tempTugas,
+        ];
+        $update = $this->db->where('id', $this->input->post('detail_tugas_id'))->update('detail_tugas', $params);
+        if ($update) {
+            $data['status'] = TRUE;
+            $data['message'] = "Berhasil memberikan instruksi umum ke anggota";
+        } else {
+            $data['status'] = FALSE;
+            $data['message'] = "Gagal memberikan instruksi umum ke anggota";
         }
         $this->output->set_content_type('application/json')->set_output(json_encode($data));
     }

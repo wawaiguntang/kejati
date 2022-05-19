@@ -10,7 +10,7 @@
                 </div>
                 <?php echo form_open('', ["id" => "form"]); ?>
                 <?php echo input('hidden', 'id', '', [], ["value" => $id]); ?>
-                <?php echo inputWithFormGroup('No Surat Tugas', 'text', 'no_surat_tugas', 'No Surat Tugas',[],['id'=> 'no_surat_tugas']) ?>
+                <?php echo inputWithFormGroup('No Surat Perintah Penyelidikan', 'text', 'no_surat_tugas', 'No Surat Perintah Penyelidikan',[],['id'=> 'no_surat_tugas']) ?>
                 <div class="row">
                     <div class="col-md-6">
                         <?php echo inputWithFormGroup('No Nota Dinas', 'text', 'no_nota_dinas', 'No Nota Dinas',[],['id'=> 'no_nota_dinas']) ?>

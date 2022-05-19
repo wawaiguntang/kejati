@@ -25,27 +25,129 @@ class Dashboard extends MX_Controller
         // }
     }
 
-    public function all()
+    public function get()
     {
         $userPermission = getPermissionFromUser();
-        $list = $this->tugas->get_datatables();
-        $data = array();
-        foreach ($list as $tugas) {
-            $row = array();
-            $row[] = '  <p class="text-sm d-flex py-auto my-auto"><b><span class="badge ' . (($tugas->detail_tugasStatus == 'Ditinjau atasan' || $tugas->detail_tugasStatus == 'Dalam proses') ? 'bg-warning' : (($tugas->detail_tugasStatus == 'Ditolak') ? 'bg-danger' : 'bg-success')) . '">' . $tugas->detail_tugasStatus . '</span>' . '</b></p>
-            <p class="text-sm d-flex py-auto my-auto">' . $tugas->waktu . ' ' . $tugas->satuan . '</p>
-            <p class="text-xs d-flex py-auto my-auto">Mulai: ' . $tugas->waktu_mulai . '</p>
-            <p class="text-xs d-flex py-auto my-auto">Selesai: ' . $tugas->waktu_selesai . '</p>';
-            $data[] = $row;
+        $anggota = ($this->input->post('tipe') == NULL) ? 'anggota' : $this->input->post('tipe');
+        if ($anggota == 'anggota') {
+            $tipe = '0';
+        } else {
+            $tipe = '1';
         }
+        $all = $this->db
+            ->select('*')
+            ->join('pegawai p', 'p.id=pdt.pegawai_id')
+            ->join('detail_tugas dt', 'dt.id=pdt.detail_tugas_id')
+            ->join('tugas t', 't.id=dt.tugas_id')
+            ->where([
+                'pdt.deleteAt' => NULL,
+                'p.userCode' => $this->session->userdata('userCode'),
+            ])
+            ->get('pegawai_detail_tugas pdt')->result_array();
 
-        $output = array(
-            "draw" => @$_POST['draw'],
-            "recordsTotal" => $this->tugas->count_all(),
-            "recordsFiltered" => $this->tugas->count_filtered(),
-            "data" => $data,
+        $allData = $this->db
+            ->select('*')
+            ->join('pegawai p', 'p.id=pdt.pegawai_id')
+            ->join('detail_tugas dt', 'dt.id=pdt.detail_tugas_id')
+            ->join('tugas t', 't.id=dt.tugas_id')
+            ->where([
+                'pdt.deleteAt' => NULL,
+                'p.userCode' => $this->session->userdata('userCode'),
+                'pdt.leader' => $tipe
+            ])
+            ->get('pegawai_detail_tugas pdt')->result_array();
+
+        $done = $this->db
+            ->select('*')
+            ->join('pegawai p', 'p.id=pdt.pegawai_id')
+            ->join('detail_tugas dt', 'dt.id=pdt.detail_tugas_id')
+            ->join('tugas t', 't.id=dt.tugas_id')
+            ->where([
+                'pdt.deleteAt' => NULL,
+                'p.userCode' => $this->session->userdata('userCode'),
+                'dt.status' => 'Diterima'
+            ])
+            ->get('pegawai_detail_tugas pdt')->result_array();
+        $doneData = $this->db
+            ->select('*')
+            ->join('pegawai p', 'p.id=pdt.pegawai_id')
+            ->join('detail_tugas dt', 'dt.id=pdt.detail_tugas_id')
+            ->join('tugas t', 't.id=dt.tugas_id')
+            ->where([
+                'pdt.deleteAt' => NULL,
+                'p.userCode' => $this->session->userdata('userCode'),
+                'pdt.leader' => $tipe,
+                'dt.status' => 'Diterima'
+            ])
+            ->get('pegawai_detail_tugas pdt')->result_array();
+        $running = $this->db
+            ->select('*')
+            ->join('pegawai p', 'p.id=pdt.pegawai_id')
+            ->join('detail_tugas dt', 'dt.id=pdt.detail_tugas_id')
+            ->join('tugas t', 't.id=dt.tugas_id')
+            ->where_in('dt.status', ['Dalam proses', 'Ditinjau atasan'])
+            ->where([
+                'pdt.deleteAt' => NULL,
+                'p.userCode' => $this->session->userdata('userCode'),
+            ])
+            ->get('pegawai_detail_tugas pdt')->result_array();
+        $runningData = $this->db
+            ->select('*')
+            ->join('pegawai p', 'p.id=pdt.pegawai_id')
+            ->join('detail_tugas dt', 'dt.id=pdt.detail_tugas_id')
+            ->join('tugas t', 't.id=dt.tugas_id')
+            ->where_in('dt.status', ['Dalam proses', 'Ditinjau atasan'])
+            ->where([
+                'pdt.deleteAt' => NULL,
+                'p.userCode' => $this->session->userdata('userCode'),
+                'pdt.leader' => $tipe
+            ])
+            ->get('pegawai_detail_tugas pdt')->result_array();
+        $reject = $this->db
+            ->select('*')
+            ->join('pegawai p', 'p.id=pdt.pegawai_id')
+            ->join('detail_tugas dt', 'dt.id=pdt.detail_tugas_id')
+            ->join('tugas t', 't.id=dt.tugas_id')
+            ->where([
+                'pdt.deleteAt' => NULL,
+                'p.userCode' => $this->session->userdata('userCode'),
+                'dt.status' => 'Ditolak'
+            ])
+            ->get('pegawai_detail_tugas pdt')->result_array();
+        $rejectData = $this->db
+            ->select('*')
+            ->join('pegawai p', 'p.id=pdt.pegawai_id')
+            ->join('detail_tugas dt', 'dt.id=pdt.detail_tugas_id')
+            ->join('tugas t', 't.id=dt.tugas_id')
+            ->where([
+                'pdt.deleteAt' => NULL,
+                'p.userCode' => $this->session->userdata('userCode'),
+                'pdt.leader' => $tipe,
+                'dt.status' => 'Ditolak'
+            ])
+            ->get('pegawai_detail_tugas pdt')->result_array();
+        $params = [
+            'all' => [
+                'count' => count($all),
+                'data' => $allData
+            ],
+            'running' => [
+                'count' => count($running),
+                'data' => $runningData
+            ],
+            'done' => [
+                'count' => count($done),
+                'data' => $doneData
+            ],
+            'reject' => [
+                'count' => count($reject),
+                'data' => $rejectData
+            ]
+        ];
+        $data = array(
+            'status' => TRUE,
+            'data' => $params
         );
-        //output to json format
-        echo json_encode($output);
+        return $this->output->set_content_type('application/json')->set_output(json_encode($data));
     }
 }

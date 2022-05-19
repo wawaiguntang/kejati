@@ -8,16 +8,15 @@
 </div>
 <?php echo form_open('', ["id" => "form"]); ?>
 <?php echo input('hidden', 'detail_tugas_id', '', [], ["value" => $detail_tugas_id, 'id' => 'detail_tugas_id']); ?>
-<?php echo input('hidden', 'id', '', [], ["value" => $id, 'id' => 'id']); ?>
 <div class="row">
     <div class="col-md-12">
         <div class="form-group">
-            <label for="tugas">Instruksi</label>
-            <textarea class="form-control" id="tugas" rows="3"></textarea>
+            <label for="umum">Instruksi Umum</label>
+            <textarea class="form-control" id="umum" rows="3"></textarea>
         </div>
     </div>
 </div>
 <div class="d-flex justify-content-end">
-    <?php echo button('Simpan', ["btn-primary"], ["id" => "btnSave", "onclick" => "saveTugasUntukAnggota()"]); ?>
+    <?php echo button('Simpan', ["btn-primary"], ["id" => "btnSave", "onclick" => "saveTugasUmumUntukAnggota()"]); ?>
 </div>
 <?php echo form_close(); ?>
