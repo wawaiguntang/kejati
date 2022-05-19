@@ -167,10 +167,10 @@ $profile = getProfileWeb();
     <link rel="stylesheet" href="<?php echo base_url() ?>assets/kejati/css/style.css">
 </head>
 
-<body class="g-sidenav-show  bg-gray-100">
+<body class="g-sidenav-show bg-gray-100">
     <!-- Side -->
     <?php $this->load->view('layouts/back/side'); ?>
-    <main class="main-content position-relative max-height-vh-100 h-100 mt-1 border-radius-lg ">
+    <main class="main-content">
         <!-- Navbar -->
         <?php $this->load->view('layouts/back/nav'); ?>
         <div class="container-fluid py-4">

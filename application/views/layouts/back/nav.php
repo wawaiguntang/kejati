@@ -18,7 +18,7 @@
                     <a href="javascript:;" class="nav-link text-body p-0" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fa fa-bell cursor-pointer" aria-hidden="true"></i>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end px-2 py-3 me-sm-n4 notif" aria-labelledby="dropdownMenuButton">
+                    <ul class="dropdown-menu dropdown-menu-end px-2 py-3 me-sm-n4 notif" style="z-index: 999;width: 50vw;" aria-labelledby="dropdownMenuButton">
                         <?php echo checkNotif(); ?>
                     </ul>
                 </li>

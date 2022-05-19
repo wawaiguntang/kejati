@@ -3,8 +3,8 @@
     "view": "/dashboard/kegiatan",
     "params": []
   },
-  "chart": {
-    "view": "/dashboard/chart",
+  "detail": {
+    "view": "/dashboard/detail",
     "params": []
   }
 }

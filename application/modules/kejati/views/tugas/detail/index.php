@@ -4,7 +4,9 @@
             <div class="card-body px-5 pt-2 pb-2">
                 <div class="row mb-3">
                     <div class="d-flex justify-content-between mt-2 py-auto">
-                        <i title="back" role="button" class="ri-arrow-left-circle-line ri-lg my-auto text-danger" onclick="back()"></i>
+                        <?php if (!isset($dashboard)) { ?>
+                            <i title="back" role="button" class="ri-arrow-left-circle-line ri-lg my-auto text-danger" onclick="back()"></i>
+                        <?php } ?>
                         <p class="pl-4 my-auto fw-bolder"> <?php echo $title ?> </p>
                     </div>
                 </div>
@@ -14,7 +16,7 @@
 
                             <table class="table table-sm">
                                 <tr>
-                                    <td><span class="text-md" for="No Surat Tugas"><b>No Surat Tugas</b></span></td>
+                                    <td><span class="text-md" for="No Surat Perintah"><b>No Surat Perintah</b></span></td>
                                     <td>:</td>
                                     <td><?php echo $tugas['no_surat_tugas'] ?></td>
                                 </tr>
@@ -45,7 +47,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="d-flex justify-content-between my-0 py-0 mt-3">
+                    <div class="d-flex justify-content-between my-0 py-0">
                         <span class="text-md align-middle"><b>SOP</b></span>
                     </div>
                     <div class="mx-2">
@@ -75,21 +77,21 @@
                                                             <span class="text-xs" title="Ket">
                                                                 <b>Kelengkapan: </b>
                                                                 <div id="kelengkapanHTML3">
-                                                                    <ul class="mt-1">
-                                                                        <?php
-                                                                        foreach ($g['kelengkapan'] as $n => $m) {
-                                                                        ?>
-                                                                            <li>
 
-                                                                                <?php echo $m['kelengkapan'] ?>
-                                                                                <?php if ($m['dokumen'] != NULL) { ?>
-                                                                                    <a href="<?php echo base_url('kejati/penyelidikan/download/' . encrypt('\assets\kejati\files\\' . $m['dokumen']) . '/' . $m['dokumen']) ?>" style="text-decoration: none;"><i class="ri-file-download-line ri-lg text-primary" role="button" title="Download Kelengkapan"></i></a>
-                                                                                <?php } ?>
-                                                                            </li>
-                                                                        <?php
-                                                                        }
-                                                                        ?>
-                                                                    </ul>
+                                                                    <?php
+                                                                    foreach ($g['kelengkapan'] as $n => $m) {
+                                                                    ?>
+                                                                        <p class="text-xs  py-0 my-0 ml-1">-
+
+                                                                            <?php echo $m['kelengkapan'] ?>
+                                                                            <?php if ($m['dokumen'] != NULL) { ?>
+                                                                                <a href="<?php echo base_url('kejati/penyelidikan/download/' . encrypt('\assets\kejati\files\\' . $m['dokumen']) . '/' . $m['dokumen']) ?>" style="text-decoration: none;"><i class="ri-file-download-line ri-lg text-primary" role="button" title="Download Kelengkapan"></i></a>
+                                                                            <?php } ?>
+                                                                        </p>
+                                                                    <?php
+                                                                    }
+                                                                    ?>
+
                                                                 </div>
                                                             </span>
                                                         </div>
@@ -97,43 +99,42 @@
                                                             <span class="text-xs" title="Ket">
                                                                 <b>Hasil: </b>
                                                                 <div id="kelengkapanHTML3">
-                                                                    <ul class="mt-1">
+
+                                                                    <?php
+                                                                    $push = FALSE;
+                                                                    foreach ($g['hasil'] as $n => $z) {
+                                                                    ?>
+                                                                        <p class="text-xs  py-0 my-0 ml-1">-
+                                                                            <?php
+                                                                            if (isset($g['leader']['userCode']) && ($g['detail_tugasStatus'] == 'Dalam proses' || $g['detail_tugasStatus'] == 'Ditolak')) {
+                                                                                if ($this->session->userdata('userCode') == $g['leader']['userCode']) {
+                                                                            ?>
+                                                                                    <i class="ri-file-upload-line ri-lg text-success" role="button" title="Upload Hasil" onclick="uploadHasil(<?php echo $g['id'] . ',' . $z['hasil_id'] ?>)"></i>
+                                                                            <?php
+                                                                                }
+                                                                            }
+                                                                            ?>
+                                                                            <?php
+                                                                            echo $z['hasil'];
+                                                                            $push = FALSE;
+                                                                            ?>
+                                                                            <?php
+                                                                            if ($z['dokumen'] != NULL) {
+                                                                                $push = TRUE;
+                                                                            ?>
+                                                                                <a href="<?php echo base_url('kejati/penyelidikan/download/' . encrypt('\assets\kejati\files\\' . $z['dokumen']) . '/' . $z['dokumen']) ?>" style="text-decoration: none;"><i class="ri-file-download-line ri-lg text-primary" role="button" title="Download Kelengkapan"></i></a>
+                                                                            <?php
+                                                                            }
+                                                                            ?>
 
                                                                         <?php
-                                                                        $push = FALSE;
-                                                                        foreach ($g['hasil'] as $n => $z) {
+                                                                    }
                                                                         ?>
-                                                                            <li>
-                                                                                <?php
-                                                                                if (isset($g['leader']['userCode']) && ($g['detail_tugasStatus'] == 'Dalam proses' || $g['detail_tugasStatus'] == 'Ditolak')) {
-                                                                                    if ($this->session->userdata('userCode') == $g['leader']['userCode']) {
-                                                                                ?>
-                                                                                        <i class="ri-file-upload-line ri-lg text-success" role="button" title="Upload Hasil" onclick="uploadHasil(<?php echo $g['id'] . ',' . $z['hasil_id'] ?>)"></i>
-                                                                                <?php
-                                                                                    }
-                                                                                }
-                                                                                ?>
-                                                                                <?php
-                                                                                echo $z['hasil'];
-                                                                                $push = FALSE;
-                                                                                ?>
-                                                                                <?php
-                                                                                if ($z['dokumen'] != NULL) {
-                                                                                    $push = TRUE;
-                                                                                ?>
-                                                                                    <a href="<?php echo base_url('kejati/penyelidikan/download/' . encrypt('\assets\kejati\files\\' . $z['dokumen']) . '/' . $z['dokumen']) ?>" style="text-decoration: none;"><i class="ri-file-download-line ri-lg text-primary" role="button" title="Download Kelengkapan"></i></a>
-                                                                                <?php
-                                                                                }
-                                                                                ?>
-                                                                            </li>
-                                                                        <?php
-                                                                        }
-                                                                        ?>
-                                                                    </ul>
+
                                                                 </div>
 
                                                                 <?php if ($g['leader']['userCode'] == $this->session->userdata('userCode') && $push == TRUE && ($g['detail_tugasStatus'] == 'Dalam proses' || $g['detail_tugasStatus'] == 'Ditolak')) { ?>
-                                                                    <div class="d-flex justify-content-end">
+                                                                    <div class="d-flex justify-content-end mt-2">
                                                                         <button class="btn btn-sm btn-primary" onclick="kirim(<?php echo $g['id'] ?>)" title="Kirim ke atasan">Kirim ke atasan</button>
                                                                     </div>
                                                                 <?php } ?>
@@ -141,6 +142,17 @@
                                                         </div>
                                                     </div>
                                                     <span class="text-xs" title="Ket"><b>Ket: </b><?php echo $g['keterangan'] ?></span>
+                                                    <span class="text-xs" title="Riwayat"><b>Riwayat: </b>
+
+                                                        <?php
+                                                        $riwayat = (!json_decode($g['catatan'], TRUE) ? [] : json_decode($g['catatan'], TRUE));
+                                                        foreach ($riwayat as $r => $ty) {
+                                                        ?>
+
+                                                            <p class="text-xs  py-0 my-0 ml-1">- <?php echo ($ty['tipe'] == 'tolak' ? 'Ditolak' : 'Diterima') ?> - <?php echo $ty['catatan'] ?> - <span class="text-xs text-bold"><?php echo $ty['createAt'] ?></span></p>
+
+                                                        <?php } ?>
+                                                    </span>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
@@ -175,55 +187,75 @@
                                                 </table>
                                             </div>
                                         </div>
-                                        <hr>
-                                        <div class="row m-2">
-                                            <span class="text-sm"><b>Detail Tugas Dari Ketua Tim</b></span>
-                                            <table class="table table-sm">
-                                                <tbody id="detail_tugas3">
-                                                    <?php
+                                        <?php if (count($g['pegawai']) > 1) { ?>
+                                            <hr>
+                                            <div class="row m-2">
+                                                <span class="text-sm"><b>Instruksi Umum Dari Ketua Tim</b>
+                                                    <i class="ri-add-circle-line ri-lg text-success" role="button" title="Bagi instruksi umum untuk anggota" onclick="addTugasUmumUntukAnggota(<?php echo $g['id'] ?>)"></i>
 
-                                                    foreach ($g['pegawai'] as $w => $a) {
-                                                        if ($a['leader'] == 0) {
+                                                    <?php
+                                                    $umum = (!json_decode($g['umum'], TRUE) ? [] : json_decode($g['umum'], TRUE));
+                                                    foreach ($umum as $r => $uu) {
                                                     ?>
-                                                            <tr>
-                                                                <td class="d-flex">
-                                                                    <div class="author align-items-center mb-1">
-                                                                        <img src="<?php echo base_url('assets/img/pegawai/foto/' . $a['foto']) ?>" alt="..." class="avatar shadow">
-                                                                        <div class="name ps-3">
-                                                                            <span class=""><?php echo $a['nama'] ?> <?php echo (($g['detail_tugasStatus'] == 'Dalam proses' || $g['detail_tugasStatus'] == 'Ditolak')) ? '<i class="ri-add-circle-line ri-lg text-success" role="button" title="Bagi tugas untuk anggota" onclick="addTugasUntukAnggota(' . $a['pdtId'] . ',' . $g['id'] . ')"></i>' : ''; ?></span>
-                                                                            <div class="stats">
-                                                                                <small><?php echo $a['leader'] == 1 ? 'Ketua Tim' : 'Anggota Tim' ?></small>
+                                                        <p class="text-xs py-0 my-0 ml-1">- <?php echo $uu['umum'] ?> - <span class="text-xs text-bold"><?php echo $uu['createAt'] ?></span></p>
+
+                                                    <?php } ?>
+                                                </span>
+                                                <span class="text-sm"><b>Detail Instruksi Dari Ketua Tim</b></span>
+                                                <table class="table table-sm">
+                                                    <tbody id="detail_tugas3">
+                                                        <?php
+
+                                                        foreach ($g['pegawai'] as $w => $a) {
+
+                                                            if ($a['leader'] == 0) {
+                                                        ?>
+                                                                <tr>
+                                                                    <td class="d-flex">
+                                                                        <div class="author align-items-center mb-1">
+                                                                            <img src="<?php echo base_url('assets/img/pegawai/foto/' . $a['foto']) ?>" alt="..." class="avatar shadow">
+                                                                            <div class="name ps-3">
+                                                                                <span class=""><?php echo $a['nama'] ?> <?php echo (($g['detail_tugasStatus'] == 'Dalam proses' || $g['detail_tugasStatus'] == 'Ditolak')) ? '<i class="ri-add-circle-line ri-lg text-success" role="button" title="Bagi tugas untuk anggota" onclick="addTugasUntukAnggota(' . $a['pdtId'] . ',' . $g['id'] . ')"></i>' : ''; ?></span>
+                                                                                <div class="stats">
+                                                                                    <small><?php echo $a['leader'] == 1 ? 'Ketua Tim' : 'Anggota Tim' ?></small>
+                                                                                </div>
                                                                             </div>
                                                                         </div>
-                                                                    </div>
-                                                                </td>
-                                                                <td class="text-xs">
-                                                                    <?php
-                                                                    if ($a['tugas'] == NULL) {
-                                                                        echo "Tugas belum di atur";
-                                                                    } else {
-                                                                        echo $a['tugas'];
-                                                                    }
-                                                                    ?>
-                                                                </td>
-                                                                <td class="text-xs">
-                                                                    <?php
-                                                                    if ($a['dokumen'] == NULL) {
-                                                                        echo "Belum ada dokumen yang di upload";
-                                                                    } else {
-                                                                        $dokumen = json_decode($a['dokumen'], true);
-                                                                    ?>
-                                                                        <ul>
+                                                                    </td>
+                                                                    <td class="text-xs">
+                                                                        <?php
+                                                                        if ($a['tugas'] == NULL) {
+                                                                            echo "Tugas belum di atur";
+                                                                        } else {
+                                                                        ?>
+
+                                                                            <?php
+                                                                            $tug = (!json_decode($a['tugas'], TRUE) ? [] : json_decode($a['tugas'], TRUE));
+                                                                            foreach ($tug as $r => $ty) {
+                                                                            ?>
+                                                                                <p class="text-xs  py-0 my-0 ml-1">- <?php echo $ty['tugas'] ?> - <span class="text-xs text-bold"><?php echo $ty['createAt'] ?></span></p>
+                                                                            <?php } ?>
+
+                                                                        <?php
+                                                                        }
+                                                                        ?>
+                                                                    </td>
+                                                                    <td class="text-xs">
+                                                                        <?php
+                                                                        if ($a['dokumen'] == NULL) {
+                                                                            echo "Belum ada dokumen yang di upload";
+                                                                        } else {
+                                                                            $dokumen = json_decode($a['dokumen'], true);
+                                                                        ?>
+
                                                                             <?php
                                                                             foreach ($dokumen as $k => $v) { ?>
-                                                                                <?php echo '<li class="text-xs">' . $v['nama'] . '<a href="' . base_url("kejati/tugas/download/" . encrypt("\assets\kejati\dokumenTim\\" . $v['dokumen']) . "/" . $v['dokumen']) . '" style="text-decoration: none;"><i class="ri-file-download-line ri-lg text-primary" role="button" title="Download Hasil Tim"></i></a></li>'; ?>
+                                                                                <?php echo '<p class="text-xs  py-0 my-0 ml-1">- ' . $v['nama'] . '<a href="' . base_url("kejati/tugas/download/" . encrypt("\assets\kejati\dokumenTim\\" . $v['dokumen']) . "/" . $v['dokumen']) . '" style="text-decoration: none;"><i class="ri-file-download-line ri-lg text-primary" role="button" title="Download Hasil Tim"></i></a></p>'; ?>
                                                                             <?php }
                                                                             ?>
-                                                                        </ul>
-                                                                    <?php
-                                                                    }
-                                                                    ?>
-
+                                                                        <?php
+                                                                        }
+                                                                        ?>
                                                                 </td>
                                                                 <td>
                                                                     <div class="col-2">
@@ -233,18 +265,18 @@
                                                                     </div>
                                                                 </td>
                                                             </tr>
-
-                                                    <?php
+                                                        <?php
+                                                            }
                                                         }
-                                                    }
-                                                    ?>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        <?php if ($g['dibuka'] == '1') { ?>
-                                            <div class="d-flex justify-content-end">
-                                                <button id="bagikan" class="btn btn-sm btn-primary" onclick="bagikan(<?php echo $g['id'] ?>)">Bagikan</button>
+                                                        ?>
+                                                    </tbody>
+                                                </table>
                                             </div>
+                                            <?php if ($g['dibuka'] == '1') { ?>
+                                                <div class="d-flex justify-content-end">
+                                                    <button id="bagikan" class="btn btn-sm btn-primary" onclick="bagikan(<?php echo $g['id'] ?>)">Bagikan</button>
+                                                </div>
+                                            <?php } ?>
                                         <?php } ?>
                                         <?php
                                     } else {
@@ -296,21 +328,19 @@
                                                                     <span class="text-xs" title="Ket">
                                                                         <b>Kelengkapan: </b>
                                                                         <div id="kelengkapanHTML3">
-                                                                            <ul class="mt-1">
-                                                                                <?php
-                                                                                foreach ($g['kelengkapan'] as $n => $m) {
-                                                                                ?>
-                                                                                    <li>
+                                                                            <?php
+                                                                            foreach ($g['kelengkapan'] as $n => $m) {
+                                                                            ?>
+                                                                                <p class="text-xs  py-0 my-0 ml-1">-
 
-                                                                                        <?php echo $m['kelengkapan'] ?>
-                                                                                        <?php if ($m['dokumen'] != NULL) { ?>
-                                                                                            <a href="<?php echo base_url('kejati/penyelidikan/download/' . encrypt('\assets\kejati\files\\' . $m['dokumen']) . '/' . $m['dokumen']) ?>" style="text-decoration: none;"><i class="ri-file-download-line ri-lg text-primary" role="button" title="Download Kelengkapan"></i></a>
-                                                                                        <?php } ?>
-                                                                                    </li>
-                                                                                <?php
-                                                                                }
-                                                                                ?>
-                                                                            </ul>
+                                                                                    <?php echo $m['kelengkapan'] ?>
+                                                                                    <?php if ($m['dokumen'] != NULL) { ?>
+                                                                                        <a href="<?php echo base_url('kejati/penyepdikan/download/' . encrypt('\assets\kejati\files\\' . $m['dokumen']) . '/' . $m['dokumen']) ?>" style="text-decoration: none;"><i class="ri-file-download-line ri-lg text-primary" role="button" title="Download Kelengkapan"></i></a>
+                                                                                    <?php } ?>
+                                                                                </p>
+                                                                            <?php
+                                                                            }
+                                                                            ?>
                                                                         </div>
                                                                     </span>
                                                                 </div>
@@ -318,43 +348,41 @@
                                                                     <span class="text-xs" title="Ket">
                                                                         <b>Hasil: </b>
                                                                         <div id="kelengkapanHTML3">
-                                                                            <ul class="mt-1">
 
-                                                                                <?php
-                                                                                $push = FALSE;
-                                                                                foreach ($g['hasil'] as $n => $z) {
-                                                                                ?>
-                                                                                    <li>
-                                                                                        <?php
-                                                                                        if (isset($g['leader']['userCode']) && ($g['detail_tugasStatus'] == 'Dalam proses' || $g['detail_tugasStatus'] == 'Ditolak')) {
-                                                                                            if ($this->session->userdata('userCode') == $g['leader']['userCode']) {
-                                                                                        ?>
-                                                                                                <i class="ri-file-upload-line ri-lg text-success" role="button" title="Upload Hasil" onclick="uploadHasil(<?php echo $g['id'] . ',' . $z['hasil_id'] ?>)"></i>
-                                                                                        <?php
-                                                                                            }
+                                                                            <?php
+                                                                            $push = FALSE;
+                                                                            foreach ($g['hasil'] as $n => $z) {
+                                                                            ?>
+                                                                                <p class="text-xs  py-0 my-0 ml-1">-
+                                                                                    <?php
+                                                                                    if (isset($g['leader']['userCode']) && ($g['detail_tugasStatus'] == 'Dalam proses' || $g['detail_tugasStatus'] == 'Ditolak')) {
+                                                                                        if ($this->session->userdata('userCode') == $g['leader']['userCode']) {
+                                                                                    ?>
+                                                                                            <i class="ri-file-upload-line ri-lg text-success" role="button" title="Upload Hasil" onclick="uploadHasil(<?php echo $g['id'] . ',' . $z['hasil_id'] ?>)"></i>
+                                                                                    <?php
                                                                                         }
-                                                                                        ?>
-                                                                                        <?php
-                                                                                        echo $z['hasil'];
-                                                                                        $push = FALSE;
-                                                                                        ?>
-                                                                                        <?php
-                                                                                        if ($z['dokumen'] != NULL) {
-                                                                                            $push = TRUE;
-                                                                                        ?>
-                                                                                            <a href="<?php echo base_url('kejati/penyelidikan/download/' . encrypt('\assets\kejati\files\\' . $z['dokumen']) . '/' . $z['dokumen']) ?>" style="text-decoration: none;"><i class="ri-file-download-line ri-lg text-primary" role="button" title="Download Kelengkapan"></i></a>
-                                                                                        <?php
-                                                                                        }
-                                                                                        ?>
-                                                                                    </li>
-                                                                                <?php
-                                                                                }
-                                                                                ?>
-                                                                            </ul>
+                                                                                    }
+                                                                                    ?>
+                                                                                    <?php
+                                                                                    echo $z['hasil'];
+                                                                                    $push = FALSE;
+                                                                                    ?>
+                                                                                    <?php
+                                                                                    if ($z['dokumen'] != NULL) {
+                                                                                        $push = TRUE;
+                                                                                    ?>
+                                                                                        <a href="<?php echo base_url('kejati/penyelidikan/download/' . encrypt('\assets\kejati\files\\' . $z['dokumen']) . '/' . $z['dokumen']) ?>" style="text-decoration: none;"><i class="ri-file-download-line ri-lg text-primary" role="button" title="Download Kelengkapan"></i></a>
+                                                                                    <?php
+                                                                                    }
+                                                                                    ?>
+                                                                                </p>
+                                                                            <?php
+                                                                            }
+                                                                            ?>
                                                                         </div>
 
                                                                         <?php if ($g['leader']['userCode'] == $this->session->userdata('userCode') && $push == TRUE && ($g['detail_tugasStatus'] == 'Dalam proses' || $g['detail_tugasStatus'] == 'Ditolak')) { ?>
-                                                                            <div class="d-flex justify-content-end">
+                                                                            <div class="d-flex justify-content-end mt-2">
                                                                                 <button class="btn btn-sm btn-primary" onclick="kirim(<?php echo $g['id'] ?>)" title="Kirim ke atasan">Kirim ke atasan</button>
                                                                             </div>
                                                                         <?php } ?>
@@ -362,6 +390,15 @@
                                                                 </div>
                                                             </div>
                                                             <span class="text-xs" title="Ket"><b>Ket: </b><?php echo $g['keterangan'] ?></span>
+                                                            <span class="text-xs" title="Riwayat"><b>Riwayat: </b>
+                                                                <?php
+                                                                $riwayat = (!json_decode($g['catatan'], TRUE) ? [] : json_decode($g['catatan'], TRUE));
+                                                                foreach ($riwayat as $r => $ty) {
+                                                                ?>
+                                                                    <p class="text-xs  py-0 my-0 ml-1">- <?php echo ($ty['tipe'] == 'tolak' ? 'Ditolak' : 'Diterima') ?> - <?php echo $ty['catatan'] ?> - <span class="text-xs text-bold"><?php echo $ty['createAt'] ?></span></p>
+
+                                                                <?php } ?>
+                                                            </span>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6">
@@ -400,13 +437,16 @@
                                                 </div>
                                                 <hr>
                                                 <div class="row m-2">
-                                                    <div class="col-10"></div>
-                                                    <span class="text-sm"><b>Tugas Dari Ketua Tim</b></span>
+                                                    <span class="text-sm"><b>Instruksi Umum Dari Ketua Tim</b>
+                                                        <?php
+                                                        $umum = (!json_decode($g['umum'], TRUE) ? [] : json_decode($g['umum'], TRUE));
+                                                        foreach ($umum as $r => $uu) {
+                                                        ?>
+                                                            <p class="text-xs  py-0 my-0 ml-1">- <?php echo $uu['umum'] ?> - <span class="text-xs text-bold"><?php echo $uu['createAt'] ?></span></p>
+                                                        <?php } ?>
+                                                    </span>
+                                                    <span class="text-sm"><b>Instruksi Dari Ketua Tim</b></span>
                                                     <?php
-
-
-
-
                                                     foreach ($g['pegawai'] as $w => $a) {
                                                         if ($a['userCode'] == $this->session->userdata('userCode')) {
                                                     ?>
@@ -415,9 +455,18 @@
                                                                     <span class="text-xs mb-2">
                                                                         <?php
                                                                         if ($a['tugas'] == NULL) {
-                                                                            echo "Tugas belum di atur";
+                                                                            echo "Instruksi belum di berikan";
                                                                         } else {
-                                                                            echo $a['tugas'];
+                                                                        ?>
+                                                                            <?php
+                                                                            $tug = (!json_decode($a['tugas'], TRUE) ? [] : json_decode($a['tugas'], TRUE));
+                                                                            foreach ($tug as $r => $ty) {
+                                                                            ?>
+
+                                                                                <p class="text-xs py-0 my-0 ml-1">- <?php echo $ty['tugas'] ?> - <span class="text-xs text-bold"><?php echo $ty['createAt'] ?></span></p>
+
+                                                                            <?php } ?>
+                                                                        <?php
                                                                         }
                                                                         ?>
 
@@ -443,13 +492,11 @@
                                                                 } else {
                                                                     $dokumen = json_decode($a['dokumen'], true);
                                                                 ?>
-                                                                    <ul>
-                                                                        <?php
-                                                                        foreach ($dokumen as $k => $v) {
-                                                                            echo '<li class="text-xs">' . $v['nama'] . '<a href="' . base_url("kejati/tugas/download/" . encrypt("\assets\kejati\dokumenTim\\" . $v['dokumen']) . "/" . $v['dokumen']) . '" style="text-decoration: none;"><i class="ri-file-download-line ri-lg text-primary" role="button" title="Download Hasil Tim"></i></a></li>';
-                                                                        }
-                                                                        ?>
-                                                                    </ul>
+                                                                    <?php
+                                                                    foreach ($dokumen as $k => $v) {
+                                                                        echo '<p class="text-xs  py-0 my-0 ml-1">- ' . $v['nama'] . '<a href="' . base_url("kejati/tugas/download/" . encrypt("\assets\kejati\dokumenTim\\" . $v['dokumen']) . "/" . $v['dokumen']) . '" style="text-decoration: none;"><i class="ri-file-download-line ri-lg text-primary" role="button" title="Download Hasil Tim"></i></a></p>';
+                                                                    }
+                                                                    ?>
                                                                 <?php
                                                                 }
                                                                 ?>
@@ -549,6 +596,69 @@
                     if (data.status) {
                         detail(<?php echo $tugas_id ?>);
                         $("#addTugasUntukAnggota").modal("hide");
+                        handleToast("success", data.message);
+                    } else {
+                        handleError(data);
+                    }
+                    $("#btnSave").text("save");
+                    $("#btnSave").attr("disabled", false);
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    alert("Error adding / update data");
+                    $("#btnSave").text("save");
+                    $("#btnSave").attr("disabled", false);
+                },
+            });
+
+            $("#form input, #form textarea").on("keyup", function() {
+                $(this).removeClass("is-valid is-invalid");
+            });
+            $("#form select").on("change", function() {
+                $(this).removeClass("is-valid is-invalid");
+            });
+        }
+
+        function addTugasUmumUntukAnggota(detail_tugas_id) {
+            $.ajax({
+                url: base_url + 'kejati/ajax/tugas/addTugasUmumUntukAnggota',
+                type: "POST",
+                data: {
+                    detail_tugas_id: detail_tugas_id
+                },
+                success: function(data) {
+                    if (data.status) {
+                        $("#forModal").html(data.data);
+                        $("#addTugasUmumUntukAnggota").modal("show");
+                    } else {
+                        handleError(data);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    alert("Error get data from ajax");
+                },
+            });
+        }
+
+        function saveTugasUmumUntukAnggota() {
+            $("#btnSave").text("saving...");
+            $("#btnSave").attr("disabled", true);
+            var url, method;
+
+            url = base_url + 'kejati/ajax/tugas/saveTugasUmumUntukAnggota';
+            method = "saved";
+
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: {
+                    umum: $("#umum").val(),
+                    detail_tugas_id: $("#detail_tugas_id").val(),
+                },
+                dataType: "json",
+                success: function(data) {
+                    if (data.status) {
+                        detail(<?php echo $tugas_id ?>);
+                        $("#addTugasUmumUntukAnggota").modal("hide");
                         handleToast("success", data.message);
                     } else {
                         handleError(data);

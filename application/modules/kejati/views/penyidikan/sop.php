@@ -306,7 +306,7 @@
             },
             success: function(data) {
                 if (data.status) {
-                    getPegawai(3);
+                    getPegawai(data.kegiatan_id);
                     handleToast("success", data.message);
                 } else {
                     handleError(data);
@@ -315,6 +315,71 @@
             error: function(jqXHR, textStatus, errorThrown) {
                 alert("Error get data from ajax");
             },
+        });
+    }
+
+    function uploadHasil(kegiatan_id, hasil_id) {
+        $.ajax({
+            url: base_url + 'kejati/ajax/penyidikan/uploadHasilHTML',
+            type: "POST",
+            data: {
+                kegiatan_id: kegiatan_id,
+                hasil_id: hasil_id,
+            },
+            success: function(data) {
+                if (data.status) {
+                    $("#forModal").html(data.data);
+                    $("#upload_hasil").modal("show");
+                } else {
+                    handleError(data);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert("Error get data from ajax");
+            },
+        });
+    }
+
+    function saveHasil() {
+        $("#btnSave").text("saving...");
+        $("#btnSave").attr("disabled", true);
+        var url, method;
+
+        url = base_url + 'kejati/ajax/penyidikan/uploadHasil';
+        method = "saved";
+
+        var formData = new FormData(this.form);
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: formData,
+            async: false,
+            cache: false,
+            processData: false,
+            contentType: false,
+            success: function(data) {
+                if (data.status) {
+                    $("#upload_hasil").modal("hide");
+                    getKelengkapan(data.kegiatan_id);
+                    handleToast("success", data.message);
+                } else {
+                    handleError(data);
+                }
+                $("#btnSave").text("save");
+                $("#btnSave").attr("disabled", false);
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert("Error adding / update data");
+                $("#btnSave").text("save");
+                $("#btnSave").attr("disabled", false);
+            },
+        });
+
+        $("#form input, #form textarea").on("keyup", function() {
+            $(this).removeClass("is-valid is-invalid");
+        });
+        $("#form select").on("change", function() {
+            $(this).removeClass("is-valid is-invalid");
         });
     }
 </script>

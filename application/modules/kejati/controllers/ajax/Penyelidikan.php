@@ -1299,7 +1299,7 @@ class Penyelidikan extends MX_Controller
         $this->output->set_content_type('application/json')->set_output(json_encode($data));
     }
 
-    public function terima()
+    public function terimaTolak()
     {
         $userPermission = getPermissionFromUser();
         if (!in_array('RDETAILPENYELIDIKAN', $userPermission)) {
@@ -1330,41 +1330,16 @@ class Penyelidikan extends MX_Controller
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
-        $update = $this->db->where('id', $this->input->post('detail_tugas_id'))->update('detail_tugas', ['status' => 'Diterima']);
-        if ($update) {
-            $notifParam = [];
-            $pegawai = $this->db->get_where('pegawai_detail_tugas', ['detail_tugas_id' => $this->input->post('detail_tugas_id'), 'deleteAt' => NULL])->result_array();
-            foreach ($pegawai as $p => $i) {
-                $p = $this->db->get_where('pegawai', ['pegawai.deleteAt' => NULL, 'pegawai.id' => $i['pegawai_id']])->row_array();
-                $notifParam[] = [
-                    'from' => $this->session->userdata('userCode'),
-                    'to' => $p['userCode'],
-                    'description' => "Dokumen hasil kegiatan " . $tugas['kegiatan'] . " diterima oleh atasan ",
-                    'data' => json_encode([
-                        'link' => base_url('kejati/tugas/index/' . encrypt('detail(' . $tugas['id'] . ');')),
-                        'action' => 'detail(' . $tugas['id'] . ');'
-                    ], true)
-                ];
-                $this->db->where('pegawai_detail_tugas_id', $i['id'])->update('konsultasi', ['waktu_selesai' => date('Y-m-d H:i:s')]);
-            }
-
-            $notif = $this->db->insert_batch('notifikasi', $notifParam);
-            if ($notif == FALSE) {
-                $data['status'] = FALSE;
-                $data['message'] = "Gagal menerima tugas dari ketua tim";
-                return $this->output->set_content_type('application/json')->set_output(json_encode($data));
-            }
-            $data['status'] = TRUE;
-            $data['tugas_id'] = $tugas['tugas_id'];
-            $data['message'] = "Berhasil menerima tugas dari ketua tim";
-        } else {
-            $data['status'] = FALSE;
-            $data['message'] = "Gagal menerima tugas dari ketua tim";
-        }
+        $params = [
+            'detail_tugas_id' => $this->input->post('detail_tugas_id'),
+            'tipe' => $this->input->post('tipe'),
+        ];
+        $data['status'] = TRUE;
+        $data['data'] = modal('addCatatan', $this->load->view($this->module . '/penyelidikan/detail/catatan', $params, TRUE));
         $this->output->set_content_type('application/json')->set_output(json_encode($data));
     }
 
-    public function tolak()
+    public function saveCatatan()
     {
         $userPermission = getPermissionFromUser();
         if (!in_array('RDETAILPENYELIDIKAN', $userPermission)) {
@@ -1382,7 +1357,7 @@ class Penyelidikan extends MX_Controller
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
         $tugas = $this->db
-            ->select('tugas.id as tugas_id, detail_tugas.id as id, detail_tugas.dibuka, sop.sop, sop.kategori, sop.waktu as sopWaktu, tugas.no_surat_tugas, tugas.no_nota_dinas, tugas.tanggal_nota_dinas, tugas.perihal_nota_dinas, tugas.status as tugasStatus, kegiatan.kegiatan, detail_tugas.waktu, detail_tugas.satuan, detail_tugas.waktu_mulai, detail_tugas.waktu_selesai, detail_tugas.status as detail_tugasStatus, tugas.pengaduan_id, kegiatan.keterangan')
+            ->select('tugas.id as tugas_id, detail_tugas.id as id, detail_tugas.catatan, detail_tugas.dibuka, sop.sop, sop.kategori, sop.waktu as sopWaktu, tugas.no_surat_tugas, tugas.no_nota_dinas, tugas.tanggal_nota_dinas, tugas.perihal_nota_dinas, tugas.status as tugasStatus, kegiatan.kegiatan, detail_tugas.waktu, detail_tugas.satuan, detail_tugas.waktu_mulai, detail_tugas.waktu_selesai, detail_tugas.status as detail_tugasStatus, tugas.pengaduan_id, kegiatan.keterangan')
             ->join('tugas', 'tugas.id=detail_tugas.tugas_id')
             ->join('sop', 'sop.id=tugas.sop_id')
             ->join('kegiatan', 'kegiatan.id=detail_tugas.kegiatan_id')
@@ -1395,7 +1370,20 @@ class Penyelidikan extends MX_Controller
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
-        $update = $this->db->where('id', $this->input->post('detail_tugas_id'))->update('detail_tugas', ['status' => 'Ditolak', 'waktu_selesai' => NULL]);
+        $tempCatatan = json_decode($tugas['catatan']);
+        if ($this->input->post('catatan') != NULL) {
+            $tempCatatan[] = [
+                'tipe' => $this->input->post('tipe'), 
+                'catatan' => $this->input->post('catatan'),
+                'createAt' => date('Y-m-d H:i:s')
+            ];
+        }
+        $tempCatatan = json_encode($tempCatatan, TRUE);
+        $update = $this->db->where('id', $this->input->post('detail_tugas_id'))->update('detail_tugas', [
+            'status' => (($this->input->post('tipe') == 'terima') ? 'Diterima' : 'Ditolak'),
+            'waktu_selesai' => (($this->input->post('tipe') == 'terima') ? date('Y-m-d H:i:s') : NULL),
+            'catatan' => $tempCatatan
+        ]);
         if ($update) {
             $notifParam = [];
             $pegawai = $this->db->get_where('pegawai_detail_tugas', ['detail_tugas_id' => $this->input->post('detail_tugas_id'), 'deleteAt' => NULL])->result_array();
@@ -1404,7 +1392,7 @@ class Penyelidikan extends MX_Controller
                 $notifParam[] = [
                     'from' => $this->session->userdata('userCode'),
                     'to' => $p['userCode'],
-                    'description' => "Dokumen hasil kegiatan " . $tugas['kegiatan'] . " ditolak oleh atasan ",
+                    'description' => "Dokumen hasil kegiatan " . $tugas['kegiatan'] . " " .  (($this->input->post('tipe') == 'terima') ? 'DITERIMA' : 'DITOLAK') . " oleh atasan ",
                     'data' => json_encode([
                         'link' => base_url('kejati/tugas/index/' . encrypt('detail(' . $tugas['id'] . ');')),
                         'action' => 'detail(' . $tugas['id'] . ');'
