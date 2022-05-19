@@ -58,6 +58,17 @@
 </div>
 <script>
     allChat();
+    if (typeof myChat === 'undefined') {
+        let myChat;
+    }
+    // let chatId = localStorage.getItem('chatId' + <?= $id_konsultasi; ?>);
+    if (localStorage.getItem('chatId' + <?= $id_konsultasi; ?>) == 'show') {
+        console.log('show');
+        myChat = setInterval(allChat, 6000);
+    } else {
+        console.log('hide');
+        clearInterval(myChat);
+    }
     // setInterval(allChat, 6000);
 
     function allChat() {
@@ -65,7 +76,7 @@
             url: base_url + 'kejati/ajax/konsultasi/allChat/' + <?= $id_konsultasi; ?>,
             type: "GET",
             success: function(data) {
-                console.log(data)
+                // console.log(data)
                 var html = '';
                 if (data.status) {
                     handleToast("success", data.message);
@@ -123,4 +134,10 @@
             },
         });
     }
+    $('#close-modal1').click(function() {
+        clearInterval(myChat);
+    });
+    $('#close-modal2').click(function() {
+        clearInterval(myChat);
+    });
 </script>

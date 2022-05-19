@@ -63,9 +63,9 @@
                  } else {
                      konsultasi.forEach(k => {
                          html += `<div id="list-konsul` + k['id'] + `"  class="card shadow-lg mb-1">
-                                    <div class="card-body  pt-1" onclick="tampilChat(` + k['id'] + `,` + <?= $pegawai_id_leader; ?> + `,` + <?= $pegawai_id; ?> + `)"> 
+                                    <div class="card-body  pt-1" > 
                                     <div class="row">
-                                    <div class="col-10">`;
+                                    <div class="col-3">`;
                          if (k['waktu_selesai'] === null) {
                              html += '<span class="badge bg-gradient-warning">Proses</span>';
                          } else {
@@ -74,11 +74,11 @@
                          }
 
                          html += `</div>
-                         <div class="col-2">
+                         <div class="col-9 text-end">
                          <button class="btn btn-primary btn-sm" onclick="toEditKonsul(` + k['id'] + `)"><i class="fa-solid fa-file-pen"></i>edit</button>
                          </div>
                          </div>
-                         <a href="javascript:;" class="card-title h5 mt-1 d-block text-darker mb-0">` +
+                         <a onclick="tampilChat(` + k['id'] + `,` + <?= $pegawai_id_leader; ?> + `,` + <?= $pegawai_id; ?> + `)" href="javascript:;" class="card-title h5 mt-1 d-block text-darker mb-0">` +
                              k['judul'] +
                              `</a><div class="row">
                                         <small class=" col-10 card-description mb-0">` +
@@ -107,14 +107,30 @@
              url: base_url + 'kejati/ajax/Konsultasi/cardChatKonsultasi/' + id + '/' + pegawai_id_leader + '/' + pegawai_id,
              type: "GET",
              success: function(data) {
-                 //  if ($('#chat-konsultasi' + id).css('display') == 'none' || $('#chat-konsultasi' + id).css("visibility") == "hidden") {
-                 //      console.log($('#chat-konsultasi' + id).css('display'))
-                 //  } else {
-                 //      list()
-                 //  }
                  $('#chat-konsultasi' + id).html(data)
-                 $('#chat-konsultasi' + id).toggle('slow')
-                 $('#list-konsul' + id).siblings().toggle()
+                 localStorage.setItem('chatId' + id, 'show');
+                 if ($('#chat-konsultasi' + id).css('display') === 'none' || $('#chat-konsultasi' + id).css("visibility") === "hidden") {
+                     //  console.log('show');
+
+                     localStorage.setItem('chatId' + id, 'hide');
+                     //  console.log(localStorage.getItem('chatId' + id));
+                 } else {
+                     //  console.log('hide');
+                     let myChat;
+                     list();
+                     localStorage.setItem('chatId' + id, 'show');
+                     //  console.log(localStorage.getItem('chatId' + id));
+                     //  $('#chat-konsultasi' + id).empty();
+                 }
+                 $('#close-modal1').click(function() {
+                     localStorage.setItem('chatId' + id, 'show');
+                 });
+                 $('#close-modal2').click(function() {
+                     localStorage.setItem('chatId' + id, 'show');
+                 });
+                 $('#chat-konsultasi' + id).toggle('slow');
+                 $('#list-konsul' + id).siblings().toggle();
+
 
              }
          })

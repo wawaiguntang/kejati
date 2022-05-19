@@ -229,10 +229,6 @@
                                                                     <div class="col-2">
                                                                         <button type="button" class="btn  p-2 bg-gradient-info position-relative" onclick="cardKonsulKetua(<?= $a['pdtId']; ?>,<?= $g['id'] ?>,<?= $a['pegawai_id']; ?>,<?= $leader; ?>)">
                                                                             Konsultasi
-                                                                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-gradient-danger">
-                                                                                99+
-                                                                                <span class="visually-hidden">unread messages</span>
-                                                                            </span>
                                                                         </button>
                                                                     </div>
                                                                 </td>
@@ -431,10 +427,6 @@
                                                                 <div class="col-2">
                                                                     <button type="button" class="btn  p-2 bg-gradient-info position-relative" onclick="cardKonsul(<?= $a['pdtId']; ?>,<?= $g['id'] ?>,<?= $leader; ?>,<?= $a['pegawai_id']; ?>)">
                                                                         Konsultasi
-                                                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-gradient-danger">
-                                                                            99+
-                                                                            <span class="visually-hidden">unread messages</span>
-                                                                        </span>
                                                                     </button>
                                                                 </div>
                                                             </div>
@@ -489,7 +481,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h6 class="modal-title" id="modal-title-notification">Konsultasi</h6>
-                    <button type="button" class="btn-close text-dark" data-bs-dismiss="modal" onclick="clearModal()" aria-label="Close">
+                    <button id="close-modal1" type="button" class="btn-close text-dark" data-bs-dismiss="modal" onclick="clearModal()" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
@@ -504,7 +496,7 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-link  ml-auto" onclick="clearModal()" data-bs-dismiss="modal">Close</button>
+                    <button id="close-modal2" type="button" class="btn btn-link  ml-auto" onclick="clearModal()" data-bs-dismiss="modal">Close</button>
                 </div>
 
             </div>
