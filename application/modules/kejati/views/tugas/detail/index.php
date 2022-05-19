@@ -4,7 +4,9 @@
             <div class="card-body px-5 pt-2 pb-2">
                 <div class="row mb-3">
                     <div class="d-flex justify-content-between mt-2 py-auto">
-                        <i title="back" role="button" class="ri-arrow-left-circle-line ri-lg my-auto text-danger" onclick="back()"></i>
+                        <?php if (!isset($dashboard)) { ?>
+                            <i title="back" role="button" class="ri-arrow-left-circle-line ri-lg my-auto text-danger" onclick="back()"></i>
+                        <?php } ?>
                         <p class="pl-4 my-auto fw-bolder"> <?php echo $title ?> </p>
                     </div>
                 </div>
@@ -79,7 +81,7 @@
                                                                     <?php
                                                                     foreach ($g['kelengkapan'] as $n => $m) {
                                                                     ?>
-                                                                        <p class="text-xs  py-0 my-0 ml-1">- 
+                                                                        <p class="text-xs  py-0 my-0 ml-1">-
 
                                                                             <?php echo $m['kelengkapan'] ?>
                                                                             <?php if ($m['dokumen'] != NULL) { ?>
@@ -102,7 +104,7 @@
                                                                     $push = FALSE;
                                                                     foreach ($g['hasil'] as $n => $z) {
                                                                     ?>
-                                                                        <p class="text-xs  py-0 my-0 ml-1">- 
+                                                                        <p class="text-xs  py-0 my-0 ml-1">-
                                                                             <?php
                                                                             if (isset($g['leader']['userCode']) && ($g['detail_tugasStatus'] == 'Dalam proses' || $g['detail_tugasStatus'] == 'Ditolak')) {
                                                                                 if ($this->session->userdata('userCode') == $g['leader']['userCode']) {
@@ -243,12 +245,12 @@
                                                                         } else {
                                                                             $dokumen = json_decode($a['dokumen'], true);
                                                                         ?>
-                                                                            
-                                                                                <?php
-                                                                                foreach ($dokumen as $k => $v) { ?>
-                                                                                    <?php echo '<p class="text-xs  py-0 my-0 ml-1">- ' . $v['nama'] . '<a href="' . base_url("kejati/tugas/download/" . encrypt("\assets\kejati\dokumenTim\\" . $v['dokumen']) . "/" . $v['dokumen']) . '" style="text-decoration: none;"><i class="ri-file-download-line ri-lg text-primary" role="button" title="Download Hasil Tim"></i></a></p>'; ?>
-                                                                                <?php }
-                                                                                ?>
+
+                                                                            <?php
+                                                                            foreach ($dokumen as $k => $v) { ?>
+                                                                                <?php echo '<p class="text-xs  py-0 my-0 ml-1">- ' . $v['nama'] . '<a href="' . base_url("kejati/tugas/download/" . encrypt("\assets\kejati\dokumenTim\\" . $v['dokumen']) . "/" . $v['dokumen']) . '" style="text-decoration: none;"><i class="ri-file-download-line ri-lg text-primary" role="button" title="Download Hasil Tim"></i></a></p>'; ?>
+                                                                            <?php }
+                                                                            ?>
                                                                         <?php
                                                                         }
                                                                         ?>
@@ -333,7 +335,7 @@
                                                                             <?php
                                                                             foreach ($g['kelengkapan'] as $n => $m) {
                                                                             ?>
-                                                                                <p class="text-xs  py-0 my-0 ml-1">- 
+                                                                                <p class="text-xs  py-0 my-0 ml-1">-
 
                                                                                     <?php echo $m['kelengkapan'] ?>
                                                                                     <?php if ($m['dokumen'] != NULL) { ?>
@@ -355,7 +357,7 @@
                                                                             $push = FALSE;
                                                                             foreach ($g['hasil'] as $n => $z) {
                                                                             ?>
-                                                                                <p class="text-xs  py-0 my-0 ml-1">- 
+                                                                                <p class="text-xs  py-0 my-0 ml-1">-
                                                                                     <?php
                                                                                     if (isset($g['leader']['userCode']) && ($g['detail_tugasStatus'] == 'Dalam proses' || $g['detail_tugasStatus'] == 'Ditolak')) {
                                                                                         if ($this->session->userdata('userCode') == $g['leader']['userCode']) {

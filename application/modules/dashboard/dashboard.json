@@ -1,6 +1,6 @@
 [
   {
     "modules": "kejati",
-    "view": ["kegiatan", "chart"]
+    "view": ["kegiatan"]
   }
 ]
