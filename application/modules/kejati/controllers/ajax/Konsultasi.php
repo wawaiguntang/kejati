@@ -312,26 +312,29 @@ class Konsultasi extends MX_Controller
         $this->output->set_content_type('application/json')->set_output(json_encode($data));
     }
 
-    public function cardListKonsultasi($pdtId, $tugas_id, $pegawai_id_leader)
+    public function cardListKonsultasi($pdtId, $tugas_id, $pegawai_id_leader, $pegawai_id)
     {
         $data['id'] = $pdtId;
         $data['tugas_id'] = $tugas_id;
         $data['pegawai_id_leader'] = $pegawai_id_leader;
+        $data['pegawai_id'] = $pegawai_id;
 
         $this->load->view($this->module . '/tugas/detail/list_konsultasi', $data);
     }
-    public function cardChatKonsultasi($id_konsultasi, $pegawai_id_leader)
+    public function cardChatKonsultasi($id_konsultasi, $pegawai_id_leader, $pegawai_id)
     {
         $data['id_konsultasi'] = $id_konsultasi;
+        $data['pegawai_id'] = $pegawai_id;
         $data['leader'] = $this->db->get_where('pegawai', ['id' => $pegawai_id_leader])->result_array()[0];
 
         $this->load->view($this->module . '/tugas/detail/chat_konsultasi', $data);
     }
-    public function cardChatKonsultasiKetua($id_konsultasi, $id_pegawai)
+    public function cardChatKonsultasiKetua($id_konsultasi, $id_pegawai, $leader)
     {
         $data['id_konsultasi'] = $id_konsultasi;
         $pegawai = $this->db->get_where('pegawai', ['id' => $id_pegawai])->result_array()[0];
         $data['pegawai'] = $pegawai;
+        $data['leader'] = $leader;
         $this->load->view($this->module . '/tugas/detail/chat_konsultasi_ketua', $data);
     }
     public function cardTambahKonsultasi($id_pegawai)
@@ -345,12 +348,58 @@ class Konsultasi extends MX_Controller
         $data['konsultasi'] = $this->db->get_where('konsultasi', ['id' => $id_konsultasi])->row_array();
         $this->load->view($this->module . '/tugas/detail/edit_konsultasi', $data);
     }
-    public function cardListKonsultasiKetua($pdtId, $tugas_id, $id_pegawai)
+    public function cardListKonsultasiKetua($pdtId, $tugas_id, $id_pegawai, $leader)
     {
         $data['id'] = $pdtId;
         $data['tugas_id'] = $tugas_id;
         $data['id_pegawai'] = $id_pegawai;
+        $data['leader'] = $leader;
 
         $this->load->view($this->module . '/tugas/detail/list_konsultasi_ketua', $data);
+    }
+
+    public function kirimPesan()
+    {
+        // $pdtId = $this->db->select('pegawai_detail_tugas_id')->get_where('konsultasi', ['id' => $this->input->post('id_konsultasi')])->row_array()[0];
+        // $getData = $this->db->join('pegawai', 'pegawai.id=pegawai_detail_tugas.pegawai_id')->get_where('pegawai_detail_tugas', ['pegawai_detail_tugas.deleteAt' => NULL, 'pegawai_detail_tugas.id' => $pdtId])->row_array();
+        // if ($this->checkStatusKegiatan($getData['detail_tugas_id']) == 'Diterima') {
+        //     $data['status'] = FALSE;
+        //     $data['message'] = "Gagal menambah konsultasi, kegiatan sudah diterima";
+        //     return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        // }
+        // if ($this->checkStatusKegiatan($getData['detail_tugas_id']) == 'Ditinjau atasan') {
+        //     $data['status'] = FALSE;
+        //     $data['message'] = "Gagal menambah konsultasi, kegiatan masih dalam penijauan oleh atasan";
+        //     return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        // }
+        $isSelesai = $this->db->select('waktu_selesai')->get_where('konsultasi', ['id' => $this->input->post('id_konsultasi')])->result_array()[0];
+        if ($isSelesai['waktu_selesai'] == NULL || $isSelesai['waktu_selesai'] == 'NULL') {
+            if ($this->input->post('pesan') != NULL || $this->input->post('pesan') != '') {
+
+                $insert = array(
+                    'pesan' => $this->input->post('pesan'),
+                    'dari' => $this->input->post('dari'),
+                    'untuk' => $this->input->post('untuk'),
+                    'konsultasi_id' => $this->input->post('id_konsultasi')
+                );
+                $insert = $this->db->insert('detail_konsultasi', $insert);
+                if ($insert) {
+                    $data['status'] = TRUE;
+                    $data['message'] = "Berhasil mengirim pesan";
+                } else {
+                    $data['status'] = FALSE;
+                    $data['message'] = "Gagal mengirim pesan";
+                }
+                $this->output->set_content_type('application/json')->set_output(json_encode($data));
+            } else {
+                $data['status'] = FALSE;
+                $data['message'] = "Pesan Harus Diisi";
+                return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+            }
+        } else {
+            $data['status'] = FALSE;
+            $data['message'] = "Konsultasi Sudah Selesai";
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        }
     }
 }

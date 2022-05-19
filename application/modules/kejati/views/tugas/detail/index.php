@@ -164,6 +164,9 @@
                                                         <?php
                                                         foreach ($g['pegawai'] as $w => $a) {
                                                         ?>
+                                                            <?php if ($a['leader'] == 1) {
+                                                                $leader = $a['pegawai_id'];
+                                                            } ?>
                                                             <tr>
                                                                 <td class="d-flex">
                                                                     <div class="author align-items-center mb-1">
@@ -194,7 +197,6 @@
                                                     $umum = (!json_decode($g['umum'], TRUE) ? [] : json_decode($g['umum'], TRUE));
                                                     foreach ($umum as $r => $uu) {
                                                     ?>
-
                                                         <p class="text-xs py-0 my-0 ml-1">- <?php echo $uu['umum'] ?> - <span class="text-xs text-bold"><?php echo $uu['createAt'] ?></span></p>
 
                                                     <?php } ?>
@@ -254,21 +256,15 @@
                                                                         <?php
                                                                         }
                                                                         ?>
-
-                                                                    </td>
-                                                                    <td>
-                                                                        <div class="col-2">
-                                                                            <button type="button" class="btn  p-2 bg-gradient-info position-relative" onclick="cardKonsulKetua(<?= $a['pdtId']; ?>,<?= $g['id'] ?>,<?= $a['pegawai_id']; ?>)">
-                                                                                Konsultasi
-                                                                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-gradient-danger">
-                                                                                    99+
-                                                                                    <span class="visually-hidden">unread messages</span>
-                                                                                </span>
-                                                                            </button>
-                                                                        </div>
-                                                                    </td>
-                                                                </tr>
-
+                                                                </td>
+                                                                <td>
+                                                                    <div class="col-2">
+                                                                        <button type="button" class="btn  p-2 bg-gradient-info position-relative" onclick="cardKonsulKetua(<?= $a['pdtId']; ?>,<?= $g['id'] ?>,<?= $a['pegawai_id']; ?>,<?= $leader; ?>)">
+                                                                            Konsultasi
+                                                                        </button>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
                                                         <?php
                                                             }
                                                         }
@@ -478,12 +474,8 @@
                                                                 </div>
 
                                                                 <div class="col-2">
-                                                                    <button type="button" class="btn  p-2 bg-gradient-info position-relative" onclick="cardKonsul(<?= $a['pdtId']; ?>,<?= $g['id'] ?>,<?= $leader; ?>)">
+                                                                    <button type="button" class="btn  p-2 bg-gradient-info position-relative" onclick="cardKonsul(<?= $a['pdtId']; ?>,<?= $g['id'] ?>,<?= $leader; ?>,<?= $a['pegawai_id']; ?>)">
                                                                         Konsultasi
-                                                                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-gradient-danger">
-                                                                            99+
-                                                                            <span class="visually-hidden">unread messages</span>
-                                                                        </span>
                                                                     </button>
                                                                 </div>
                                                             </div>
@@ -531,12 +523,12 @@
         </div>
     </div>
     <!-- Modal Konsultasi -->
-    <div class="modal fade " id="modal-konsultasi" role="dialog">
-        <div class="modal-dialog modal-dialog-scrollable modal-xl modal-danger modal-dialog-centered " role="document">
+    <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" id="modal-konsultasi" role="dialog">
+        <div class="modal-dialog modal-dialog-scrollable modal-xl  modal-dialog-centered " role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h6 class="modal-title" id="modal-title-notification">Konsultasi</h6>
-                    <button type="button" class="btn-close text-dark" data-bs-dismiss="modal" aria-label="Close">
+                    <button id="close-modal1" type="button" class="btn-close text-dark" data-bs-dismiss="modal" onclick="clearModal()" aria-label="Close">
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
@@ -551,7 +543,7 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-link  ml-auto" data-bs-dismiss="modal">Close</button>
+                    <button id="close-modal2" type="button" class="btn btn-link  ml-auto" onclick="clearModal()" data-bs-dismiss="modal">Close</button>
                 </div>
 
             </div>
@@ -822,11 +814,11 @@
         //     }
         // })
 
-        function cardKonsul(pdtId, tugasId, pegawai_id_leader) {
+        function cardKonsul(pdtId, tugasId, pegawai_id_leader, pegawai_id) {
 
 
             $.ajax({
-                url: base_url + 'kejati/ajax/konsultasi/cardListKonsultasi/' + pdtId + '/' + tugasId + '/' + pegawai_id_leader,
+                url: base_url + 'kejati/ajax/konsultasi/cardListKonsultasi/' + pdtId + '/' + tugasId + '/' + pegawai_id_leader + '/' + pegawai_id,
                 type: "GET",
                 success: function(data) {
 
@@ -842,10 +834,10 @@
             });
         }
 
-        function cardKonsulKetua(pdtId, tugasId, idPegawai) {
+        function cardKonsulKetua(pdtId, tugasId, idPegawai, leader) {
 
             $.ajax({
-                url: base_url + 'kejati/ajax/konsultasi/cardListKonsultasiKetua/' + pdtId + '/' + tugasId + '/' + idPegawai,
+                url: base_url + 'kejati/ajax/konsultasi/cardListKonsultasiKetua/' + pdtId + '/' + tugasId + '/' + idPegawai + '/' + leader,
                 type: "GET",
                 success: function(data) {
 
@@ -941,5 +933,9 @@
 
                 },
             });
+        }
+
+        function clearModal() {
+            $('#modal-body').html('');
         }
     </script>
