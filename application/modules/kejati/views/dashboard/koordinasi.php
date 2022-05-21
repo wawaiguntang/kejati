@@ -2,9 +2,12 @@
     <p class="text-sm text-bold my-1">Instruksi Khusus</p>
     <i title="back" role="button" class="ri-arrow-left-circle-line ri-lg my-auto text-danger" onclick="detailTugas(<?php echo $id ?>)"></i>
 </div>
-<?php foreach ($tugas as $k => $v) { ?>
+<?php 
+if ($tugas != '') {
+    foreach ($tugas as $k => $v) { 
+?>
     <p class="text-xs my-0">- <?php echo $v['tugas'] ?> <span class="text-bold"><?php echo $v['createAt'] ?></span></p>
-<?php } ?>
+<?php } }?>
 <div class="d-flex justify-content-between">
     <p class="text-sm text-bold my-1">Koordinasi</p>
     

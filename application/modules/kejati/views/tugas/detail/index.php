@@ -142,7 +142,7 @@
                                                         </div>
                                                     </div>
                                                     <span class="text-xs" title="Ket"><b>Ket: </b><?php echo $g['keterangan'] ?></span>
-                                                    <span class="text-xs" title="Riwayat"><b>Riwayat: </b>
+                                                    <span class="text-xs" title="Riwayat"><b>Riwayat Evaluasi: </b>
 
                                                         <?php
                                                         $riwayat = (!json_decode($g['catatan'], TRUE) ? [] : json_decode($g['catatan'], TRUE));

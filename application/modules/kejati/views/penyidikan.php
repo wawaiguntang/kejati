@@ -85,7 +85,7 @@
         getData(pengaduanTag, cariTag);
     });
 
-    function savePenyelidikan() {
+    function savePenyidikan() {
         $("#btnSave").text("saving...");
         $("#btnSave").attr("disabled", true);
         var url, method;

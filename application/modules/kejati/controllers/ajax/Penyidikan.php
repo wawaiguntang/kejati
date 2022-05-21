@@ -721,7 +721,8 @@ class Penyidikan extends MX_Controller
 
             $data = array(
                 'status'         => TRUE,
-                'message'         => "Berhasil to set leader"
+                'message'         => "Berhasil to set leader",
+                'kegiatan_id' => $ex[0],
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
@@ -757,7 +758,6 @@ class Penyidikan extends MX_Controller
                     'perihal_nota_dinas' => form_error('perihal_nota_dinas'),
                     'pengaduan' => form_error('pengaduan'),
                     'sop' => form_error('sop'),
-                    'status' => 'Dalam proses'
                 );
                 $data = array(
                     'status'         => FALSE,
@@ -772,10 +772,16 @@ class Penyidikan extends MX_Controller
                     'perihal_nota_dinas' => $this->input->post('perihal_nota_dinas'),
                     'pengaduan_id' => $this->input->post('pengaduan'),
                     'sop_id' => $this->input->post('sop'),
+                    'status' => 'Dalam proses',
+                    'userCode' => $this->session->userdata('userCode')
                 );
+                $pengaduan = $this->pengaduan->get_by_id($this->input->post('pengaduan'));
+                $from = $this->session->userdata('userCode');
 
                 // cek kelengkapan
                 $temp = $this->session->userdata('temp');
+                // var_dump($temp);
+                // die;
                 foreach ($temp['kegiatan_kelengkapan'] as $k => $v) {
                     if ($v == NULL || $v == '') {
                         $data = array(
@@ -830,6 +836,7 @@ class Penyidikan extends MX_Controller
                     return $this->output->set_content_type('application/json')->set_output(json_encode($data));
                 }
                 $tugas_id = $this->db->insert_id();
+
                 $tembusanParams = [];
                 $no = 1;
                 $tembusanData = $this->input->post('tembusan') == NULL ? [] : $this->input->post('tembusan');
@@ -869,12 +876,36 @@ class Penyidikan extends MX_Controller
                     }
                     $kegiatan_id = $this->db->insert_id();
                     $pegawai_detail_tugasParams = [];
-                    foreach ($v as $kk => $x) {
+                    foreach ($v as $k => $x) {
                         $pegawai_detail_tugasParams[] = [
                             'pegawai_id' => $x['pegawai']['id'],
                             'detail_tugas_id' => $kegiatan_id,
                             'leader' => $x['leader']
                         ];
+
+                        if ($x['leader'] == 1) {
+                            $description = 'Anda diberi tugas sebagai ketua tim dengan no surat tugas ' . $this->input->post('no_surat_tugas') . ' dari no pengaduan ' . $pengaduan->no . ' untuk melakukan kegiatan penyidikan ' . $kegiatanData->kegiatan;
+                        } else {
+                            $description = 'Anda diberi tugas sebagai anggota tim dengan no surat tugas ' . $this->input->post('no_surat_tugas') . ' dari no pengaduan ' . $pengaduan->no . ' untuk melakukan kegiatan penyidikan ' . $kegiatanData->kegiatan;
+                        }
+
+                        $notifParam = [
+                            'from' => $from,
+                            'to' => $x['pegawai']['userCode'],
+                            'description' => $description,
+                            'data' => json_encode([
+                                'link' => base_url('kejati/tugas/index/' . encrypt('detail(' . $tugas_id . ');')),
+                                'action' => 'detail(' . $tugas_id . ');'
+                            ], true)
+                        ];
+
+                        $notif = $this->db->insert('notifikasi', $notifParam);
+                        if ($this->db->trans_status() === FALSE || $notif == FALSE) {
+                            $this->db->trans_rollback();
+                            $data['status'] = FALSE;
+                            $data['message'] = "Gagal menambah penyidikan";
+                            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                        }
                     }
                     $pegawai_detail_tugas = $this->db->insert_batch('pegawai_detail_tugas', $pegawai_detail_tugasParams);
                     if ($this->db->trans_status() === FALSE || $pegawai_detail_tugas == FALSE) {
@@ -884,10 +915,10 @@ class Penyidikan extends MX_Controller
                         return $this->output->set_content_type('application/json')->set_output(json_encode($data));
                     }
 
-                    // var_dump($temp['kegiatan_kelengkapan'][$kegiatan_id]);
-                    // die; 
+                    // var_dump($temp['kegiatan_kelengkapan'][$kegiatanData->id]);
+                    // die;
                     $kelengkapanParams = [];
-                    foreach ($temp['kegiatan_kelengkapan'][$k] as $t => $y) {
+                    foreach ($temp['kegiatan_kelengkapan'][$kegiatanData->id] as $t => $y) {
                         $kelengkapanParams[] = [
                             'detail_tugas_id' => $kegiatan_id,
                             'kelengkapan_id' => $t,
@@ -903,7 +934,8 @@ class Penyidikan extends MX_Controller
                         return $this->output->set_content_type('application/json')->set_output(json_encode($data));
                     }
 
-                    $hasilData = $this->db->get_where('hasil', ['deleteAt' => NULL, 'kegiatan_id' => $k])->result_array();
+                    $hasilData = $this->db->get_where('hasil', ['deleteAt' => NULL, 'kegiatan_id' => $kegiatanData->id])->result_array();
+
 
                     $hasilParams = [];
                     foreach ($hasilData as $h => $r) {
@@ -921,6 +953,7 @@ class Penyidikan extends MX_Controller
                     }
                 }
                 $this->db->trans_commit();
+
 
                 $data['status'] = TRUE;
                 $data['message'] = "Berhasil menambah penyidikan";
