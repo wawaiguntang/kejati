@@ -1,7 +1,7 @@
 <div class="card card-body">
     <?php if (isset($pimpinan)) { ?>
         <p class="text-sm text-bold my-0">Jaksa</p>
-        <?php if ($pegawai != '') {
+        <?php if (isset($pegawai)) {
             foreach ($pegawai as $w => $a) {
           ?>
             <div class="author align-items-center mb-1">
