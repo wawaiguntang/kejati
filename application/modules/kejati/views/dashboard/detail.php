@@ -3,30 +3,36 @@
         <p class="text-sm text-bold my-0">Jaksa</p>
         <?php if (isset($pegawai)) {
             foreach ($pegawai as $w => $a) {
-          ?>
-            <div class="author align-items-center mb-1">
-                <img src="<?php echo base_url('assets/img/pegawai/foto/' . $a['foto']) ?>" alt="..." class="avatar shadow">
-                <div class="name ps-3">
-                    <p class="pb-0 mb-0 text-sm text-bold"><?php echo $a['nama'] ?></p>
-                    <p class="text-xs py-0 my-0"><?php echo $a['leader'] == 1 ? 'Ketua Tim' : 'Anggota Tim' ?></p>
+        ?>
+                <div class="author align-items-center mb-1">
+                    <img src="<?php echo base_url('assets/img/pegawai/foto/' . $a['foto']) ?>" alt="..." class="avatar shadow">
+                    <div class="name ps-3">
+                        <p class="pb-0 mb-0 text-sm text-bold"><?php echo $a['nama'] ?></p>
+                        <p class="text-xs py-0 my-0"><?php echo $a['leader'] == 1 ? 'Ketua Tim' : 'Anggota Tim' ?></p>
+                    </div>
                 </div>
-            </div>
-        <?php }} ?>
+        <?php }
+        } ?>
         <hr>
     <?php } ?>
     <p class="text-sm text-bold my-0">Instruksi Umum</p>
-    <?php foreach ($instruksi as $k => $v) { ?>
-        <p class="text-xs my-0">- <?php echo $v['umum'] ?> <span class="text-bold"><?php echo $v['createAt'] ?></span></p>
-    <?php } ?>
+    <?php
+    if (isset($instruksi)) {
+        foreach ($instruksi as $k => $v) {
+
+    ?>
+            <p class="text-xs my-0">- <?php echo $v['umum'] ?> <span class="text-bold"><?php echo $v['createAt'] ?></span></p>
+    <?php }
+    } ?>
     <?php if ($leader == '0') { ?>
         <p class="text-sm text-bold my-1">Instruksi Khusus</p>
-        <?php if ($tugas ==NULL ) {
+        <?php if ($tugas == NULL) {
             echo '';
-        } else {?>
-        <?php foreach ($tugas as $k => $v) { ?>
-            <p class="text-xs my-0">- <?php echo $v['tugas'] ?> <span class="text-bold"><?php echo $v['createAt'] ?></span></p>
-        <?php } 
-        }?>
+        } else { ?>
+            <?php foreach ($tugas as $k => $v) { ?>
+                <p class="text-xs my-0">- <?php echo $v['tugas'] ?> <span class="text-bold"><?php echo $v['createAt'] ?></span></p>
+        <?php }
+        } ?>
         <hr>
         <div class="koordinasiHtmlSelf">
             <p class="text-sm text-bold my-1">Koordinasi</p>
