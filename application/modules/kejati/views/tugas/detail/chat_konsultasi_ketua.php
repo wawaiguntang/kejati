@@ -38,23 +38,23 @@
                             </li> -->
                         </ul>
                     </div>
-                    <?php if($waktu_selesai == NULL || $waktu_selesai == ''){ ?>
-                    <div class="chat-message clearfix pt-0 pb-1">
-                        <form id="form-chat" action="">
-                            <div class="input-group mb-0">
-                                
-                                <input id="pesan" type="text" class="form-control" placeholder="Ketik Pesan">
-                                <input id="untuk" type="hidden" class="form-control" value="<?= $pegawai['id']; ?>">
-                                <input id="dari" type="hidden" class="form-control" value="<?= $leader; ?>">
-                                <input id="id_konsultasi" type="hidden" class="form-control" value="<?= $id_konsultasi; ?>">
-                                
+                    <?php if ($waktu_selesai == NULL || $waktu_selesai == '') { ?>
+                        <div class="chat-message clearfix pt-0 pb-1">
+                            <form id="form-chat" action="">
+                                <div class="input-group mb-0">
+
+                                    <input id="pesan" type="text" class="form-control" placeholder="Ketik Pesan">
+                                    <input id="untuk" type="hidden" class="form-control" value="<?= $pegawai['id']; ?>">
+                                    <input id="dari" type="hidden" class="form-control" value="<?= $leader; ?>">
+                                    <input id="id_konsultasi" type="hidden" class="form-control" value="<?= $id_konsultasi; ?>">
+
                                     <div class="input-group-prepend" onclick="kirimPesan()" style="cursor: pointer;">
                                         <span class="input-group-text"><i class="fa fa-paper-plane m-1"></i></span>
                                     </div>
-                               
-                            </div>
-                        </form>
-                    </div>
+
+                                </div>
+                            </form>
+                        </div>
                     <?php } ?>
                 </div>
             </div>
@@ -84,7 +84,7 @@
                 // console.log(data)
                 var html = '';
                 if (data.status) {
-                    
+
                     let chat = data.data.chat;
                     chat.forEach(c => {
                         if (c.dari == <?= $leader; ?>) {
@@ -144,5 +144,14 @@
     });
     $('#close-modal2').click(function() {
         clearInterval(myChat);
+    });
+    $(document).ready(function() {
+        $(window).keydown(function(event) {
+            if (event.keyCode == 13) {
+                event.preventDefault();
+                kirimPesan();
+                return false;
+            }
+        });
     });
 </script>

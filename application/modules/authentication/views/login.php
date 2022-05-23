@@ -26,10 +26,10 @@ $profile = getProfileWeb();
 
 <body class="g-sidenav-show  bg-gray-100" style="background-image: url('<?php echo base_url() ?>assets/kejati/image/7.jpg'); background-size: cover;">
     <!-- Navbar -->
-    
+
     <!-- End Navbar -->
     <section class="min-vh-500 ">
-        <div class="page-header align-items-start min-vh-50 pt-5 pb-11 m-3 border-radius-lg" >
+        <div class="page-header align-items-start min-vh-50 pt-5 pb-11 m-3 border-radius-lg">
             <span class=""></span>
             <!-- <span class="mask opacity-6"></span> -->
             <div class="container align-middle">
@@ -39,41 +39,36 @@ $profile = getProfileWeb();
                     </div>
                 </div>
                 <div class="row mt-7">
-                <div class="col-xl-4 col-lg-5 col-md-7 mx-auto">
-                    <div class="card z-index-0">
-                        <div class="text-center pt-4">
-                            <h5>Login</h5>
-                        </div>
-                        <div class="card-body">
-                            <?php
-                            echo form_open(base_url('authentication/login/act_login'), 'role="form text-left"');
-                            ?>
-                            <div class="mb-3">
-                                <input type="email" name="email" value="<?php echo set_value('email') ?>" class="form-control" placeholder="Email" aria-label="Email" aria-describedby="email-addon">
-                                <span class="text-danger mt-1"><?php echo form_error('email')?></span>
-                                <span class="text-danger mt-1 ml-1 text-xs"><?php echo ($this->session->has_userdata('emailErr') ? $this->session->flashdata('emailErr'): '')?></span>
+                    <div class="col-xl-4 col-lg-5 col-md-7 mx-auto">
+                        <div class="card z-index-0">
+                            <div class="text-center pt-4">
+                                <h5>Login</h5>
                             </div>
-                            <div class="mb-3">
-                                <input type="password" name="password" value="<?php echo set_value('password') ?>" class="form-control" placeholder="Password" aria-label="Password" aria-describedby="password-addon">
-                                <span class="text-danger mt-1 ml-1 text-xs"><?php echo form_error('password')?></span>
-                                <span class="text-danger mt-1 ml-1 text-xs"><?php echo ($this->session->has_userdata('passwordErr') ? $this->session->flashdata('passwordErr'): '')?></span>
+                            <div class="card-body">
+                                <?php
+                                echo form_open(base_url('authentication/login/act_login'), 'role="form text-left"');
+                                ?>
+                                <div class="mb-3">
+                                    <input type="email" name="email" value="<?php echo set_value('email') ?>" class="form-control" placeholder="Email" aria-label="Email" aria-describedby="email-addon">
+                                    <span class="text-danger mt-1"><?php echo form_error('email') ?></span>
+                                    <span class="text-danger mt-1 ml-1 text-xs"><?php echo ($this->session->has_userdata('emailErr') ? $this->session->flashdata('emailErr') : '') ?></span>
+                                </div>
+                                <div class="mb-3">
+                                    <input type="password" name="password" value="<?php echo set_value('password') ?>" class="form-control" placeholder="Password" aria-label="Password" aria-describedby="password-addon">
+                                    <span class="text-danger mt-1 ml-1 text-xs"><?php echo form_error('password') ?></span>
+                                    <span class="text-danger mt-1 ml-1 text-xs"><?php echo ($this->session->has_userdata('passwordErr') ? $this->session->flashdata('passwordErr') : '') ?></span>
+                                </div>
+
+                                <div class="text-center">
+                                    <button type="submit" class="btn bg-gradient-dark w-100 my-4 mb-2">Masuk</button>
+                                </div>
+                                <?php
+                                echo form_close();
+                                ?>
                             </div>
-                            <div class="form-check form-check-info text-left">
-                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" checked>
-                                <label class="form-check-label" for="flexCheckDefault">
-                                    Remember me
-                                </label>
-                            </div>
-                            <div class="text-center">
-                                <button type="submit" class="btn bg-gradient-dark w-100 my-4 mb-2">Masuk</button>
-                            </div>
-                            <?php
-                            echo form_close();
-                            ?>
                         </div>
                     </div>
                 </div>
-            </div>
             </div>
         </div>
         <div class="container">
@@ -89,13 +84,13 @@ $profile = getProfileWeb();
                             ?>
                             <div class="mb-3">
                                 <input type="email" name="email" value="<?php echo set_value('email') ?>" class="form-control" placeholder="Email" aria-label="Email" aria-describedby="email-addon">
-                                <span class="text-danger mt-1"><?php echo form_error('email')?></span>
-                                <span class="text-danger mt-1 ml-1 text-xs"><?php echo ($this->session->has_userdata('emailErr') ? $this->session->flashdata('emailErr'): '')?></span>
+                                <span class="text-danger mt-1"><?php echo form_error('email') ?></span>
+                                <span class="text-danger mt-1 ml-1 text-xs"><?php echo ($this->session->has_userdata('emailErr') ? $this->session->flashdata('emailErr') : '') ?></span>
                             </div>
                             <div class="mb-3">
                                 <input type="password" name="password" value="<?php echo set_value('password') ?>" class="form-control" placeholder="Password" aria-label="Password" aria-describedby="password-addon">
-                                <span class="text-danger mt-1 ml-1 text-xs"><?php echo form_error('password')?></span>
-                                <span class="text-danger mt-1 ml-1 text-xs"><?php echo ($this->session->has_userdata('passwordErr') ? $this->session->flashdata('passwordErr'): '')?></span>
+                                <span class="text-danger mt-1 ml-1 text-xs"><?php echo form_error('password') ?></span>
+                                <span class="text-danger mt-1 ml-1 text-xs"><?php echo ($this->session->has_userdata('passwordErr') ? $this->session->flashdata('passwordErr') : '') ?></span>
                             </div>
                             <div class="form-check form-check-info text-left">
                                 <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" checked>

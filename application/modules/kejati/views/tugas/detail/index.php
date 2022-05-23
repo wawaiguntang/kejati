@@ -256,15 +256,15 @@
                                                                         <?php
                                                                         }
                                                                         ?>
-                                                                </td>
-                                                                <td>
-                                                                    <div class="col-2">
-                                                                        <button type="button" class="btn  p-2 bg-gradient-info position-relative" onclick="cardKonsulKetua(<?= $a['pdtId']; ?>,<?= $g['id'] ?>,<?= $a['pegawai_id']; ?>,<?= $leader; ?>)">
-                                                                        <i class="fa-solid fa-person-military-to-person"></i> Koordinasi
-                                                                        </button>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="col-2">
+                                                                            <button type="button" class="btn  p-2 bg-gradient-info position-relative" onclick="cardKonsulKetua(<?= $a['pdtId']; ?>,<?= $g['id'] ?>,<?= $a['pegawai_id']; ?>,<?= $leader; ?>)">
+                                                                                <i class="fa-solid fa-person-military-to-person"></i> Koordinasi
+                                                                            </button>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
                                                         <?php
                                                             }
                                                         }
@@ -475,7 +475,7 @@
 
                                                                 <div class="col-2">
                                                                     <button type="button" class="btn  p-2 bg-gradient-info position-relative" onclick="cardKonsul(<?= $a['pdtId']; ?>,<?= $g['id'] ?>,<?= $leader; ?>,<?= $a['pegawai_id']; ?>)">
-                                                                    <i class="fa-solid fa-person-military-to-person"></i> Koordinasi
+                                                                        <i class="fa-solid fa-person-military-to-person"></i> Koordinasi
                                                                     </button>
                                                                 </div>
                                                             </div>

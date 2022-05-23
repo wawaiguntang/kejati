@@ -16,7 +16,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="chat-history pb-0" >
+                    <div class="chat-history pb-0">
                         <ul style="max-height: 350px; overflow-y: auto;" id="list-pesan" class="m-b-0">
                             <!-- <li class="clearfix mb-1">
                                 <div class="message-data text-end">
@@ -38,21 +38,21 @@
                             </li> -->
                         </ul>
                     </div>
-                    <?php if($waktu_selesai == NULL || $waktu_selesai == ''){ ?>
-                    <div class="chat-message clearfix pt-0 pb-1">
-                        <form id="form-chat" action="">
-                            <div class="input-group mb-0">
-                                
-                                <input id="pesan" type="text" class="form-control" placeholder="Enter text here...">
-                                <input id="dari" type="hidden" class="form-control" value="<?= $pegawai_id; ?>">
-                                <input id="untuk" type="hidden" class="form-control" value="<?= $leader['id']; ?>">
-                                <input id="id_konsultasi" type="hidden" class="form-control" value="<?= $id_konsultasi; ?>">
-                                <div class="input-group-prepend" onclick="kirimPesan()" style="cursor: pointer;">
-                                    <span class="input-group-text"><i class="fa fa-paper-plane m-1"></i></span>
+                    <?php if ($waktu_selesai == NULL || $waktu_selesai == '') { ?>
+                        <div class="chat-message clearfix pt-0 pb-1">
+                            <form id="form-chat" action="">
+                                <div class="input-group mb-0">
+
+                                    <input id="pesan" type="text" class="form-control" placeholder="Enter text here...">
+                                    <input id="dari" type="hidden" class="form-control" value="<?= $pegawai_id; ?>">
+                                    <input id="untuk" type="hidden" class="form-control" value="<?= $leader['id']; ?>">
+                                    <input id="id_konsultasi" type="hidden" class="form-control" value="<?= $id_konsultasi; ?>">
+                                    <div class="input-group-prepend" onclick="kirimPesan()" style="cursor: pointer;">
+                                        <span class="input-group-text"><i class="fa fa-paper-plane m-1"></i></span>
+                                    </div>
                                 </div>
-                            </div>
-                        </form>
-                    </div>
+                            </form>
+                        </div>
                     <?php } ?>
                 </div>
             </div>
@@ -146,5 +146,14 @@
     });
     $('#close-modal2').click(function() {
         clearInterval(myChat);
+    });
+    $(document).ready(function() {
+        $(window).keydown(function(event) {
+            if (event.keyCode == 13) {
+                event.preventDefault();
+                kirimPesan();
+                return false;
+            }
+        });
     });
 </script>
