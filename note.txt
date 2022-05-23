@@ -1,0 +1,42 @@
+- penempatan no pengaduan, dipindah ke atas
+- responsive notifikasi (penting)
+- reject dari ketua tim ke anggota
+- report kegiatan dari masing masing jaksa (waktu)
+- konsultasi dari anggota ke ketua dan ketua ke pimpinan (penting) -- hiskia
+
+- input semua data SOP (penting)
+
+- identitas aplikasi berupa nama dan keterangan (di login)
+- konsistensi pengguna bahasa (penting)
+
+
+
+
+
+
+13-05-2022
+- semua jaksa bisa upload tugas ke atasan -- diki
+- perapihan menu tugas -- diki (done)
+- jumlah kegiatan -- diki
+
+
+
+14-05-2022
+- nama navbar diganti ke kejaksaan tinggi lampung (clear)
+- pengaduan maks 14 hari (on progress)
+- upload file di pengaduan (on progress) 
+- status tindakan di pengaduan (on progress)
+
+
+- No Surat Tugas replace jadi No Surat Perintah Penyelidikan (menu penyelidikan) (clear)
+- buat instruksi umum (clear)
+
+- pimpinan all access /dashboard (clear)
+
+- kolom catatan di pimpinan saat tolak/terima (clear)
+
+- konsultasi di replace jadi koordinasi (clear)
+- dashboard pimpinan (clear)
+
+
+https://prod.liveshare.vsengsaas.visualstudio.com/join?20DD1BE14D96FE2276166EF40039E12CA2A9

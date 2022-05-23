@@ -1,0 +1,37 @@
+{
+    "code": "KEJATI",
+    "header" : "Kejaksaan Tinggi",
+    "menu" : [
+        {
+            "text" : "Master",
+            "icon" : "<i class='fa fa-gear'></i>",
+            "url" : "kejati/master",
+            "access" : ["RJABATAN","RPANGKAT","RGOLONGAN"]
+        },
+        {
+            "text" : "Pengaduan",
+            "icon" : "<i class='fa fa-question'></i>",
+            "url" : "kejati/pengaduan",
+            "access" : ["RPENGADUAN"]
+        },
+        {
+            "text" : "Penyelidikan",
+            "icon" : "<i class='fa fa-search'></i>",
+            "url" : "kejati/penyelidikan",
+            "access" : ["RPENYELIDIKAN"]
+        },
+        {
+            "text" : "Penyidikan",
+            "icon" : "<i class='fa fa-search'></i>",
+            "url" : "kejati/penyidikan",
+            "access" : ["RPENYIDIKAN"]
+        },
+        {
+            "text" : "Tugas",
+            "icon" : "<i class='fa fa-search'></i>",
+            "url" : "kejati/tugas",
+            "access" : ["RTUGASSELF"]
+        }
+    ]
+}
+

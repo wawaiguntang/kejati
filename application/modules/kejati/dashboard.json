@@ -1,0 +1,10 @@
+{
+  "kegiatan": {
+    "view": "/dashboard/kegiatan",
+    "params": []
+  },
+  "detail": {
+    "view": "/dashboard/detail",
+    "params": []
+  }
+}
