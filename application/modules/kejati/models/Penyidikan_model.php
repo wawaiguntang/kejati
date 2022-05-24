@@ -5,8 +5,8 @@ class Penyidikan_model extends CI_Model
 {
 
 	var $table = 'tugas';
-	var $column_order = array('no_surat_tugas', 'no_nota_dinas', 'sop', 'pengaduan.perihal', 'status'); //set column field database for datatable orderable
-	var $column_search = array('no_surat_tugas', 'no_nota_dinas', 'sop', 'pengaduan.perihal', 'status'); //set column field database for datatable searchable just firstname , lastname , address are searchable
+	var $column_order = array('no_surat_tugas', 'no_nota_dinas', 'sop', 'pengaduan.perihal', 'kategori'); //set column field database for datatable orderable
+	var $column_search = array('no_surat_tugas', 'no_nota_dinas', 'sop', 'pengaduan.perihal', 'kategori'); //set column field database for datatable searchable just firstname , lastname , address are searchable
 	var $order = array('tugas.id' => 'desc'); // default order 
 
 	public function __construct()
@@ -19,7 +19,7 @@ class Penyidikan_model extends CI_Model
 	{
 
 		$this->db
-			->select('tugas.id as id,no_surat_tugas,no_nota_dinas,sop,perihal,status')
+			->select('tugas.id as id,no_surat_tugas,no_nota_dinas,sop,perihal,kategori')
 			->from($this->table)
 			->join('sop', 'sop.id=tugas.sop_id')
 			->join('pengaduan', 'pengaduan.id=tugas.pengaduan_id')

@@ -4,7 +4,7 @@
             <?php echo ((in_array('CPENYELIDIKAN', $userPermission)) ? button('Tambah Penyidikan', ["btn-primary"], ["onclick" => "addData()"]) : '') ?>
         </div>
         <div class="table-responsive">
-            <?php echo table('penyidikan', ['No Surat Tugas', 'No Nota Dinas', 'SOP', 'Perihal Pengaduan', 'status', 'Aksi'], ['table-hover py-1 px-0 mx-0']); ?>
+            <?php echo table('penyidikan', ['No Surat Tugas', 'No Nota Dinas', 'SOP', 'Perihal Pengaduan', 'Kategori', 'Aksi'], ['table-hover py-1 px-0 mx-0']); ?>
         </div>
     </div>
 </div>

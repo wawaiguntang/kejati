@@ -117,7 +117,7 @@ $profile = getProfileWeb();
                     <p class="mb-0 text-white">
                         Copyright © <script>
                             document.write(new Date().getFullYear())
-                        </script> Cinda Logika Grafia.
+                        </script>
                     </p>
                 </div>
             </div>

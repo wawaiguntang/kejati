@@ -52,7 +52,7 @@ class Penyidikan extends MX_Controller
                 ]
             ], 'Data Penyidikan');
             $data['data'] =  $this->load->view($this->module . '/penyidikan/index', $params, TRUE);
-            $this->output
+            return $this->output
                 ->set_content_type('application/json')
                 ->set_output(
                     json_encode($data)
@@ -71,7 +71,7 @@ class Penyidikan extends MX_Controller
             $row[] = '  <p class="text-sm d-flex py-auto my-auto"><b>' . $penyidikan->no_nota_dinas . '</b></p>';
             $row[] = '  <p class="text-sm d-flex py-auto my-auto"><b>' . $penyidikan->sop . '</b></p>';
             $row[] = '  <p class="text-sm d-flex py-auto my-auto"><b>' . character_limiter($penyidikan->perihal, 25) . '</b></p>';
-            $row[] = '  <p class="text-sm d-flex py-auto my-auto"><b>' . $penyidikan->status . '</b></p>';
+            $row[] = '  <p class="text-sm d-flex py-auto my-auto"><b>' . $penyidikan->kategori . '</b></p>';
 
             // $row[] = "
             //     <div class='d-flex justify-content-center'>
@@ -83,8 +83,7 @@ class Penyidikan extends MX_Controller
 
             $row[] = "
                 <div class='d-flex justify-content-center'>
-                " . ((in_array('DPENYIDIKAN', $userPermission)) ? '<i class="ri-delete-bin-line ri-lg text-danger m-1" role="button" title="Hapus" onclick="deleteData(' . $penyidikan->id . ')"></i>' : '') . "
-                " . ((in_array('RDETAILPENYELIDIKAN', $userPermission)) ? '<i class="ri-information-line ri-lg text-primary m-1" role="button" title="Info" onclick="detail(' . $penyidikan->id . ')"></i>' : '') . "
+                " . ((in_array('RDETAILPENYIDIKAN', $userPermission)) ? '<i class="ri-information-line ri-lg text-primary m-1" role="button" title="Info" onclick="detail(' . $penyidikan->id . ')"></i>' : '') . "
                 </div>
                 ";
 
@@ -308,8 +307,86 @@ class Penyidikan extends MX_Controller
         }
     }
 
+    public function editKegiatanHTML()
+    {
+        $userPermission = getPermissionFromUser();
+        if (!in_array('CPENYIDIKAN', $userPermission)) {
+            $data = array(
+                'status'         => FALSE,
+                'message'         => "Anda tidak memiliki akses!"
+            );
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        } else {
+            if ($this->input->post('kegiatan_id') == NULL) {
+                $data = array(
+                    'status'         => FALSE,
+                    'message'         => "Kegiatan is required"
+                );
+                return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+            }
+            $data['status'] = TRUE;
+            // $kegiatan = [];
+
+            // echo json_encode($this->session->userdata('temp')['kegiatan']);
+
+            if (isset($this->session->userdata('temp')['kegiatan'])) {
+                $kegiatan = $this->session->userdata('temp')['kegiatan'];
+                foreach ($kegiatan as $k => $v) {
+                    if ($k == $this->input->post('kegiatan_id')) {
+                        $data = array(
+                            'status'         => FALSE,
+                            'message'         => "Kegiatan has been added"
+                        );
+                        // $this->session->unset_userdata('temp');
+                        return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                    }
+                }
+            }
+
+
+
+            $tugas = $this->session->userdata('tugas_id');
+            $cek_tugas = $this->db->get_where('detail_tugas', array('tugas_id' => $tugas))->result();
+            foreach ($cek_tugas as $k) {
+                if ($k->kegiatan_id == $this->input->post('kegiatan_id')) {
+                    $data = array(
+                        'status'         => FALSE,
+                        'message'         => "Kegiatan has been added"
+                    );
+                    return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                }
+            }
+            $kelengkapan = [];
+            $kelengkapanData = $this->kelengkapan->get_all($this->input->post('kegiatan_id'));
+            foreach ($kelengkapanData as $k) {
+                $kelengkapan[$k->id] = [];
+            }
+            $kegiatan[$this->input->post('kegiatan_id')] = [];
+            $kegiatan_kelengkapan = [];
+            $kegiatan_kelengkapan[$this->input->post('kegiatan_id')] = $kelengkapan;
+            $this->session->set_userdata([
+                'temp' => [
+                    'kegiatan' => $kegiatan,
+                    'kegiatan_kelengkapan' => $kegiatan_kelengkapan
+                ]
+            ]);
+
+            $kegiatanData = $this->kegiatan->get_by_id($this->input->post('kegiatan_id'));
+            $kegiatanData->kelengkapan = $this->kelengkapan->get_all($this->input->post('kegiatan_id'));
+
+            $params = [
+                'kegiatan' => $kegiatanData,
+            ];
+            $data['data'] = $this->load->view($this->module . '/penyidikan/sop_kegiatan', $params, TRUE);
+            $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        }
+    }
+
     public function deleteKegiatanHTML()
     {
+        if (isset($this->session->userdata('temp')['kegiatan'])) {
+            $this->session->unset_userdata('temp');
+        }
         $userPermission = getPermissionFromUser();
         if (!in_array('CPENYIDIKAN', $userPermission)) {
             $data = array(
@@ -337,8 +414,10 @@ class Penyidikan extends MX_Controller
                 $insert = array(
                     'kegiatan_id' => $this->input->post('kegiatan_id'),
                 );
-
-                $temp = $this->session->userdata('temp')['kegiatan'];
+                $temp = [];
+                if (isset($this->session->userdata('temp')['kegiatan'])) {
+                    $temp = $this->session->userdata('temp')['kegiatan'];
+                }
                 unset($temp[$insert['kegiatan_id']]);
                 unset($this->session->userdata('temp')['kegiatan_kelengkapan'][$insert['kegiatan_id']]);
                 $this->session->set_userdata([
@@ -961,9 +1040,203 @@ class Penyidikan extends MX_Controller
             }
         }
     }
+    public function saveEdit()
+    {
+        $userPermission = getPermissionFromUser();
+        if (!in_array('CPENYIDIKAN', $userPermission)) {
+            $data = array(
+                'status'         => FALSE,
+                'message'         => "Anda tidak memiliki akses!"
+            );
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        } else {
+            $this->validation_for = 'add';
+            $data = array();
+            $data['status'] = TRUE;
+
+            $from = $this->session->userdata('userCode');
+
+
+            // cek kelengkapan
+            $temp = $this->session->userdata('temp');
+            // var_dump($temp);
+            // die;
+            foreach ($temp['kegiatan_kelengkapan'] as $k => $v) {
+                if ($v == NULL || $v == '') {
+                    $data = array(
+                        'status'         => FALSE,
+                        'message'         => 'Lengkapi file kelengkapan terlebih dahulu'
+                    );
+                    return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                } else {
+                    foreach ($v as $t => $y) {
+                        if ($y == NULL || $y == '') {
+                            $data = array(
+                                'status'         => FALSE,
+                                'message'         => 'Lengkapi file kelengkapan terlebih dahulu'
+                            );
+                            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                        }
+                    }
+                }
+            }
+
+            // cek pegawai dan leader
+            foreach ($temp['kegiatan'] as $k => $v) {
+                if ($v == NULL || $v == '') {
+                    $data = array(
+                        'status'         => FALSE,
+                        'message'         => 'Setiap tugas minimal 1 jaksa'
+                    );
+                    return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                } else {
+                    $leader = FALSE;
+                    foreach ($v as $kk => $x) {
+                        if ($x['leader'] == 1) {
+                            $leader = TRUE;
+                        }
+                    }
+                    if ($leader == FALSE) {
+                        $data = array(
+                            'status'         => FALSE,
+                            'message'         => 'Setiap tugas harus mempunyai ketua tim jaksa'
+                        );
+                        return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                    }
+                }
+            }
+
+            $this->db->trans_start();
+
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                $data['status'] = FALSE;
+                $data['message'] = "Gagal menambah penyidikan7";
+                return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+            }
+            $tugas_id = $this->session->userdata('tugas_id');
+
+
+
+
+            if ($this->db->trans_status() === FALSE) {
+                $this->db->trans_rollback();
+                $data['status'] = FALSE;
+                $data['message'] = "Gagal menambah penyidikan";
+                return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+            }
+
+            foreach ($temp['kegiatan'] as $k => $v) {
+                // var_dump($v);
+                // die;
+                $kegiatanData = $this->kegiatan->get_by_id($k);
+                $kegiatanParams = [
+                    'tugas_id' => $tugas_id,
+                    'kegiatan_id' => $k,
+                    'status' => 'Dalam proses',
+                    'waktu' => $kegiatanData->waktu,
+                    'satuan' => $kegiatanData->satuan,
+                    // 'waktu_mulai' => date('Y-m-d H:i:s'),
+                    'dibuka' => 0
+                ];
+                $kegiatan = $this->db->insert('detail_tugas', $kegiatanParams);
+                if ($this->db->trans_status() === FALSE || $kegiatan == FALSE) {
+                    $this->db->trans_rollback();
+                    $data['status'] = FALSE;
+                    $data['message'] = "Gagal menambah penyidikan6";
+                    return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                }
+                $kegiatan_id = $this->db->insert_id();
+                $pegawai_detail_tugasParams = [];
+                foreach ($v as $k => $x) {
+                    $pegawai_detail_tugasParams[] = [
+                        'pegawai_id' => $x['pegawai']['id'],
+                        'detail_tugas_id' => $kegiatan_id,
+                        'leader' => $x['leader']
+                    ];
+                    if ($x['leader'] == 1) {
+                        $description = 'Anda diberi tugas sebagai ketua tim dengan no surat tugas ' . $this->input->post('no_surat_tugas') . ' untuk melakukan kegiatan penyidikan ' . $kegiatanData->kegiatan;
+                    } else {
+                        $description = 'Anda diberi tugas sebagai anggota tim dengan no surat tugas ' . $this->input->post('no_surat_tugas') . ' untuk melakukan kegiatan penyidikan ' . $kegiatanData->kegiatan;
+                    }
+
+                    $notifParam = [
+                        'from' => $from,
+                        'to' => $x['pegawai']['userCode'],
+                        'description' => $description,
+                        'data' => json_encode([
+                            'link' => base_url('kejati/tugas/index/' . encrypt('detail(' . $tugas_id . ');')),
+                            'action' => 'detail(' . $tugas_id . ');'
+                        ], true)
+                    ];
+
+                    $notif = $this->db->insert('notifikasi', $notifParam);
+                    if ($this->db->trans_status() === FALSE || $notif == FALSE) {
+                        $this->db->trans_rollback();
+                        $data['status'] = FALSE;
+                        $data['message'] = "Gagal menambah penyidikan1";
+                        return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                    }
+                }
+                $pegawai_detail_tugas = $this->db->insert_batch('pegawai_detail_tugas', $pegawai_detail_tugasParams);
+                if ($this->db->trans_status() === FALSE || $pegawai_detail_tugas == FALSE) {
+                    $this->db->trans_rollback();
+                    $data['status'] = FALSE;
+                    $data['message'] = "Gagal menambah penyidikan2";
+                    return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                }
+
+                // var_dump($temp['kegiatan_kelengkapan'][$kegiatanData->id]);
+                // die;
+                $kelengkapanParams = [];
+                foreach ($temp['kegiatan_kelengkapan'][$kegiatanData->id] as $t => $y) {
+                    $kelengkapanParams[] = [
+                        'detail_tugas_id' => $kegiatan_id,
+                        'kelengkapan_id' => $t,
+                        'dokumen' => $y['file'],
+                        'tipe' => $y['type']
+                    ];
+                }
+                $kelengkapan = $this->db->insert_batch('kelengkapan_data', $kelengkapanParams);
+                if ($this->db->trans_status() === FALSE || $kelengkapan == FALSE) {
+                    $this->db->trans_rollback();
+                    $data['status'] = FALSE;
+                    $data['message'] = "Gagal menambah penyidikan3";
+                    return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                }
+
+                $hasilData = $this->db->get_where('hasil', ['deleteAt' => NULL, 'kegiatan_id' => $kegiatanData->id])->result_array();
+
+
+                $hasilParams = [];
+                foreach ($hasilData as $h => $r) {
+                    $hasilParams[] = [
+                        'detail_tugas_id' => $kegiatan_id,
+                        'hasil_id' => $r['id']
+                    ];
+                }
+                $hasil = $this->db->insert_batch('hasil_data', $hasilParams);
+                if ($this->db->trans_status() === FALSE || $hasil == FALSE) {
+                    $this->db->trans_rollback();
+                    $data['status'] = FALSE;
+                    $data['message'] = "Gagal menambah penyidikan4";
+                    return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                }
+            }
+            $this->db->trans_commit();
+
+            $data['status'] = TRUE;
+            $data['message'] = "Berhasil menambah penyidikan";
+            $data['tugas_id'] = $tugas_id;
+            $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        }
+    }
 
     public function detail()
     {
+        if (isset($this->session->userdata('temp')['kegiatan'])) {
+            $this->session->unset_userdata('temp');
+        }
         $userPermission = getPermissionFromUser();
         if (!in_array('RDETAILPENYIDIKAN', $userPermission)) {
             $data = array(
@@ -972,6 +1245,7 @@ class Penyidikan extends MX_Controller
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
+        $this->session->set_userdata('tugas_id', $this->input->post('tugas_id'));
         if ($this->input->post('tugas_id') == NULL) {
             $data = array(
                 'status'         => FALSE,
@@ -1029,7 +1303,8 @@ class Penyidikan extends MX_Controller
             'tugas' => $tugas,
             'detail_tugas' => $detail_tugas,
             'pengaduan' => $this->load->view($this->module . '/penyidikan/pengaduan', $pengaduan, TRUE),
-            'kegiatan' => $kegiatan
+            'kegiatan' => $kegiatan,
+            'userPermission' => $userPermission,
         ];
         $data['breadcrumb'] = breadcrumb([
             [
@@ -1045,6 +1320,123 @@ class Penyidikan extends MX_Controller
             ]
         ], 'Detail Data Penyidikan');
         $data['data'] = $this->load->view($this->module . '/penyidikan/detail/index', $params, TRUE);
+        $this->output->set_content_type('application/json')->set_output(json_encode($data));
+    }
+
+    public function terimaTolak()
+    {
+        $userPermission = getPermissionFromUser();
+        if (!in_array('RDETAILPENYIDIKAN', $userPermission)) {
+            $data = array(
+                'status'         => FALSE,
+                'message'         => "Anda tidak memiliki akses!"
+            );
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        }
+        if ($this->input->post('detail_tugas_id') == NULL) {
+            $data = array(
+                'status'         => FALSE,
+                'message'         => "Tugas is required"
+            );
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        }
+        $tugas = $this->db
+            ->select('tugas.id as tugas_id, detail_tugas.id as id, detail_tugas.dibuka, sop.sop, sop.kategori, sop.waktu as sopWaktu, tugas.no_surat_tugas, tugas.no_nota_dinas, tugas.tanggal_nota_dinas, tugas.perihal_nota_dinas, tugas.status as tugasStatus, kegiatan.kegiatan, detail_tugas.waktu, detail_tugas.satuan, detail_tugas.waktu_mulai, detail_tugas.waktu_selesai, detail_tugas.status as detail_tugasStatus, tugas.pengaduan_id, kegiatan.keterangan')
+            ->join('tugas', 'tugas.id=detail_tugas.tugas_id')
+            ->join('sop', 'sop.id=tugas.sop_id')
+            ->join('kegiatan', 'kegiatan.id=detail_tugas.kegiatan_id')
+            ->get_where('detail_tugas', ['detail_tugas.deleteAt' => NULL, 'detail_tugas.id' => $this->input->post('detail_tugas_id'), 'detail_tugas.status' => 'Ditinjau atasan'])
+            ->row_array();
+        if ($tugas == NULL) {
+            $data = array(
+                'status'         => FALSE,
+                'message'         => "Tugas tidak ditemukan"
+            );
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        }
+        $params = [
+            'detail_tugas_id' => $this->input->post('detail_tugas_id'),
+            'tipe' => $this->input->post('tipe'),
+        ];
+        $data['status'] = TRUE;
+        $data['data'] = modal('addCatatan', $this->load->view($this->module . '/penyidikan/detail/catatan', $params, TRUE));
+        $this->output->set_content_type('application/json')->set_output(json_encode($data));
+    }
+
+    public function saveCatatan()
+    {
+        $userPermission = getPermissionFromUser();
+        if (!in_array('RDETAILPENYIDIKAN', $userPermission)) {
+            $data = array(
+                'status'         => FALSE,
+                'message'         => "Anda tidak memiliki akses!"
+            );
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        }
+        if ($this->input->post('detail_tugas_id') == NULL) {
+            $data = array(
+                'status'         => FALSE,
+                'message'         => "Tugas is required"
+            );
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        }
+        $tugas = $this->db
+            ->select('tugas.id as tugas_id, detail_tugas.id as id, detail_tugas.catatan, detail_tugas.dibuka, sop.sop, sop.kategori, sop.waktu as sopWaktu, tugas.no_surat_tugas, tugas.no_nota_dinas, tugas.tanggal_nota_dinas, tugas.perihal_nota_dinas, tugas.status as tugasStatus, kegiatan.kegiatan, detail_tugas.waktu, detail_tugas.satuan, detail_tugas.waktu_mulai, detail_tugas.waktu_selesai, detail_tugas.status as detail_tugasStatus, tugas.pengaduan_id, kegiatan.keterangan')
+            ->join('tugas', 'tugas.id=detail_tugas.tugas_id')
+            ->join('sop', 'sop.id=tugas.sop_id')
+            ->join('kegiatan', 'kegiatan.id=detail_tugas.kegiatan_id')
+            ->get_where('detail_tugas', ['detail_tugas.deleteAt' => NULL, 'detail_tugas.id' => $this->input->post('detail_tugas_id'), 'detail_tugas.status' => 'Ditinjau atasan'])
+            ->row_array();
+        if ($tugas == NULL) {
+            $data = array(
+                'status'         => FALSE,
+                'message'         => "Tugas tidak ditemukan"
+            );
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        }
+        $tempCatatan = json_decode($tugas['catatan']);
+        if ($this->input->post('catatan') != NULL) {
+            $tempCatatan[] = [
+                'tipe' => $this->input->post('tipe'),
+                'catatan' => $this->input->post('catatan'),
+                'createAt' => date('Y-m-d H:i:s')
+            ];
+        }
+        $tempCatatan = json_encode($tempCatatan, TRUE);
+        $update = $this->db->where('id', $this->input->post('detail_tugas_id'))->update('detail_tugas', [
+            'status' => (($this->input->post('tipe') == 'terima') ? 'Diterima' : 'Ditolak'),
+            'waktu_selesai' => (($this->input->post('tipe') == 'terima') ? date('Y-m-d H:i:s') : NULL),
+            'catatan' => $tempCatatan
+        ]);
+        if ($update) {
+            $notifParam = [];
+            $pegawai = $this->db->get_where('pegawai_detail_tugas', ['detail_tugas_id' => $this->input->post('detail_tugas_id'), 'deleteAt' => NULL])->result_array();
+            foreach ($pegawai as $p => $i) {
+                $p = $this->db->get_where('pegawai', ['pegawai.deleteAt' => NULL, 'pegawai.id' => $i['pegawai_id']])->row_array();
+                $notifParam[] = [
+                    'from' => $this->session->userdata('userCode'),
+                    'to' => $p['userCode'],
+                    'description' => "Dokumen hasil kegiatan " . $tugas['kegiatan'] . " " .  (($this->input->post('tipe') == 'terima') ? 'DITERIMA' : 'DITOLAK') . " oleh atasan ",
+                    'data' => json_encode([
+                        'link' => base_url('kejati/tugas/index/' . encrypt('detail(' . $tugas['id'] . ');')),
+                        'action' => 'detail(' . $tugas['id'] . ');'
+                    ], true)
+                ];
+            }
+
+            $notif = $this->db->insert_batch('notifikasi', $notifParam);
+            if ($notif == FALSE) {
+                $data['status'] = FALSE;
+                $data['message'] = "Gagal menolak tugas dari ketua tim";
+                return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+            }
+            $data['status'] = TRUE;
+            $data['tugas_id'] = $tugas['tugas_id'];
+            $data['message'] = "Berhasil menolak tugas dari ketua tim";
+        } else {
+            $data['status'] = FALSE;
+            $data['message'] = "Gagal menolak tugas dari ketua tim";
+        }
         $this->output->set_content_type('application/json')->set_output(json_encode($data));
     }
 }

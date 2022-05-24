@@ -77,7 +77,8 @@ class Tugas extends MX_Controller
                 $row[] = '  <p class="text-sm d-flex py-auto my-auto"><b>' . $penyelidikan->no_surat_tugas . '</b></p>
                             <p class="text-sm d-flex py-auto my-auto">Jumlah Tugas : ' . count($check) . '</p>';
                 $row[] = '  <p class="text-sm d-flex py-auto my-auto"><b>' . $penyelidikan->no_nota_dinas . '</b></p>';
-                $row[] = '  <p class="text-sm d-flex py-auto my-auto"><b>' . $penyelidikan->sop . '</b></p>';
+                $row[] = '  <p class="text-sm d-flex py-auto my-auto"><b>' . $penyelidikan->sop . '</b></p>
+                            <p class="text-sm d-flex py-auto my-auto">' . $penyelidikan->kategori . '</p>';
                 $row[] = '  <p class="text-sm d-flex py-auto my-auto"><b>' . character_limiter($penyelidikan->perihal, 25) . '</b></p>';
 
                 // $row[] = "
@@ -308,14 +309,14 @@ class Tugas extends MX_Controller
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
-        $tempTugas = json_decode($pegawai_detail_tugas['tugas'],TRUE);
-        if($this->input->post('tugas') != NULL){
+        $tempTugas = json_decode($pegawai_detail_tugas['tugas'], TRUE);
+        if ($this->input->post('tugas') != NULL) {
             $tempTugas[] = [
                 'tugas' => $this->input->post('tugas'),
                 'createAt' => date('Y-m-d H:i:s')
             ];
         }
-        $tempTugas = json_encode($tempTugas,TRUE);
+        $tempTugas = json_encode($tempTugas, TRUE);
         $params = [
             'tugas' => $tempTugas,
         ];
@@ -403,15 +404,15 @@ class Tugas extends MX_Controller
             );
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
-        
-        $tempTugas = json_decode($tugas['umum'],TRUE);
-        if($this->input->post('umum') != NULL){
+
+        $tempTugas = json_decode($tugas['umum'], TRUE);
+        if ($this->input->post('umum') != NULL) {
             $tempTugas[] = [
                 'umum' => $this->input->post('umum'),
                 'createAt' => date('Y-m-d H:i:s')
             ];
         }
-        $tempTugas = json_encode($tempTugas,TRUE);
+        $tempTugas = json_encode($tempTugas, TRUE);
         $params = [
             'umum' => $tempTugas,
         ];
@@ -856,21 +857,24 @@ class Tugas extends MX_Controller
         if ($update) {
             $leader = $this->db->get_where('pegawai_detail_tugas', ['detail_tugas_id' => $tugas['id'], 'leader' => 1])->row_array();
             $l = $this->db->get_where('pegawai', ['pegawai.deleteAt' => NULL, 'pegawai.id' => $leader['pegawai_id']])->row_array();
-            $notifParam = [
-                'from' => $this->session->userdata('userCode'),
-                'to' => $tugas['pembuatTugas'],
-                'description' => $l['nama'] . ' mengirim hasil dokumen kegiatan ' . $tugas['kegiatan'],
-                'data' => json_encode([
-                    'link' => base_url('kejati/penyelidikan/index/' . encrypt('detail(' . $tugas['tugas_id'] . ');')),
-                    'action' => 'detail(' . $tugas['tugas_id'] . ');'
-                ], true)
-            ];
+            $not = $this->db->join('permission p', 'p.permissionCode=up.permissionCode')->get_where('user_permission up', ['p.permission' => 'GETPERMISSION'])->result_array();
+            foreach ($not as $t => $b) {
+                $notifParam = [
+                    'from' => $this->session->userdata('userCode'),
+                    'to' => $b['userCode'],
+                    'description' => $l['nama'] . ' mengirim hasil dokumen kegiatan ' . $tugas['kegiatan'],
+                    'data' => json_encode([
+                        'link' => base_url('kejati/penyelidikan/index/' . encrypt('detail(' . $tugas['tugas_id'] . ');')),
+                        'action' => 'detail(' . $tugas['tugas_id'] . ');'
+                    ], true)
+                ];
 
-            $notif = $this->db->insert('notifikasi', $notifParam);
-            if ($notif == FALSE) {
-                $data['status'] = FALSE;
-                $data['message'] = "Gagal mengirim tugas ke atasan";
-                return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                $notif = $this->db->insert('notifikasi', $notifParam);
+                if ($notif == FALSE) {
+                    $data['status'] = FALSE;
+                    $data['message'] = "Gagal mengirim tugas ke atasan";
+                    return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                }
             }
             $data['status'] = TRUE;
             $data['message'] = "Berhasil mengirim tugas ke atasan";

@@ -198,9 +198,9 @@ $profile = getProfileWeb();
                                 <div class="copyright text-center text-sm text-muted text-lg-start">
                                     © <script>
                                         document.write(new Date().getFullYear())
-                                    </script>,
-                                    made with <i class="fa fa-heart"></i> by
-                                    <a href="https://www.cindalogikagrafia.com" class="font-weight-bold" target="_blank">Cinda Logika Grafia</a>
+                                    </script>
+                                    <!--,  made with <i class="fa fa-heart"></i> by
+                                    <a href="https://www.cindalogikagrafia.com" class="font-weight-bold" target="_blank">Cinda Logika Grafia</a> -->
                                 </div>
                             </div>
                         </div>

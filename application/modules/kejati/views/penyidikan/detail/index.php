@@ -116,13 +116,24 @@
                                                     </div>
                                                 </div>
                                                 <span class="text-xs" title="Ket"><b>Ket: </b><?php echo $v['keterangan'] ?></span>
+                                                <span class="text-xs" title="Ket"><b>Riwayat Evaluasi: </b>
+                                                 
+                                                        <?php
+                                                        $riwayat = (!json_decode($v['catatan'], TRUE) ? [] : json_decode($v['catatan'], TRUE));
+                                                        foreach ($riwayat as $r => $ty) {
+                                                        ?>
+                                                            
+                                                                <p class="text-xs my-0">- <?php echo ($ty['tipe'] == 'tolak' ? 'Ditolak' : 'Diterima') ?> - <?php echo $ty['catatan'] ?> - <span class="text-xs text-bold"><?php echo $ty['createAt'] ?></span></p>
+                                                          
+                                                        <?php } ?>
+                                                </span>
                                             </div>
                                             <?php
-                                            if (($v['status'] == 'Ditinjau atasan')) {
+                                            if (($v['status'] == 'Ditinjau atasan') && (in_array('ACCPENYIDIKAN', $userPermission))) {
                                             ?>
                                                 <div class="d-flex justify-content-end">
-                                                    <button class="btn btn-sm btn-danger mr-1" onclick="tolak(<?php echo $v['detail_tugas_id'] ?>)" title="Tolak">Tolak</button>
-                                                    <button class="btn btn-sm btn-primary" onclick="terima(<?php echo $v['detail_tugas_id'] ?>)" title="Terima">Terima</button>
+                                                    <button class="btn btn-sm btn-danger mr-1" onclick="terimaTolak(<?php echo $v['detail_tugas_id'] ?>,'tolak')" title="Tolak">Tolak</button>
+                                                    <button class="btn btn-sm btn-primary" onclick="terimaTolak(<?php echo $v['detail_tugas_id'] ?>,'terima')" title="Terima">Terima</button>
                                                 </div>
                                             <?php } ?>
                                         </div>
@@ -179,20 +190,20 @@
         $("#addTugas").css('display', '');
     }
 
-    function terima(detail_tugas_id = '') {
+    function terimaTolak(detail_tugas_id = '', tipe = 'terima') {
         $("#btnSave").text("mengirim...");
         $("#btnSave").attr("disabled", true);
         $.ajax({
-            url: base_url + 'kejati/ajax/penyidikan/terima',
+            url: base_url + 'kejati/ajax/penyidikan/terimaTolak',
             type: "POST",
             data: {
                 detail_tugas_id: detail_tugas_id,
+                tipe: tipe
             },
             success: function(data) {
                 if (data.status) {
-                    handleToast("success", data.message);
-                    detail(data.tugas_id);
-                    breadcrumb(data.breadcrumb);
+                    $("#forModal").html(data.data);
+                    $("#addCatatan").modal("show");
                 } else {
                     handleError(data);
                     $("#btnSave").text("Kirim ke atasan");
@@ -207,31 +218,46 @@
         });
     }
 
-    function tolak(detail_tugas_id = '') {
-        $("#btnSave").text("mengirim...");
+    function saveCatatan() {
+        $("#btnSave").text("saving...");
         $("#btnSave").attr("disabled", true);
+        var url, method;
+
+        url = base_url + 'kejati/ajax/penyidikan/saveCatatan';
+        method = "saved";
+
         $.ajax({
-            url: base_url + 'kejati/ajax/penyidikan/tolak',
+            url: url,
             type: "POST",
             data: {
-                detail_tugas_id: detail_tugas_id,
+                detail_tugas_id: $("#detail_tugas_id").val(),
+                catatan: $("#catatan").val(),
+                tipe: $("#tipe").val(),
             },
+            dataType: "json",
             success: function(data) {
                 if (data.status) {
-                    handleToast("success", data.message);
                     detail(data.tugas_id);
-                    breadcrumb(data.breadcrumb);
+                    $("#addCatatan").modal("hide");
+                    handleToast("success", data.message);
                 } else {
                     handleError(data);
-                    $("#btnSave").text("Kirim ke atasan");
-                    $("#btnSave").attr("disabled", false);
                 }
+                $("#btnSave").text("save");
+                $("#btnSave").attr("disabled", false);
             },
             error: function(jqXHR, textStatus, errorThrown) {
-                alert("Error get data from ajax");
-                $("#btnSave").text("Kirim ke atasan");
+                alert("Error adding / update data");
+                $("#btnSave").text("save");
                 $("#btnSave").attr("disabled", false);
-            }
+            },
+        });
+
+        $("#form input, #form textarea").on("keyup", function() {
+            $(this).removeClass("is-valid is-invalid");
+        });
+        $("#form select").on("change", function() {
+            $(this).removeClass("is-valid is-invalid");
         });
     }
 
@@ -509,7 +535,7 @@
             data: formData,
             success: function(data) {
                 if (data.status) {
-                    back();
+                    detail(data.tugas_id);
                     handleToast("success", data.message);
                 } else {
                     handleError(data);

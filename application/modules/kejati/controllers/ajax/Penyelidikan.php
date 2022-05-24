@@ -71,7 +71,7 @@ class Penyelidikan extends MX_Controller
             $row[] = '  <p class="text-sm d-flex py-auto my-auto"><b>' . $penyelidikan->no_nota_dinas . '</b></p>';
             $row[] = '  <p class="text-sm d-flex py-auto my-auto"><b>' . $penyelidikan->sop . '</b></p>';
             $row[] = '  <p class="text-sm d-flex py-auto my-auto"><b>' . character_limiter($penyelidikan->perihal, 25) . '</b></p>';
-            $row[] = '  <p class="text-sm d-flex py-auto my-auto"><b>' . $penyelidikan->status . '</b></p>';
+            $row[] = '  <p class="text-sm d-flex py-auto my-auto"><b>' . $penyelidikan->kategori . '</b></p>';
 
             // $row[] = "
             //     <div class='d-flex justify-content-center'>
@@ -83,7 +83,6 @@ class Penyelidikan extends MX_Controller
 
             $row[] = "
                 <div class='d-flex justify-content-center'>
-                " . ((in_array('DPENYELIDIKAN', $userPermission)) ? '<i class="ri-delete-bin-line ri-lg text-danger m-1" role="button" title="Hapus" onclick="deleteData(' . $penyelidikan->id . ')"></i>' : '') . "
                 " . ((in_array('RDETAILPENYELIDIKAN', $userPermission)) ? '<i class="ri-information-line ri-lg text-primary m-1" role="button" title="Info" onclick="detail(' . $penyelidikan->id . ')"></i>' : '') . "
                 </div>
                 ";
@@ -1228,6 +1227,7 @@ class Penyelidikan extends MX_Controller
 
             $data['status'] = TRUE;
             $data['message'] = "Berhasil menambah penyelidikan";
+            $data['tugas_id'] = $tugas_id;
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
     }
@@ -1303,7 +1303,8 @@ class Penyelidikan extends MX_Controller
             'tugas' => $tugas,
             'detail_tugas' => $detail_tugas,
             'pengaduan' => $this->load->view($this->module . '/penyelidikan/pengaduan', $pengaduan, TRUE),
-            'kegiatan' => $kegiatan
+            'kegiatan' => $kegiatan,
+            'userPermission' => $userPermission
         ];
         $data['breadcrumb'] = breadcrumb([
             [
@@ -1380,7 +1381,7 @@ class Penyelidikan extends MX_Controller
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
         $tugas = $this->db
-            ->select('tugas.id as tugas_id, detail_tugas.id as id, detail_tugas.catatan, detail_tugas.dibuka, sop.sop, sop.kategori, sop.waktu as sopWaktu, tugas.no_surat_tugas, tugas.no_nota_dinas, tugas.tanggal_nota_dinas, tugas.perihal_nota_dinas, tugas.status as tugasStatus, kegiatan.kegiatan, detail_tugas.waktu, detail_tugas.satuan, detail_tugas.waktu_mulai, detail_tugas.waktu_selesai, detail_tugas.status as detail_tugasStatus, tugas.pengaduan_id, kegiatan.keterangan')
+            ->select('tugas.id as tugas_id, detail_tugas.id as id, detail_tugas.catatan, detail_tugas.dibuka, sop.sop, sop.katupdasaveegori, sop.waktu as sopWaktu, tugas.no_surat_tugas, tugas.no_nota_dinas, tugas.tanggal_nota_dinas, tugas.perihal_nota_dinas, tugas.status as tugasStatus, kegiatan.kegiatan, detail_tugas.waktu, detail_tugas.satuan, detail_tugas.waktu_mulai, detail_tugas.waktu_selesai, detail_tugas.status as detail_tugasStatus, tugas.pengaduan_id, kegiatan.keterangan')
             ->join('tugas', 'tugas.id=detail_tugas.tugas_id')
             ->join('sop', 'sop.id=tugas.sop_id')
             ->join('kegiatan', 'kegiatan.id=detail_tugas.kegiatan_id')

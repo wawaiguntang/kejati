@@ -129,7 +129,7 @@
                                                 </span>
                                             </div>
                                             <?php
-                                            if (($v['status'] == 'Ditinjau atasan')) {
+                                            if (($v['status'] == 'Ditinjau atasan') && (in_array('ACCPENYELIDIKAN', $userPermission))) {
                                             ?>
                                                 <div class="d-flex justify-content-end">
                                                     <button class="btn btn-sm btn-danger mr-1" onclick="terimaTolak(<?php echo $v['detail_tugas_id'] ?>,'tolak')" title="Tolak">Tolak</button>
@@ -535,7 +535,7 @@
             data: formData,
             success: function(data) {
                 if (data.status) {
-                    back();
+                    detail(data.tugas_id);
                     handleToast("success", data.message);
                 } else {
                     handleError(data);
