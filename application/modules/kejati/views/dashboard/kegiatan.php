@@ -12,7 +12,7 @@
 <?php
 $permission = getPermissionFromUser();
 if (in_array("RDASHSELF", $permission)) { ?>
-    <div class="col-8 col-sm-12 col-xs-12 col-md-8">
+    <div class="col-12 col-sm-12 col-xs-12 col-md-8">
         <div class="row mb-3">
             <div class="col-xl-3 col-sm-6 col-xs-12 py-0">
                 <div class="card my-1" style="border-radius: 1rem;height: 30vh;" role="button" onclick="allListFunc()">
@@ -401,7 +401,7 @@ if (in_array("RDASHSELF", $permission)) { ?>
         }
     </script>
 <?php } else { ?>
-    <div class="col-8 col-sm-12 col-xs-12 col-md-8">
+    <div class="col-12 col-sm-12 col-xs-12 col-md-8">
         <div class="row mb-3">
             <div class="col-xl-3 col-sm-6 col-xs-12 py-0">
                 <div class="card my-1" style="border-radius: 1rem;height: 30vh;" role="button" onclick="allListFunc()">

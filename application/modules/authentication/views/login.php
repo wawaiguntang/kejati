@@ -58,12 +58,6 @@ $profile = getProfileWeb();
                                 <span class="text-danger mt-1 ml-1 text-xs"><?php echo form_error('password')?></span>
                                 <span class="text-danger mt-1 ml-1 text-xs"><?php echo ($this->session->has_userdata('passwordErr') ? $this->session->flashdata('passwordErr'): '')?></span>
                             </div>
-                            <div class="form-check form-check-info text-left">
-                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" checked>
-                                <label class="form-check-label" for="flexCheckDefault">
-                                    Remember me
-                                </label>
-                            </div>
                             <div class="text-center">
                                 <button type="submit" class="btn bg-gradient-dark w-100 my-4 mb-2">Masuk</button>
                             </div>

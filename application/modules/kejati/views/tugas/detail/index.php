@@ -909,6 +909,7 @@
         }
 
         function simpanKonsul(pegawai_detail_id) {
+            console.log($('#form-tambah-konsul' + pegawai_detail_id).serialize());
             $.ajax({
                 url: base_url + 'kejati/ajax/konsultasi/add/' + pegawai_detail_id,
                 type: 'POST',

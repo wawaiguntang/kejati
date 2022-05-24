@@ -34,6 +34,7 @@
 </div>
 <script>
     function updateKonsul(id_konsul) {
+        console.log($('#form-edit-konsul').serialize());
         $.ajax({
             url: base_url + 'kejati/ajax/konsultasi/edit/' + id_konsul,
             type: 'POST',

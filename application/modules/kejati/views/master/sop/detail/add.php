@@ -8,7 +8,10 @@
         </div>
         <?php echo form_open('', ["id" => "form"]); ?>
         <div class="row">
-            <?php echo inputWithFormGroup('Kegiatan', 'text', 'kegiatan', 'Kegiatan', [], []); ?>
+            <label for="">Kegiatan</label>
+            <div class="form-group">
+                <textarea name="kegiatan" id="kegiatan" rows="10"></textarea>
+            </div>
         </div>
         <div class="row">
             <div class="col-md-6 col-12">
@@ -64,7 +67,7 @@
         } else {
             var kelengkapan = `<div class="row" id="copyKelengkapan">
                 <div class="input-group mb-1">
-                    <input type="text" class="form-control" placeholder="Kelengkapan" name="kelengkapan[]" value="` + valKelengkapan + `" disabled>
+                    <input type="text" class="form-control" placeholder="Kelengkapan" name="kelengkapan[]" id="kelengkapan" value="` + valKelengkapan + `" disabled>
                     <button class="btn btn-outline-primary mb-0" type="button" onclick="hapusKelengkapan(this)" id="btnHapusKelengkapan">Hapus</button>
                 </div>
             </div>`;
@@ -85,7 +88,7 @@
         } else {
             var hasil = `<div class="row" id="copyHasil">
                 <div class="input-group mb-1">
-                    <input type="text" class="form-control" placeholder="Hasil" name="hasil[]" value="` + valHasil + `" disabled>
+                    <input type="text" class="form-control" placeholder="Hasil" name="hasil[]" id="hasil" value="` + valHasil + `" disabled>
                     <button class="btn btn-outline-primary mb-0" type="button" onclick="hapusHasil(this)" id="btnHapusHasil">Hapus</button>
                 </div>
             </div>`
@@ -102,7 +105,19 @@
     function saveKegiatan(id) {
         var formData = new FormData(this.form);
         sop_id = id;
+        var hasil = $("input[name='hasil[]']")
+            .map(function() {
+                return $(this).val();
+            }).get();
+
+        var kelengkapan = $("input[name='kelengkapan[]']")
+            .map(function() {
+                return $(this).val();
+            }).get();
         formData.append('sop_id', <?php echo $id ?>);
+        formData.append('kegiatan', editorKegiatan.getData());
+        formData.append('kelengkapan', kelengkapan);
+        formData.append('hasil', hasil);
 
         $("#btnSave").text("saving...");
         $("#btnSave").attr("disabled", true);
@@ -125,8 +140,10 @@
                     infoKegiatan(sop_id);
                     handleToast("success", data.message);
                 } else {
+                    ckKegiatan();
                     handleError(data);
                 }
+                delete("editorKegiatan");
                 $("#btnSave").text("save");
                 $("#btnSave").attr("disabled", false);
             },
@@ -143,5 +160,26 @@
         $("#form select").on("change", function() {
             $(this).removeClass("is-valid is-invalid");
         });
+    }
+
+    $(document).ready(function() {
+        ckKegiatan()
+    });
+
+    if (typeof editorKegiatan === 'undefined') {
+        let editorKegiatan;
+    }
+
+    function ckKegiatan() {
+        ClassicEditor
+            .create(document.querySelector('#kegiatan'), {
+                removePlugins: ['CKFinderUploadAdapter', 'CKFinder', 'EasyImage', 'Image', 'ImageCaption', 'ImageStyle', 'ImageToolbar', 'ImageUpload', 'MediaEmbed'],
+            })
+            .then(newEditor => {
+                editorKegiatan = newEditor;
+            })
+            .catch(error => {
+                console.error(error);
+            });
     }
 </script>

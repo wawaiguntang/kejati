@@ -9,7 +9,10 @@
         <?php echo form_open('', ["id" => "form"]); ?>
         <?php echo input('hidden', 'kegiatan_id', '', [], ['value' => $kegiatan_id]) ?>
         <div class="row">
-            <?php echo inputWithFormGroup('Kegiatan', 'text', 'kegiatan', 'Kegiatan', [], ['value' => $kegiatan]); ?>
+            <label for="">Kegiatan</label>
+            <div class="form-group">
+                <textarea name="kegiatan" id="kegiatan" rows="10"></textarea>
+            </div>
         </div>
         <div class="row">
             <div class="col-md-6 col-12">
@@ -34,6 +37,7 @@
 <script>
     function saveKegiatan(id) {
         var formData = new FormData(this.form);
+        formData.append('kegiatan', editorKegiatanEdit.getData());
         $("#btnSave").text("saving...");
         $("#btnSave").attr("disabled", true);
         var url, method;
@@ -57,6 +61,7 @@
                 } else {
                     handleError(data);
                 }
+                delete("editorKegiatanEdit");
                 $("#btnSave").text("save");
                 $("#btnSave").attr("disabled", false);
             },
@@ -73,5 +78,27 @@
         $("#form select").on("change", function() {
             $(this).removeClass("is-valid is-invalid");
         });
+    }
+
+    $(document).ready(function() {
+        ckKegiatan();
+    });
+
+    if (typeof editorKegiatanEdit === 'undefined') {
+        let editorKegiatanEdit;
+    }
+
+    function ckKegiatan() {
+        ClassicEditor
+            .create(document.querySelector('#kegiatan'), {
+                removePlugins: ['CKFinderUploadAdapter', 'CKFinder', 'EasyImage', 'Image', 'ImageCaption', 'ImageStyle', 'ImageToolbar', 'ImageUpload', 'MediaEmbed'],
+            })
+            .then(newEditor => {
+                editorKegiatanEdit = newEditor;
+                editorKegiatanEdit.setData("<?php echo $kegiatan ?>");
+            })
+            .catch(error => {
+                console.error(error);
+            });
     }
 </script>

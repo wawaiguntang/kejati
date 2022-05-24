@@ -10,7 +10,7 @@ class Tugas extends MX_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->model($this->module . '/penyelidikan_model', 'penyelidikan');
+        $this->load->model($this->module . '/tugas_model', 'penyelidikan');
         $this->load->model($this->module . '/pengaduan_model', 'pengaduan');
         $this->load->model($this->module . '/tugas_model', 'tugas');
         $this->load->model($this->module . '/pegawai_model', 'pegawai');

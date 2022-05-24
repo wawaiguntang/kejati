@@ -390,7 +390,7 @@ class Sop extends MX_Controller
         $data = array();
         foreach ($list as $kegiatan) {
             $row = array();
-            $row[] = '<p class="text-sm d-flex py-auto my-auto" title="' . $kegiatan->kegiatan . '">' . character_limiter($kegiatan->kegiatan, 25) . '</p>';
+            $row[] = '<p class="text-sm d-flex py-auto my-auto" title="">' . AbstractHTMLContents($kegiatan->kegiatan, 10) . '</p>';
             $row[] = '<p class="text-sm d-flex py-auto my-auto">' . $kegiatan->waktu . ' ' . $kegiatan->satuan . '</p>';
             $row[] = '<p class="text-sm d-flex py-auto my-auto" title="' . $kegiatan->keterangan . '">' . character_limiter($kegiatan->keterangan, 25) . '</p>';
 
@@ -590,9 +590,10 @@ class Sop extends MX_Controller
                             $data['status'] = FALSE;
                             $data['message'] = "Gagal menambah kegiatan";
                         }
+
                         if (!empty($this->input->post('kelengkapan')) && $this->input->post('kelengkapan') != NULL) {
                             $params = [];
-                            foreach ($this->input->post('kelengkapan') as $k => $v) {
+                            foreach (explode(',', $this->input->post('kelengkapan')) as $k => $v) {
                                 $params[] = [
                                     'kegiatan_id' => $kegiatan,
                                     'kelengkapan' => $v
@@ -607,7 +608,7 @@ class Sop extends MX_Controller
                         }
                         if (!empty($this->input->post('hasil')) && $this->input->post('hasil') != NULL) {
                             $params = [];
-                            foreach ($this->input->post('hasil') as $k => $v) {
+                            foreach (explode(',', $this->input->post('hasil')) as $k => $v) {
                                 $params[] = [
                                     'kegiatan_id' => $kegiatan,
                                     'hasil' => $v
@@ -822,7 +823,8 @@ class Sop extends MX_Controller
                         'userPermission' => $userPermission,
                         'kelengkapan' => $this->db->get_where('kelengkapan', ['deleteAt' => NULL, 'kegiatan_id' => $id])->result(),
                         'hasil' => $this->db->get_where('hasil', ['deleteAt' => NULL, 'kegiatan_id' => $id])->result(),
-                        'kegiatan_id' => $id
+                        'kegiatan_id' => $id,
+                        'kegiatan' => $kegiatan
                     ];
                     $data['data'] = $this->load->view($this->module . '/master/sop/detail/kegiatan/index', $params, TRUE);
                     $this->output->set_content_type('application/json')->set_output(json_encode($data));

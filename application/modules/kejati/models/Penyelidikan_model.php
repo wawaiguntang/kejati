@@ -23,8 +23,8 @@ class Penyelidikan_model extends CI_Model
 			->from($this->table)
 			->join('sop', 'sop.id=tugas.sop_id')
 			->join('pengaduan', 'pengaduan.id=tugas.pengaduan_id')
-			->where('tugas.deleteAt', NULL);
-			// ->where('sop.kategori', 'Penyelidikan');
+			->where('tugas.deleteAt', NULL)
+			->where('sop.kategori', 'Penyelidikan');
 
 		$i = 0;
 

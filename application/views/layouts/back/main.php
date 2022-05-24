@@ -233,7 +233,7 @@ $profile = getProfileWeb();
         // navbarFixed(true);
         $('form').bind('keypress', false);
     </script>
-
+    <script src="https://cdn.ckeditor.com/ckeditor5/11.1.1/classic/ckeditor.js"></script>
 </body>
 
 </html>

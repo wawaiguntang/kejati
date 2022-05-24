@@ -4,10 +4,10 @@ defined('BASEPATH') or exit('No direct script access allowed');
 class Tugas_model extends CI_Model
 {
 
-	var $table = 'pegawai_detail_tugas';
-	var $column_order = array('detail_tugas.id', ' sop.sop', ' sop.kategori', ' sop.waktu', ' tugas.no_surat_tugas', ' tugas.no_nota_dinas', ' tugas.tanggal_nota_dinas', ' tugas.status', ' kegiatan.kegiatan', ' detail_tugas.waktu', ' detail_tugas.satuan', ' detail_tugas.waktu_mulai', 'pengaduan.no', 'pengaduan.asal_surat', 'pengaduan.perihal'); //set column field database for datatable orderable
-	var $column_search = array('detail_tugas.id', ' sop.sop', ' sop.kategori', ' sop.waktu', ' tugas.no_surat_tugas', ' tugas.no_nota_dinas', ' tugas.tanggal_nota_dinas', ' tugas.status', ' kegiatan.kegiatan', ' detail_tugas.waktu', ' detail_tugas.satuan', ' detail_tugas.waktu_mulai', 'pengaduan.no', 'pengaduan.asal_surat', 'pengaduan.perihal'); //set column field database for datatable searchable just firstname , lastname , address are searchable
-	var $order = array('pegawai_detail_tugas.createAt' => 'desc'); // default order 
+	var $table = 'tugas';
+	var $column_order = array('no_surat_tugas', 'no_nota_dinas', 'sop', 'pengaduan.perihal', 'status'); //set column field database for datatable orderable
+	var $column_search = array('no_surat_tugas', 'no_nota_dinas', 'sop', 'pengaduan.perihal', 'status'); //set column field database for datatable searchable just firstname , lastname , address are searchable
+	var $order = array('tugas.id' => 'desc'); // default order 
 
 	public function __construct()
 	{
@@ -19,16 +19,12 @@ class Tugas_model extends CI_Model
 	{
 
 		$this->db
-			->select('detail_tugas.id as id, sop.sop, sop.kategori, sop.waktu as sopWaktu, tugas.no_surat_tugas, tugas.no_nota_dinas, tugas.tanggal_nota_dinas, tugas.status as tugasStatus, kegiatan.kegiatan, detail_tugas.waktu, detail_tugas.satuan, detail_tugas.waktu_mulai, detail_tugas.waktu_selesai, detail_tugas.status as detail_tugasStatus, pengaduan.no , pengaduan.asal_surat, pengaduan.perihal')
+			->select('tugas.id as id,no_surat_tugas,no_nota_dinas,sop,perihal,status')
 			->from($this->table)
-			->join('detail_tugas', 'detail_tugas.id=pegawai_detail_tugas.detail_tugas_id')
-			->join('pegawai', 'pegawai.id=pegawai_detail_tugas.pegawai_id')
-			->join('kegiatan', 'kegiatan.id=detail_tugas.kegiatan_id')
-			->join('tugas', 'tugas.id=detail_tugas.tugas_id')
 			->join('sop', 'sop.id=tugas.sop_id')
 			->join('pengaduan', 'pengaduan.id=tugas.pengaduan_id')
-			->where('pegawai_detail_tugas.deleteAt', NULL)
-			->where('pegawai.userCode', $this->session->userdata('userCode'));
+			->where('tugas.deleteAt', NULL);
+			// ->where('sop.kategori', 'Penyelidikan');
 
 		$i = 0;
 
@@ -63,6 +59,7 @@ class Tugas_model extends CI_Model
 	function get_datatables()
 	{
 		$this->_get_datatables_query();
+		
 		if (isset($_POST['length'])) {
 			if ($_POST['length'] != -1) $this->db->limit($_POST['length'], $_POST['start']);
 		}

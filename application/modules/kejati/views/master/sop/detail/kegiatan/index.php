@@ -1,3 +1,9 @@
+    <div class="row mt-2 mx-2">
+        <p class="my-0">Keagiatan :</p>
+        <div class="ml-1">
+            <?php echo $kegiatan->kegiatan ?>
+        </div>
+    </div>
     <div class="row mt-2">
         <div class="col-md-6 col-sm-12 col-12">
             <h6 class="d-flex my-auto">Kelengkapan <?php echo ((in_array('CKELENGKAPANKEGIATAN', $userPermission)) ? '<i class="my-auto ri-add-circle-line ri-xl text-success" role="button" title="Tambah" onclick="addKelengkapanKegiatan(' . $kegiatan_id . ')"></i>' : '') ?></h6>
