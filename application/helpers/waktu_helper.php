@@ -7,15 +7,15 @@ function formatWaktu($waktu = 0)
     $jam = 60;
     $menit = 1;
     if (((int)$waktu / $hari) >= 1) {
-        $tempHari = (int)number_format(((int)$waktu / $hari), 0);
+        $tempHari = floor($waktu / $hari);
         $return .= $tempHari . ' Hari ';
     }
     if (((int)$waktu / $jam) >= 1) {
         if (isset($tempHari)) {
             $tempJam = $waktu - ($tempHari * 24 * 60);
-            $tempJam = (int)number_format(($tempJam / $jam), 0);
+            $tempJam = floor($tempJam / $jam);
         } else {
-            $tempJam = (int)number_format(((int)$waktu / $jam), 0);
+            $tempJam = floor($waktu / $jam);
         }
         $return .= $tempJam . ' Jam ';
     }

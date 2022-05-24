@@ -32,6 +32,6 @@ class Penyidikan extends MX_Controller
     {
         $this->load->helper('download');
 
-        force_download($name, file_get_contents(DIR.decrypt($path)));
+        force_download($name, file_get_contents(DIR.separator(decrypt($path))));
     }
 }

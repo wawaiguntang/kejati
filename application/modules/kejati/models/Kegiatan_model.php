@@ -8,6 +8,7 @@ class Kegiatan_model extends CI_Model
 	var $column_order = array('kegiatan', 'waktu', 'keterangan'); //set column field database for datatable orderable
 	var $column_search = array('kegiatan', 'waktu', 'keterangan'); //set column field database for datatable searchable just firstname , lastname , address are searchable
 	var $order = array('id' => 'desc'); // default order 
+	var $sop_id = NULL;
 
 	public function __construct()
 	{
@@ -19,7 +20,9 @@ class Kegiatan_model extends CI_Model
 	{
 
 		$this->db->from($this->table)->where('deleteAt', NULL);
-
+		if ($this->sop_id != NULL) {
+			$this->db->where('sop_id', $this->sop_id);
+		}
 		$i = 0;
 
 		foreach ($this->column_search as $item) // loop column 
@@ -54,6 +57,7 @@ class Kegiatan_model extends CI_Model
 	{
 		$this->_get_datatables_query();
 		if ($sop_id != '') {
+			$this->sop_id = $sop_id;
 			$this->db->where('sop_id', $sop_id);
 		}
 		if (isset($_POST['length'])) {

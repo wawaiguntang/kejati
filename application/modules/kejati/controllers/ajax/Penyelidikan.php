@@ -1055,7 +1055,7 @@ class Penyelidikan extends MX_Controller
             $data = array();
             $data['status'] = TRUE;
 
-
+            $from = $this->session->userdata('userCode');
 
 
             // cek kelengkapan
@@ -1155,6 +1155,29 @@ class Penyelidikan extends MX_Controller
                         'detail_tugas_id' => $kegiatan_id,
                         'leader' => $x['leader']
                     ];
+                    if ($x['leader'] == 1) {
+                        $description = 'Anda diberi tugas sebagai ketua tim dengan no surat tugas ' . $this->input->post('no_surat_tugas') . ' untuk melakukan kegiatan penyelidikan ' . $kegiatanData->kegiatan;
+                    } else {
+                        $description = 'Anda diberi tugas sebagai anggota tim dengan no surat tugas ' . $this->input->post('no_surat_tugas') . ' untuk melakukan kegiatan penyelidikan ' . $kegiatanData->kegiatan;
+                    }
+
+                    $notifParam = [
+                        'from' => $from,
+                        'to' => $x['pegawai']['userCode'],
+                        'description' => $description,
+                        'data' => json_encode([
+                            'link' => base_url('kejati/tugas/index/' . encrypt('detail(' . $tugas_id . ');')),
+                            'action' => 'detail(' . $tugas_id . ');'
+                        ], true)
+                    ];
+
+                    $notif = $this->db->insert('notifikasi', $notifParam);
+                    if ($this->db->trans_status() === FALSE || $notif == FALSE) {
+                        $this->db->trans_rollback();
+                        $data['status'] = FALSE;
+                        $data['message'] = "Gagal menambah penyelidikan";
+                        return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                    }
                 }
                 $pegawai_detail_tugas = $this->db->insert_batch('pegawai_detail_tugas', $pegawai_detail_tugasParams);
                 if ($this->db->trans_status() === FALSE || $pegawai_detail_tugas == FALSE) {
@@ -1373,7 +1396,7 @@ class Penyelidikan extends MX_Controller
         $tempCatatan = json_decode($tugas['catatan']);
         if ($this->input->post('catatan') != NULL) {
             $tempCatatan[] = [
-                'tipe' => $this->input->post('tipe'), 
+                'tipe' => $this->input->post('tipe'),
                 'catatan' => $this->input->post('catatan'),
                 'createAt' => date('Y-m-d H:i:s')
             ];
