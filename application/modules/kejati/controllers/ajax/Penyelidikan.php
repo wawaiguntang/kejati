@@ -1381,7 +1381,7 @@ class Penyelidikan extends MX_Controller
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
         $tugas = $this->db
-            ->select('tugas.id as tugas_id, detail_tugas.id as id, detail_tugas.catatan, detail_tugas.dibuka, sop.sop, sop.katupdasaveegori, sop.waktu as sopWaktu, tugas.no_surat_tugas, tugas.no_nota_dinas, tugas.tanggal_nota_dinas, tugas.perihal_nota_dinas, tugas.status as tugasStatus, kegiatan.kegiatan, detail_tugas.waktu, detail_tugas.satuan, detail_tugas.waktu_mulai, detail_tugas.waktu_selesai, detail_tugas.status as detail_tugasStatus, tugas.pengaduan_id, kegiatan.keterangan')
+            ->select('tugas.id as tugas_id, detail_tugas.id as id, detail_tugas.catatan, detail_tugas.dibuka, sop.sop, sop.kategori, sop.waktu as sopWaktu, tugas.no_surat_tugas, tugas.no_nota_dinas, tugas.tanggal_nota_dinas, tugas.perihal_nota_dinas, tugas.status as tugasStatus, kegiatan.kegiatan, detail_tugas.waktu, detail_tugas.satuan, detail_tugas.waktu_mulai, detail_tugas.waktu_selesai, detail_tugas.status as detail_tugasStatus, tugas.pengaduan_id, kegiatan.keterangan')
             ->join('tugas', 'tugas.id=detail_tugas.tugas_id')
             ->join('sop', 'sop.id=tugas.sop_id')
             ->join('kegiatan', 'kegiatan.id=detail_tugas.kegiatan_id')
@@ -1427,15 +1427,15 @@ class Penyelidikan extends MX_Controller
             $notif = $this->db->insert_batch('notifikasi', $notifParam);
             if ($notif == FALSE) {
                 $data['status'] = FALSE;
-                $data['message'] = "Gagal menolak tugas dari ketua tim";
+                $data['message'] = "Gagal " . (($this->input->post('tipe') == 'terima') ? 'menerima' : 'menolak') . " tugas dari ketua tim";
                 return $this->output->set_content_type('application/json')->set_output(json_encode($data));
             }
             $data['status'] = TRUE;
             $data['tugas_id'] = $tugas['tugas_id'];
-            $data['message'] = "Berhasil menolak tugas dari ketua tim";
+            $data['message'] = "Berhasil " . (($this->input->post('tipe') == 'terima') ? 'menerima' : 'menolak') . " tugas dari ketua tim";
         } else {
             $data['status'] = FALSE;
-            $data['message'] = "Gagal menolak tugas dari ketua tim";
+            $data['message'] = "Gagal " . (($this->input->post('tipe') == 'terima') ? 'menerima' : 'menolak') . " tugas dari ketua tim";
         }
         $this->output->set_content_type('application/json')->set_output(json_encode($data));
     }
