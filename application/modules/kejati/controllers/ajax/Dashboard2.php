@@ -37,16 +37,14 @@ class Dashboard2 extends MX_Controller
     {
         $allData = $this->db
             ->select('dt.id, k.kegiatan, t.no_surat_tugas, pe.no, dt.status, dt.waktu_mulai, dt.waktu_selesai, dt.waktu, dt.satuan')
-            ->join('pegawai p', 'p.id=pdt.pegawai_id')
-            ->join('detail_tugas dt', 'dt.id=pdt.detail_tugas_id')
             ->join('kegiatan k', 'k.id=dt.kegiatan_id')
             ->join('tugas t', 't.id=dt.tugas_id')
             ->join('pengaduan pe', 'pe.id=t.pengaduan_id')
             ->where([
-                'pdt.deleteAt' => NULL,
+                'dt.deleteAt' => NULL,
             ])
             ->order_by('dt.id', 'DESC')
-            ->get('pegawai_detail_tugas pdt')->result_array();
+            ->get('detail_tugas dt')->result_array();
 
         $tempAllData = $allData;
         $allData = [];
@@ -83,17 +81,15 @@ class Dashboard2 extends MX_Controller
         }
         $doneData = $this->db
             ->select('dt.id, k.kegiatan, t.no_surat_tugas, pe.no, dt.status, dt.waktu_mulai, dt.waktu_selesai, dt.waktu, dt.satuan')
-            ->join('pegawai p', 'p.id=pdt.pegawai_id')
-            ->join('detail_tugas dt', 'dt.id=pdt.detail_tugas_id')
             ->join('kegiatan k', 'k.id=dt.kegiatan_id')
             ->join('tugas t', 't.id=dt.tugas_id')
             ->join('pengaduan pe', 'pe.id=t.pengaduan_id')
             ->where([
-                'pdt.deleteAt' => NULL,
+                'dt.deleteAt' => NULL,
                 'dt.status' => 'Diterima'
             ])
             ->order_by('dt.id', 'DESC')
-            ->get('pegawai_detail_tugas pdt')->result_array();
+            ->get('detail_tugas dt')->result_array();
         $tempDoneData = $doneData;
         $doneData = [];
         foreach ($tempDoneData as $k => $v) {
@@ -129,17 +125,15 @@ class Dashboard2 extends MX_Controller
         }
         $runningData = $this->db
             ->select('dt.id, k.kegiatan, t.no_surat_tugas, pe.no, dt.status, dt.waktu_mulai, dt.waktu_selesai, dt.waktu, dt.satuan')
-            ->join('pegawai p', 'p.id=pdt.pegawai_id')
-            ->join('detail_tugas dt', 'dt.id=pdt.detail_tugas_id')
             ->join('kegiatan k', 'k.id=dt.kegiatan_id')
             ->join('tugas t', 't.id=dt.tugas_id')
             ->join('pengaduan pe', 'pe.id=t.pengaduan_id')
             ->where_in('dt.status', ['Dalam proses', 'Ditinjau atasan'])
             ->where([
-                'pdt.deleteAt' => NULL,
+                'dt.deleteAt' => NULL,
             ])
             ->order_by('dt.id', 'DESC')
-            ->get('pegawai_detail_tugas pdt')->result_array();
+            ->get('detail_tugas dt')->result_array();
 
         $tempRunningData = $runningData;
         $runningData = [];
@@ -176,17 +170,15 @@ class Dashboard2 extends MX_Controller
         }
         $rejectData = $this->db
             ->select('dt.id, k.kegiatan, t.no_surat_tugas, pe.no, dt.status, dt.waktu_mulai, dt.waktu_selesai, dt.waktu, dt.satuan')
-            ->join('pegawai p', 'p.id=pdt.pegawai_id')
-            ->join('detail_tugas dt', 'dt.id=pdt.detail_tugas_id')
             ->join('kegiatan k', 'k.id=dt.kegiatan_id')
             ->join('tugas t', 't.id=dt.tugas_id')
             ->join('pengaduan pe', 'pe.id=t.pengaduan_id')
             ->where([
-                'pdt.deleteAt' => NULL,
+                'dt.deleteAt' => NULL,
                 'dt.status' => 'Ditolak'
             ])
             ->order_by('dt.id', 'DESC')
-            ->get('pegawai_detail_tugas pdt')->result_array();
+            ->get('detail_tugas dt')->result_array();
 
         $tempRejectData = $rejectData;
         $rejectData = [];
