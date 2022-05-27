@@ -233,11 +233,17 @@ class Pegawai extends MX_Controller
                     }
                     $params['golongan'] = $golongan;
 
-                    $inUse = array_values(array_column($this->pegawai->get_all(), 'userCode'));
+                    $tempUserUse = [];
+                    $inUse = $this->pegawai->get_all();
+                    foreach($inUse as $k => $ve){
+                        if($pegawai->userCode != $ve->userCode){
+                            $tempUserUse[] = $ve->userCode;
+                        }
+                    }
                     $user = [];
                     $this->db->select('userCode, email');
                     if ($inUse != NULL) {
-                        $this->db->where_not_in('userCode', $inUse);
+                        $this->db->where_not_in('userCode', $tempUserUse);
                     }
                     $getUser = $this->db->get_where('user', ['deleteAt' => NULL])->result();
                     foreach ($getUser as $k) {
