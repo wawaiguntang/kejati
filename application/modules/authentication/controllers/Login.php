@@ -28,7 +28,8 @@ class Login extends MX_Controller
 			} else {
 				if (password_verify($this->input->post('password'), $data['password'])) {
 					$this->session->set_userdata([
-						'userCode' => $data['userCode']
+						'userCode' => $data['userCode'],
+						'name' => $data['name']
 					]);
 					redirect('dashboard/index');
 				} else {
