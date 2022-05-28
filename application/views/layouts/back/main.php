@@ -181,9 +181,7 @@ $profile = getProfileWeb();
                 if (!isset($_view)) {
                     echo "Content not set";
                 } else {
-                    echo '<div class="card card-body rounded-lg shadow-lg py-2">
-                    <h3 id="welcome"> Selamat Datang, ' . $this->session->userdata('name') . '</h3>
-                </div>';
+
                     if (!is_array($_view)) {
                         $this->load->view($_view);
                     } else {
