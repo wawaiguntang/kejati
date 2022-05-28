@@ -89,7 +89,11 @@ class Penyelidikan extends MX_Controller
 
             $data[] = $row;
         }
-
+        $this->session->set_userdata([
+            'positionEditOnDetail' => [
+                'status' => FALSE,
+            ]
+        ]);
         $output = array(
             "draw" => @$_POST['draw'],
             "recordsTotal" => $this->penyelidikan->count_all(),
@@ -346,7 +350,7 @@ class Penyelidikan extends MX_Controller
 
 
             $tugas = $this->session->userdata('tugas_id');
-            $cek_tugas = $this->db->get_where('detail_tugas', array('tugas_id' => $tugas))->result();
+            $cek_tugas = $this->db->get_where('detail_tugas', array('tugas_id' => $tugas, 'deleteAt' => NULL))->result();
             foreach ($cek_tugas as $k) {
                 if ($k->kegiatan_id == $this->input->post('kegiatan_id')) {
                     $data = array(
@@ -1254,6 +1258,7 @@ class Penyelidikan extends MX_Controller
             return $this->output->set_content_type('application/json')->set_output(json_encode($data));
         }
         $tugas = $this->db
+            ->select('*,tugas.id as tugas_id')
             ->join('sop', 'sop.id=tugas.sop_id')
             ->get_where('tugas', ['tugas.deleteAt' => NULL, 'tugas.id' => $this->input->post('tugas_id')])
             ->row();
@@ -1272,11 +1277,13 @@ class Penyelidikan extends MX_Controller
                 ->where(['pegawai.deleteAt' => NULL, 'pegawai_detail_tugas.deleteAt' => NULL, 'pegawai_detail_tugas.detail_tugas_id' => $k['detail_tugas_id']])
                 ->get('pegawai_detail_tugas')
                 ->result_array();
-            $k['kelengkapan'] = $this->db->join('kelengkapan', 'kelengkapan.id=kelengkapan_data.kelengkapan_id')
+            $k['kelengkapan'] = $this->db
+                ->join('kelengkapan', 'kelengkapan.id=kelengkapan_data.kelengkapan_id')
                 ->where(['kelengkapan.deleteAt' => NULL, 'kelengkapan_data.deleteAt' => NULL, 'kelengkapan_data.detail_tugas_id' => $k['detail_tugas_id']])
                 ->get('kelengkapan_data')
                 ->result_array();
-            $k['hasil'] = $this->db->join('hasil', 'hasil.id=hasil_data.hasil_id')
+            $k['hasil'] = $this->db
+                ->join('hasil', 'hasil.id=hasil_data.hasil_id')
                 ->where(['hasil.deleteAt' => NULL, 'hasil_data.deleteAt' => NULL, 'hasil_data.detail_tugas_id' => $k['detail_tugas_id']])
                 ->get('hasil_data')
                 ->result_array();
@@ -1319,6 +1326,7 @@ class Penyelidikan extends MX_Controller
                 "text" => "Detail Data Penyelidikan"
             ]
         ], 'Detail Data Penyelidikan');
+
         $data['data'] = $this->load->view($this->module . '/penyelidikan/detail/index', $params, TRUE);
         $this->output->set_content_type('application/json')->set_output(json_encode($data));
     }
@@ -1438,5 +1446,507 @@ class Penyelidikan extends MX_Controller
             $data['message'] = "Gagal " . (($this->input->post('tipe') == 'terima') ? 'menerima' : 'menolak') . " tugas dari ketua tim";
         }
         $this->output->set_content_type('application/json')->set_output(json_encode($data));
+    }
+
+    public function deleteKegiatanOnDetail()
+    {
+        $userPermission = getPermissionFromUser();
+        if (!in_array('DKEGIATANONDETAILPENYELIDIKAN', $userPermission)) {
+            $data = array(
+                'status'         => FALSE,
+                'message'         => "Anda tidak memiliki akses!"
+            );
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        }
+        if ($this->input->post('detail_tugas_id') == NULL) {
+            $data = array(
+                'status'         => FALSE,
+                'message'         => "Tugas is required"
+            );
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        }
+        $tugas = $this->db
+            ->select('tugas.id as tugas_id, detail_tugas.id as id, detail_tugas.catatan, detail_tugas.dibuka, sop.sop, sop.kategori, sop.waktu as sopWaktu, tugas.no_surat_tugas, tugas.no_nota_dinas, tugas.tanggal_nota_dinas, tugas.perihal_nota_dinas, tugas.status as tugasStatus, kegiatan.kegiatan, detail_tugas.waktu, detail_tugas.satuan, detail_tugas.waktu_mulai, detail_tugas.waktu_selesai, detail_tugas.status as detail_tugasStatus, tugas.pengaduan_id, kegiatan.keterangan')
+            ->join('tugas', 'tugas.id=detail_tugas.tugas_id')
+            ->join('sop', 'sop.id=tugas.sop_id')
+            ->join('kegiatan', 'kegiatan.id=detail_tugas.kegiatan_id')
+            ->get_where('detail_tugas', ['detail_tugas.deleteAt' => NULL, 'detail_tugas.id' => $this->input->post('detail_tugas_id'), 'detail_tugas.status' => 'Dalam proses'])
+            ->row_array();
+        if ($tugas == NULL) {
+            $data = array(
+                'status'         => FALSE,
+                'message'         => "Tugas tidak ditemukan"
+            );
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        }
+        $delete = $this->db->where('id', $this->input->post('detail_tugas_id'))->update('detail_tugas', [
+            'deleteAt' => date('Y-m-d H:i:s')
+        ]);
+        if ($delete) {
+            $data['status'] = TRUE;
+            $data['tugas_id'] = $tugas['tugas_id'];
+            $data['message'] = "Berhasil menghapus tugas";
+        } else {
+            $data['status'] = FALSE;
+            $data['message'] = "Gagal menghapus tugas";
+        }
+        $this->output->set_content_type('application/json')->set_output(json_encode($data));
+    }
+
+    public function editKegiatanOnDetail()
+    {
+        $userPermission = getPermissionFromUser();
+        if (!in_array('UKEGIATANONDETAILPENYELIDIKAN', $userPermission)) {
+            $data = array(
+                'status'         => FALSE,
+                'message'         => "Anda tidak memiliki akses!"
+            );
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        }
+        if ($this->input->post('detail_tugas_id') == NULL) {
+            $data = array(
+                'status'         => FALSE,
+                'message'         => "Tugas dibutuhkan"
+            );
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        }
+        if ($this->input->post('status') == NULL) {
+            $data = array(
+                'status'         => FALSE,
+                'message'         => "Status dibutuhkan"
+            );
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        }
+        $tugas = $this->db
+            ->select('tugas.id as tugas_id, detail_tugas.id as id, detail_tugas.catatan, detail_tugas.dibuka, sop.sop, sop.kategori, sop.waktu as sopWaktu, tugas.no_surat_tugas, tugas.no_nota_dinas, tugas.tanggal_nota_dinas, tugas.perihal_nota_dinas, tugas.status as tugasStatus, kegiatan.kegiatan, detail_tugas.waktu, detail_tugas.satuan, detail_tugas.waktu_mulai, detail_tugas.waktu_selesai, detail_tugas.status as detail_tugasStatus, tugas.pengaduan_id, kegiatan.keterangan')
+            ->join('tugas', 'tugas.id=detail_tugas.tugas_id')
+            ->join('sop', 'sop.id=tugas.sop_id')
+            ->join('kegiatan', 'kegiatan.id=detail_tugas.kegiatan_id')
+            ->get_where('detail_tugas', ['detail_tugas.deleteAt' => NULL, 'detail_tugas.id' => $this->input->post('detail_tugas_id'), 'detail_tugas.status' => 'Dalam proses'])
+            ->row_array();
+        if ($tugas == NULL) {
+            $data = array(
+                'status'         => FALSE,
+                'message'         => "Tugas tidak ditemukan"
+            );
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        }
+        $this->session->set_userdata([
+            'positionEditOnDetail' => [
+                'status' => ($this->input->post('status') == 'edit' ? TRUE : FALSE),
+                'detail_tugas_id' => $this->input->post('detail_tugas_id')
+            ]
+        ]);
+        $data['status'] = TRUE;
+        $data['tugas_id'] = $tugas['tugas_id'];
+        $this->output->set_content_type('application/json')->set_output(json_encode($data));
+    }
+
+    public function uploadKelengkapanHTMLOnDetail()
+    {
+        $userPermission = getPermissionFromUser();
+        if (!in_array('UKEGIATANONDETAILPENYELIDIKAN', $userPermission)) {
+            $data = array(
+                'status'         => FALSE,
+                'message'         => "Anda tidak memiliki akses!"
+            );
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        } else {
+            if ($this->input->post('kegiatan_id') == NULL) {
+                $data = array(
+                    'status'         => FALSE,
+                    'message'         => "Kegiatan is required"
+                );
+                return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+            }
+            if ($this->input->post('kelengkapan_id') == NULL) {
+                $data = array(
+                    'status'         => FALSE,
+                    'message'         => "Kelengkapan is required"
+                );
+                return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+            }
+            $data['status'] = TRUE;
+
+            $kelengkapan = $this->kelengkapan->get_by_id($this->input->post('kelengkapan_id'));
+
+            $params = [
+                'title' => 'Upload file ' . $kelengkapan->kelengkapan,
+                'kegiatan_id' => $this->input->post('kegiatan_id'),
+                'kelengkapan_id' => $this->input->post('kelengkapan_id'),
+            ];
+            $data['data'] = modal('upload_kelengkapan', $this->load->view($this->module . '/penyelidikan/add_sop_kelengkapan_on_detail', $params, TRUE));
+            $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        }
+    }
+
+    public function uploadKelengkapanOnDetail()
+    {
+        $userPermission = getPermissionFromUser();
+        if (!in_array('UKEGIATANONDETAILPENYELIDIKAN', $userPermission)) {
+            $data = array(
+                'status'         => FALSE,
+                'message'         => "Anda tidak memiliki akses!"
+            );
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        } else {
+            $data = array();
+            $data['status'] = TRUE;
+
+            $this->form_validation->set_error_delimiters('', '');
+            $this->form_validation->set_rules('kegiatan_id', 'Kegiatan', 'trim|required');
+            $this->form_validation->set_rules('kelengkapan_id', 'Kelengkapan', 'trim|required');
+
+            if ($this->form_validation->run() == FALSE) {
+                $errors = array(
+                    'kegiatan_id' => form_error('kegiatan_id'),
+                    'kelengkapan_id' => form_error('kelengkapan_id')
+                );
+                $data = array(
+                    'status'         => FALSE,
+                    'errors'         => $errors
+                );
+                return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+            } else {
+                $tugas = $this->db
+                    ->select('tugas.id as tugas_id, detail_tugas.id as id, detail_tugas.catatan, detail_tugas.dibuka, sop.sop, sop.kategori, sop.waktu as sopWaktu, tugas.no_surat_tugas, tugas.no_nota_dinas, tugas.tanggal_nota_dinas, tugas.perihal_nota_dinas, tugas.status as tugasStatus, kegiatan.kegiatan, detail_tugas.waktu, detail_tugas.satuan, detail_tugas.waktu_mulai, detail_tugas.waktu_selesai, detail_tugas.status as detail_tugasStatus, tugas.pengaduan_id, kegiatan.keterangan')
+                    ->join('tugas', 'tugas.id=detail_tugas.tugas_id')
+                    ->join('sop', 'sop.id=tugas.sop_id')
+                    ->join('kegiatan', 'kegiatan.id=detail_tugas.kegiatan_id')
+                    ->get_where('detail_tugas', ['detail_tugas.deleteAt' => NULL, 'detail_tugas.id' => $this->input->post('kegiatan_id'), 'detail_tugas.status' => 'Dalam proses'])
+                    ->row_array();
+                if ($tugas == NULL) {
+                    $data = array(
+                        'status'         => FALSE,
+                        'message'         => "Tugas tidak ditemukan"
+                    );
+                    return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                }
+                $datt = array(
+                    'kegiatan_id' => $this->input->post('kegiatan_id'),
+                    'kelengkapan_id' => $this->input->post('kelengkapan_id')
+                );
+
+                if (isset($_FILES['file']['name'])) {
+                    $config['upload_path'] = './assets/kejati/files/';
+                    $config['allowed_types'] = 'jpg|png|pdf|doc|docx|xls|xlsx';
+                    $config['max_size']     = '20000';
+                    $config['encrypt_name'] = true;
+
+                    $this->load->library('upload', $config);
+
+                    $this->upload->initialize($config);
+
+                    if (!$this->upload->do_upload('file')) {
+                        $errors = array('file' => $this->upload->display_errors());
+                        $data = array(
+                            'status'         => FALSE,
+                            'errors'         => $errors
+                        );
+                    } else {
+                        $dataFile = $this->upload->data();
+                        $insert['dokumen'] = $dataFile['file_name'];
+                        $insert['tipe'] = $dataFile['file_type'];
+
+                        $update = $this->db
+                            ->where('detail_tugas_id', $datt['kegiatan_id'])
+                            ->where('kelengkapan_id', $datt['kelengkapan_id'])
+                            ->where('deleteAt', NULL)
+                            ->update('kelengkapan_data', $insert);
+
+                        if ($update) {
+                            $data['status'] = TRUE;
+                            $data['tugas_id'] = $tugas['tugas_id'];
+                            $data['message'] = "Berhasil mengunggah file";
+                        } else {
+                            $data['status'] = FALSE;
+                            $data['message'] = "Gagal mengunggah file";
+                        }
+                        return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                    }
+                } else {
+                    $data = array(
+                        'status'         => FALSE,
+                        'errors'         => [
+                            'file' => 'File is required'
+                        ]
+                    );
+                    return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                }
+            }
+        }
+    }
+
+    public function setLeaderOnDetail()
+    {
+        $userPermission = getPermissionFromUser();
+        if (!in_array('UKEGIATANONDETAILPENYELIDIKAN', $userPermission)) {
+            $data = array(
+                'status'         => FALSE,
+                'message'         => "Anda tidak memiliki akses!"
+            );
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        } else {
+            if ($this->input->post('id') == NULL) {
+                $data = array(
+                    'status'         => FALSE,
+                    'message'         => "Kode dibutuhkan"
+                );
+                return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+            }
+            $ex = explode('|', $this->input->post('id'));
+            if ($ex[0] == NULL) {
+                $data = array(
+                    'status'         => FALSE,
+                    'message'         => "Kegiatan dibutuhkan"
+                );
+                return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+            }
+            if ($ex[1] == NULL) {
+                $data = array(
+                    'status'         => FALSE,
+                    'message'         => "Pegawai dibutuhkan"
+                );
+                return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+            }
+            $tugas = $this->db
+                ->select('tugas.id as tugas_id, detail_tugas.id as id, detail_tugas.catatan, detail_tugas.dibuka, sop.sop, sop.kategori, sop.waktu as sopWaktu, tugas.no_surat_tugas, tugas.no_nota_dinas, tugas.tanggal_nota_dinas, tugas.perihal_nota_dinas, tugas.status as tugasStatus, kegiatan.kegiatan, detail_tugas.waktu, detail_tugas.satuan, detail_tugas.waktu_mulai, detail_tugas.waktu_selesai, detail_tugas.status as detail_tugasStatus, tugas.pengaduan_id, kegiatan.keterangan')
+                ->join('tugas', 'tugas.id=detail_tugas.tugas_id')
+                ->join('sop', 'sop.id=tugas.sop_id')
+                ->join('kegiatan', 'kegiatan.id=detail_tugas.kegiatan_id')
+                ->get_where('detail_tugas', ['detail_tugas.deleteAt' => NULL, 'detail_tugas.id' => $ex[0], 'detail_tugas.status' => 'Dalam proses'])
+                ->row_array();
+            if ($tugas == NULL) {
+                $data = array(
+                    'status'         => FALSE,
+                    'message'         => "Tugas tidak ditemukan"
+                );
+                return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+            }
+
+            $this->db->trans_start();
+            $def = $this->db
+                ->where('detail_tugas_id', $ex[0])
+                ->where('deleteAt', NULL)
+                ->update('pegawai_detail_tugas', ['leader' => 0]);
+            if ($this->db->trans_status() === FALSE || $def == FALSE) {
+                $this->db->trans_rollback();
+                $data['status'] = FALSE;
+                $data['message'] = "Gagal memilih ketua tim";
+                return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+            }
+            $update = $this->db
+                ->where('detail_tugas_id', $ex[0])
+                ->where('pegawai_id', $ex[1])
+                ->where('deleteAt', NULL)
+                ->update('pegawai_detail_tugas', ['leader' => 1]);
+            if ($this->db->trans_status() === FALSE || $update == FALSE) {
+                $this->db->trans_rollback();
+                $data['status'] = FALSE;
+                $data['message'] = "Gagal memilih ketua tim";
+                return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+            }
+            $this->db->trans_commit();
+            $data = array(
+                'status'         => TRUE,
+                'message'         => "Berhasil memilih ketua tim",
+                'tugas_id' => $tugas['tugas_id'],
+            );
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        }
+    }
+
+    public function deletePegawaiOnDetail()
+    {
+        $userPermission = getPermissionFromUser();
+        if (!in_array('UKEGIATANONDETAILPENYELIDIKAN', $userPermission)) {
+            $data = array(
+                'status'         => FALSE,
+                'message'         => "Anda tidak memiliki akses!"
+            );
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        } else {
+            $data = array();
+            $data['status'] = TRUE;
+
+            $this->form_validation->set_error_delimiters('', '');
+            $this->form_validation->set_rules('kegiatan_id', 'Kegiatan', 'trim|required');
+            $this->form_validation->set_rules('jaksa', 'Jaksa', 'trim|required');
+
+            if ($this->form_validation->run() == FALSE) {
+                $errors = array(
+                    'kegiatan_id' => form_error('kegiatan_id'),
+                    'jaksa' => form_error('jaksa')
+                );
+                $data = array(
+                    'status'         => FALSE,
+                    'errors'         => $errors
+                );
+                return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+            } else {
+                $tugas = $this->db
+                    ->select('tugas.id as tugas_id, detail_tugas.id as id, detail_tugas.catatan, detail_tugas.dibuka, sop.sop, sop.kategori, sop.waktu as sopWaktu, tugas.no_surat_tugas, tugas.no_nota_dinas, tugas.tanggal_nota_dinas, tugas.perihal_nota_dinas, tugas.status as tugasStatus, kegiatan.kegiatan, detail_tugas.waktu, detail_tugas.satuan, detail_tugas.waktu_mulai, detail_tugas.waktu_selesai, detail_tugas.status as detail_tugasStatus, tugas.pengaduan_id, kegiatan.keterangan')
+                    ->join('tugas', 'tugas.id=detail_tugas.tugas_id')
+                    ->join('sop', 'sop.id=tugas.sop_id')
+                    ->join('kegiatan', 'kegiatan.id=detail_tugas.kegiatan_id')
+                    ->get_where('detail_tugas', ['detail_tugas.deleteAt' => NULL, 'detail_tugas.id' => $this->input->post('kegiatan_id'), 'detail_tugas.status' => 'Dalam proses'])
+                    ->row_array();
+                if ($tugas == NULL) {
+                    $data = array(
+                        'status'         => FALSE,
+                        'message'         => "Tugas tidak ditemukan"
+                    );
+                    return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                }
+                $insert = array(
+                    'kegiatan_id' => $this->input->post('kegiatan_id'),
+                    'jaksa' => $this->input->post('jaksa')
+                );
+
+                $this->db->trans_start();
+                $get = $this->db
+                    ->where('detail_tugas_id', $insert['kegiatan_id'])
+                    ->where('pegawai_id', $insert['jaksa'])
+                    ->where('deleteAt', NULL)
+                    ->get('pegawai_detail_tugas')
+                    ->row();
+                if ($get->leader == '1') {
+                    $this->db->trans_rollback();
+                    $data['status'] = FALSE;
+                    $data['message'] = "Gagal menghapus jaksa, dikarenakan sedang menjadi ketua tim";
+                    return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                }
+                $def = $this->db
+                    ->where('id', $get->id)
+                    ->update(
+                        'pegawai_detail_tugas',
+                        [
+                            'deleteAt' => date('Y-m-d H:i:s')
+                        ]
+                    );
+                if ($this->db->trans_status() === FALSE || $def == FALSE) {
+                    $this->db->trans_rollback();
+                    $data['status'] = FALSE;
+                    $data['message'] = "Gagal menghapus jaksa";
+                    return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                }
+                $this->db->trans_commit();
+                $data = array(
+                    'status'         => TRUE,
+                    'message'         => "Berhasil menghapus jaksa",
+                    'tugas_id' => $tugas['tugas_id'],
+                );
+                return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+            }
+        }
+    }
+
+
+    public function addPegawaiHTMLOnDetail()
+    {
+        $userPermission = getPermissionFromUser();
+        if (!in_array('UKEGIATANONDETAILPENYELIDIKAN', $userPermission)) {
+            $data = array(
+                'status'         => FALSE,
+                'message'         => "Anda tidak memiliki akses!"
+            );
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        } else {
+            if ($this->input->post('kegiatan_id') == NULL) {
+                $data = array(
+                    'status'         => FALSE,
+                    'message'         => "Kegiatan is required"
+                );
+                return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+            }
+            $data['status'] = TRUE;
+            $jaksa = [];
+            $getJaksa = $this->db->get_where('pegawai', ['deleteAt' => NULL])->result();
+            foreach ($getJaksa as $k) {
+                $jaksa[$k->id] = $k->nama;
+            }
+
+            $params = [
+                'title' => 'Add jaksa',
+                'kegiatan_id' => $this->input->post('kegiatan_id'),
+                'jaksa' => $jaksa,
+            ];
+            $data['data'] = modal('add_sop_pegawai', $this->load->view($this->module . '/penyelidikan/add_sop_pegawai_on_detail', $params, TRUE));
+            $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        }
+    }
+
+    public function addPegawaiOnDetail()
+    {
+        $userPermission = getPermissionFromUser();
+        if (!in_array('UKEGIATANONDETAILPENYELIDIKAN', $userPermission)) {
+            $data = array(
+                'status'         => FALSE,
+                'message'         => "Anda tidak memiliki akses!"
+            );
+            return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        } else {
+            $data = array();
+            $data['status'] = TRUE;
+
+            $this->form_validation->set_error_delimiters('', '');
+            $this->form_validation->set_rules('kegiatan_id', 'Kegiatan', 'trim|required');
+            $this->form_validation->set_rules('jaksa', 'Jaksa', 'trim|required');
+
+            if ($this->form_validation->run() == FALSE) {
+                $errors = array(
+                    'kegiatan_id' => form_error('kegiatan_id'),
+                    'jaksa' => form_error('jaksa')
+                );
+                $data = array(
+                    'status'         => FALSE,
+                    'errors'         => $errors
+                );
+                return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+            } else {
+                $tugas = $this->db
+                    ->select('tugas.id as tugas_id, detail_tugas.id as id, detail_tugas.catatan, detail_tugas.dibuka, sop.sop, sop.kategori, sop.waktu as sopWaktu, tugas.no_surat_tugas, tugas.no_nota_dinas, tugas.tanggal_nota_dinas, tugas.perihal_nota_dinas, tugas.status as tugasStatus, kegiatan.kegiatan, detail_tugas.waktu, detail_tugas.satuan, detail_tugas.waktu_mulai, detail_tugas.waktu_selesai, detail_tugas.status as detail_tugasStatus, tugas.pengaduan_id, kegiatan.keterangan')
+                    ->join('tugas', 'tugas.id=detail_tugas.tugas_id')
+                    ->join('sop', 'sop.id=tugas.sop_id')
+                    ->join('kegiatan', 'kegiatan.id=detail_tugas.kegiatan_id')
+                    ->get_where('detail_tugas', ['detail_tugas.deleteAt' => NULL, 'detail_tugas.id' => $this->input->post('kegiatan_id'), 'detail_tugas.status' => 'Dalam proses'])
+                    ->row_array();
+                if ($tugas == NULL) {
+                    $data = array(
+                        'status'         => FALSE,
+                        'message'         => "Tugas tidak ditemukan"
+                    );
+                    return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                }
+                $insert = array(
+                    'detail_tugas_id' => $this->input->post('kegiatan_id'),
+                    'pegawai_id' => $this->input->post('jaksa'),
+                    'leader' => 0
+                );
+                $get = $this->db
+                    ->where('detail_tugas_id', $insert['detail_tugas_id'])
+                    ->where('pegawai_id', $insert['pegawai_id'])
+                    ->where('deleteAt', NULL)
+                    ->get('pegawai_detail_tugas')
+                    ->row();
+                if ($get != NULL) {
+                    $data['status'] = FALSE;
+                    $data['message'] = "Jaksa telah ditambahkan";
+                    return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                }
+                
+                $insert = $this->db->insert('pegawai_detail_tugas',$insert);
+
+                if ($insert) {
+                    $data['status'] = TRUE;
+                    $data['tugas_id'] = $tugas['tugas_id'];
+                    $data['message'] = "Berhasil menambah jaksa";
+                } else {
+                    $data['status'] = FALSE;
+                    $data['message'] = "Gagal menambah jaksa";
+                }
+                return $this->output->set_content_type('application/json')->set_output(json_encode($data));
+            }
+        }
     }
 }
