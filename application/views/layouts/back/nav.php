@@ -18,14 +18,14 @@
                     <a href="javascript:;" class="nav-link text-body p-0" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fa fa-bell cursor-pointer" aria-hidden="true"></i>
                     </a>
-                    <?php if (checkNotif()=='') { ?>
+                    <?php if (checkNotif() == '') { ?>
                         <ul class="dropdown-menu dropdown-menu-end px-2 py-3 me-sm-n4 notif" style="z-index: 999;width: 50vw;" aria-labelledby="dropdownMenuButton">
                             <?php echo checkNotif(); ?>
                         </ul>
-                    <?php }else { ?>
-                        
+                    <?php } else { ?>
+
                         <ul class="dropdown-menu dropdown-menu-end px-2 py-3 me-sm-n4 notif" style="z-index: 999;width: 50vw;" aria-labelledby="dropdownMenuButton">
-                            <?php echo checkNotif(); ?> 
+                            <?php echo checkNotif(); ?>
                         </ul>
                         <span class=" top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
                             <span class="visually-hidden">New alerts</span>
@@ -36,7 +36,12 @@
                             </span>
                         </div> -->
                     <?php } ?>
-                    
+
+                </li>
+                <li class="nav-item d-flex me-3 align-items-center cursor-pointer" onclick="editAkun(<?= $this->session->userdata('userCode'); ?>)">
+                    <span class="nav-link text-body font-weight-bold px-0">
+                        <i class="fa-solid fa-user"></i>
+                    </span>
                 </li>
                 <li class="nav-item d-flex align-items-center">
                     <a href="<?php echo base_url('authentication/logout') ?>" class="nav-link text-body font-weight-bold px-0">

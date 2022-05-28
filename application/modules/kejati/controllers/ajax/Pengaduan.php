@@ -59,10 +59,20 @@ class Pengaduan extends MX_Controller
         $list = $this->pengaduan->get_datatables();
         $data = array();
         foreach ($list as $pengaduan) {
+            $status_telaah = '';
+            if ($pengaduan->status_telaah == 'diterima') {
+                $status_telaah = '<span class="badge bg-success">Pengaduan dierima</span>';
+            } else if ($pengaduan->status_telaah == 'ditolak') {
+                $status_telaah = '<span class="badge bg-danger">Pengaduan ditolak</span>';
+            } else {
+                $status_telaah = '<span class="badge bg-secondary">Belum Ditelaah</span>';
+            }
             $row = array();
             $row[] = '  <p class="text-sm d-flex py-auto my-auto"><b>' . $pengaduan->no . '</b></p>
                         <p class="text-sm d-flex py-auto my-auto">Tanggal Surat : ' . $pengaduan->tanggal_surat . '</p>
-                        <p class="text-sm d-flex py-auto my-auto">Tanggal Terima : ' . $pengaduan->tanggal_terima . '</p>';
+                        <p class="text-sm d-flex py-auto my-auto">Tanggal Terima : ' . $pengaduan->tanggal_terima . '</p>
+                        <p class="text-sm d-flex py-auto my-auto">' . $status_telaah . '</p>';
+
 
             $row[] = '  <p class="text-sm d-flex py-auto my-auto"><b>' . $pengaduan->asal_surat . '</b></p>
                         <p class="text-sm d-flex py-auto my-auto" title="' . $pengaduan->perihal . '">' . character_limiter($pengaduan->perihal, 25) . '</p>';

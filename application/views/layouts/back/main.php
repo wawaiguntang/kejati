@@ -181,6 +181,7 @@ $profile = getProfileWeb();
                 if (!isset($_view)) {
                     echo "Content not set";
                 } else {
+
                     if (!is_array($_view)) {
                         $this->load->view($_view);
                     } else {
@@ -206,6 +207,23 @@ $profile = getProfileWeb();
                         </div>
                     </div>
                 </footer>
+            </div>
+            <div id="akun" class="modal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit Akun</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div id="form-akun" class="modal-body">
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" onclick="saveAkun()">Simpan Perubahan</button>
+                        </div>
+                    </div>
+                </div>
             </div>
     </main>
     <!--   Core JS Files   -->
@@ -234,6 +252,70 @@ $profile = getProfileWeb();
         $('form').bind('keypress', false);
     </script>
     <script src="https://cdn.ckeditor.com/ckeditor5/11.1.1/classic/ckeditor.js"></script>
+    <script>
+        if (typeof base_url === 'undefined' || typeof base_url == 'undefined') {
+            base_url = "<?= base_url(); ?>";
+        }
+
+        function editAkun(userCode) {
+            $("#akun").modal('show');
+
+            $.ajax({
+                url: base_url + 'management_users/ajax/users/editUserHTML/' + userCode,
+                type: "POST",
+
+                success: function(data) {
+                    if (data.status) {
+                        $("#form-akun").html(data.data);
+                        breadcrumb(data.breadcrumb);
+                    } else {
+                        handleError(data);
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    alert("Error get data from ajax");
+                },
+            });
+        }
+
+        function saveAkun() {
+            $("#btnSave").text("saving...");
+            $("#btnSave").attr("disabled", true);
+            var url, method;
+            url = base_url + 'management_users/ajax/users/updateAll';
+            method = "updated";
+            $.ajax({
+                url: url,
+                type: "POST",
+                data: $("#form").serialize(),
+                dataType: "json",
+                success: function(data) {
+                    if (data.status) {
+                        $("#akun").modal('hide');
+                        handleToast("success", data.message);
+                        $('#welcome').html('Selamat Datang, ' + data.name);
+                    } else {
+                        handleError(data);
+                    }
+                    $("#btnSave").text("save");
+                    $("#btnSave").attr("disabled", false);
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    alert("Error adding / update data");
+                    $("#btnSave").text("save");
+                    $("#btnSave").attr("disabled", false);
+                },
+            });
+
+            $("#form input, #form textarea").on("keyup", function() {
+                $(this).removeClass("is-valid is-invalid");
+            });
+            $("#form select").on("change", function() {
+                $(this).removeClass("is-valid is-invalid");
+            });
+
+        }
+    </script>
 </body>
 
 </html>

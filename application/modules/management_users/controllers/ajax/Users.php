@@ -169,6 +169,50 @@ class Users extends MX_Controller
         }
     }
 
+    public function editUserHTML(string $userCode = '') // untuk mengubah akun setiap Jaksa
+    {
+        $userPermission = getPermissionFromUser();
+
+        $data['status'] = TRUE;
+        if ($userCode == '') {
+            $data = array(
+                'status'         => FALSE,
+                'message'         => "ID user is required"
+            );
+        } else {
+            $user = $this->users->get_by_id($userCode);
+            if ($user == NULL) {
+                $data = array(
+                    'status'         => FALSE,
+                    'message'         => "User not found!"
+                );
+            } else {
+                $params = [
+                    'title' => 'Edit Data',
+                    'userCode' => $user->userCode,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                ];
+                $data['breadcrumb'] = breadcrumb([
+                    [
+                        "text" => "Management Users",
+                        "url" => base_url('management_users/users')
+                    ],
+                    [
+                        "text" => "Users",
+                        "action" => "back()"
+                    ],
+                    [
+                        "text" => "Edit Users",
+                    ]
+                ], 'Edit Users');
+                $data['data'] = $this->load->view($this->module . '/users/formAll', $params, TRUE);
+            }
+
+            $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        }
+    }
+
     public function add()
     {
         $userPermission = getPermissionFromUser();
@@ -276,6 +320,69 @@ class Users extends MX_Controller
                         }
                         $this->output->set_content_type('application/json')->set_output(json_encode($data));
                     }
+                }
+            }
+        }
+    }
+
+    public function updateAll() //untuk update setiap akun
+    {
+        $userPermission = getPermissionFromUser();
+
+        $this->validation_for = 'update';
+        $data = array();
+        $data['status'] = TRUE;
+        if ($this->input->post('userCode') == '' || $this->input->post('userCode') == NULL) {
+            $data = array(
+                'status'         => FALSE,
+                'message'         => "ID user is required"
+            );
+        } else {
+            $user = $this->users->get_by_id($this->input->post('userCode'));
+            if ($user == NULL) {
+                $data = array(
+                    'status'         => FALSE,
+                    'message'         => "User not found!"
+                );
+            } else {
+                $this->_validate();
+
+                if ($this->form_validation->run() == FALSE) {
+                    $errors = array(
+                        'name'     => form_error('name'),
+                        'email' => form_error('email'),
+                        'password' => form_error('password'),
+                    );
+                    $data = array(
+                        'status'         => FALSE,
+                        'errors'         => $errors
+                    );
+                    $this->output->set_content_type('application/json')->set_output(json_encode($data));
+                } else {
+                    $getData = $this->users->get_by_id($this->input->post('userCode'));
+                    if ($this->input->post('password') == NULL) {
+                        $password = $getData->password;
+                    } else {
+                        $password = password_hash($this->input->post('password'), PASSWORD_DEFAULT);
+                    }
+                    $update = array(
+                        'name' => $this->input->post('name'),
+                        'email' => $this->input->post('email'),
+                        'password' => $password,
+                    );
+
+                    $up = $this->users->update(array('userCode' => $this->input->post('userCode')), $update);
+                    if ($up) {
+                        $data['status'] = TRUE;
+                        $data['message'] = "Success to update user";
+                        $data['name'] = $this->input->post('name');
+                        $this->session->set_userdata('name', $this->input->post('name'));
+                    } else {
+                        $data['status'] = FALSE;
+                        $data['message'] = "Failed to update user";
+                    }
+
+                    $this->output->set_content_type('application/json')->set_output(json_encode($data));
                 }
             }
         }
@@ -545,7 +652,7 @@ class Users extends MX_Controller
                         ],
                         [
                             "text" => "Detail Users",
-                            "action" => "backDetail(".$userCode.")"
+                            "action" => "backDetail(" . $userCode . ")"
                         ],
                         [
                             "text" => "Add Role",
@@ -636,7 +743,7 @@ class Users extends MX_Controller
             'permissionCode' => $permissionCode,
             'userCode' => $userCode,
         ];
-        
+
         return $this->load->view($this->module . '/users/detail/permission/form', $params, TRUE);
     }
 
@@ -675,7 +782,7 @@ class Users extends MX_Controller
                         ],
                         [
                             "text" => "Detail Users",
-                            "action" => "backDetail(".$userCode.")"
+                            "action" => "backDetail(" . $userCode . ")"
                         ],
                         [
                             "text" => "Add Special Permission",
