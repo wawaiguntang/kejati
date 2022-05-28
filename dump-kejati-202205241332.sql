@@ -506,6 +506,7 @@ CREATE TABLE `pengaduan` (
   `createAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updateAt` datetime DEFAULT NULL,
   `deleteAt` datetime DEFAULT NULL,
+  `status_telaah` varchar(10) NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -516,7 +517,7 @@ CREATE TABLE `pengaduan` (
 
 LOCK TABLES `pengaduan` WRITE;
 /*!40000 ALTER TABLE `pengaduan` DISABLE KEYS */;
-INSERT INTO `pengaduan` VALUES (3,'RR-99-00','2022-05-24 00:00:00','2022-05-25 00:00:00','Departement Hukum','asd','sad','2022-05-24 12:11:37',NULL,'2022-05-24 13:35:02'),(4,'TT-99-00','2022-05-28 00:00:00','2022-05-23 00:00:00','Departement Hukum','asda','asdasd','2022-05-27 11:25:52',NULL,NULL);
+INSERT INTO `pengaduan` VALUES (3,'RR-99-00','2022-05-24 00:00:00','2022-05-25 00:00:00','Departement Hukum','asd','sad','2022-05-24 12:11:37',NULL,'2022-05-24 13:35:02',NULL),(4,'TT-99-00','2022-05-28 00:00:00','2022-05-23 00:00:00','Departement Hukum','asda','asdasd','2022-05-27 11:25:52',NULL,NULL,NULL);
 /*!40000 ALTER TABLE `pengaduan` ENABLE KEYS */;
 UNLOCK TABLES;
 
