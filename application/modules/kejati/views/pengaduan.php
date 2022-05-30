@@ -1,5 +1,22 @@
 <div class="data">
 </div>
+<!-- Modal -->
+<div class="modal fade" id="telaahModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Menu Telaah</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modal-body-telaah">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
     var base_url = '<?php echo base_url() ?>';
     var save_label = "add";
@@ -161,4 +178,44 @@
         });
     }
 
+    function telaahData(id) {
+        $.ajax({
+            url: base_url + 'kejati/ajax/pengaduan/telaahHTML/' + id,
+            type: "POST",
+
+            success: function(data) {
+                if (data.status) {
+                    $("#telaahModal").modal('show');
+                    $('#modal-body-telaah').html(data.data);
+                } else {
+                    handleError(data);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert("Error get data from ajax");
+            },
+        });
+    }
+
+    function updateTelaah(id, status) {
+        $.ajax({
+            url: base_url + 'kejati/ajax/pengaduan/updateTelaah',
+            type: "POST",
+            data: {
+                status: status,
+                id: id
+            },
+            success: function(data) {
+                if (data.status) {
+                    handleToast("success", data.message);
+                    back();
+                } else {
+                    handleError(data);
+                }
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert("Error get data from ajax");
+            },
+        });
+    }
 </script>

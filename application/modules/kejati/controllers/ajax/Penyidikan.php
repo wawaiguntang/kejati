@@ -116,7 +116,9 @@ class Penyidikan extends MX_Controller
             $pengaduan[0] = '-- Pilih Pengaduan --';
             $getPengaduan = $this->pengaduan->get_all();
             foreach ($getPengaduan as $k) {
-                $pengaduan[$k->id] = $k->no;
+                if ($k->status_telaah == 'diterima') {
+                    $pengaduan[$k->id] = $k->no;
+                }
             }
 
             $sop = [];

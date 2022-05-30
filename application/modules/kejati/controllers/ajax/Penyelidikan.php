@@ -120,7 +120,9 @@ class Penyelidikan extends MX_Controller
             $pengaduan[0] = '-- Pilih Pengaduan --';
             $getPengaduan = $this->pengaduan->get_all();
             foreach ($getPengaduan as $k) {
-                $pengaduan[$k->id] = $k->no;
+                if ($k->status_telaah == 'diterima') {
+                    $pengaduan[$k->id] = $k->no;
+                }
             }
 
             $sop = [];
@@ -1934,8 +1936,8 @@ class Penyelidikan extends MX_Controller
                     $data['message'] = "Jaksa telah ditambahkan";
                     return $this->output->set_content_type('application/json')->set_output(json_encode($data));
                 }
-                
-                $insert = $this->db->insert('pegawai_detail_tugas',$insert);
+
+                $insert = $this->db->insert('pegawai_detail_tugas', $insert);
 
                 if ($insert) {
                     $data['status'] = TRUE;
