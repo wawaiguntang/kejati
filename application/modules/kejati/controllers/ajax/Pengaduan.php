@@ -83,6 +83,7 @@ class Pengaduan extends MX_Controller
                 <div class='d-flex justify-content-center'>
                 " . ((in_array('UPENGADUAN', $userPermission)) ? '<i class="ri-edit-2-line ri-lg text-warning m-1" role="button" title="Ubah" onclick="editData(' . $pengaduan->id . ')"></i>' : '') . "
                 " . ((in_array('DPENGADUAN', $userPermission)) ? '<i class="ri-delete-bin-line ri-lg text-danger m-1" role="button" title="Hapus" onclick="deleteData(' . $pengaduan->id . ')"></i>' : '') . "
+                " . ((in_array('TELAAH', $userPermission)) ? '<span class="badge bg-primary cursor-pointer"  onclick="telaahData(' . $pengaduan->id . ')">Telaah</span>' : '') . "
                 </div>
                 ";
 
@@ -173,6 +174,46 @@ class Pengaduan extends MX_Controller
                         'isi' => $pengaduan->isi,
                     ];
                     $data['data'] = $this->load->view($this->module . '/pengaduan/form', $params, TRUE);
+                }
+            }
+            $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        }
+    }
+    public function telaahHTML(string $id = '')
+    {
+        $userPermission = getPermissionFromUser();
+        if (!in_array('TELAAH', $userPermission)) {
+            $data = array(
+                'status'         => FALSE,
+                'message'         => "Anda tidak memiliki akses!"
+            );
+            $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        } else {
+            $data['status'] = TRUE;
+            if ($id == '') {
+                $data = array(
+                    'status'         => FALSE,
+                    'message'         => "ID pengaduan is required"
+                );
+            } else {
+                $pengaduan = $this->pengaduan->get_by_id($id);
+                if ($pengaduan == NULL) {
+                    $data = array(
+                        'status'         => FALSE,
+                        'message'         => "Pengaduan tidak ditemukan!"
+                    );
+                } else {
+                    $params = [
+                        'title' => 'Ubah Data',
+                        'id' => $pengaduan->id,
+                        'no' => $pengaduan->no,
+                        'tanggal_surat' => $pengaduan->tanggal_surat,
+                        'tanggal_terima' => $pengaduan->tanggal_terima,
+                        'asal_surat' => $pengaduan->asal_surat,
+                        'perihal' => $pengaduan->perihal,
+                        'isi' => $pengaduan->isi,
+                    ];
+                    $data['data'] = $this->load->view($this->module . '/pengaduan/telaah', $params, TRUE);
                 }
             }
             $this->output->set_content_type('application/json')->set_output(json_encode($data));
@@ -293,6 +334,48 @@ class Pengaduan extends MX_Controller
                         }
                         $this->output->set_content_type('application/json')->set_output(json_encode($data));
                     }
+                }
+            }
+        }
+    }
+    public function updateTelaah()
+    {
+        $userPermission = getPermissionFromUser();
+        if (!in_array('TELAAH', $userPermission)) {
+            $data = array(
+                'status'         => FALSE,
+                'message'         => "Anda tidak memiliki akses!"
+            );
+            $this->output->set_content_type('application/json')->set_output(json_encode($data));
+        } else {
+            $this->validation_for = 'update';
+            $data = array();
+            $data['status'] = TRUE;
+            if ($this->input->post('id') == '' || $this->input->post('id') == NULL) {
+                $data = array(
+                    'status'         => FALSE,
+                    'message'         => "ID pengaduan is required"
+                );
+            } else {
+                $pengaduan = $this->pengaduan->get_by_id($this->input->post('id'));
+                if ($pengaduan == NULL) {
+                    $data = array(
+                        'status'         => FALSE,
+                        'message'         => "pengaduan tidak ditemukan!"
+                    );
+                } else {
+                    $update = array(
+                        'status_telaah' => $this->input->post('status')
+                    );
+                    $up = $this->pengaduan->update(array('id' => $this->input->post('id')), $update);
+                    if ($up) {
+                        $data['status'] = TRUE;
+                        $data['message'] = "Berhasil mengubah pengaduan";
+                    } else {
+                        $data['status'] = FALSE;
+                        $data['message'] = "Gagal mengubah pengaduan";
+                    }
+                    $this->output->set_content_type('application/json')->set_output(json_encode($data));
                 }
             }
         }
