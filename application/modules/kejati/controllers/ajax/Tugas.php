@@ -68,35 +68,36 @@ class Tugas extends MX_Controller
         $list = $this->penyelidikan->get_datatables();
         $data = array();
         foreach ($list as $penyelidikan) {
+
             $check = $this->db
                 ->join('pegawai_detail_tugas', 'pegawai_detail_tugas.detail_tugas_id=detail_tugas.id')
                 ->join('pegawai', 'pegawai.id=pegawai_detail_tugas.pegawai_id')
                 ->get_where('detail_tugas', ['detail_tugas.deleteAt' => NULL, 'detail_tugas.tugas_id' => $penyelidikan->id, 'pegawai.userCode' => $this->session->userdata('userCode')])->result_array();
-            if ($check != NULL) {
-                $row = array();
-                $row[] = '  <p class="text-sm d-flex py-auto my-auto"><b>' . $penyelidikan->no_surat_tugas . '</b></p>
+
+
+            $row = array();
+            $row[] = '  <p class="text-sm d-flex py-auto my-auto"><b>' . $penyelidikan->no_surat_tugas . '</b></p>
                             <p class="text-sm d-flex py-auto my-auto">Jumlah Tugas : ' . count($check) . '</p>';
-                $row[] = '  <p class="text-sm d-flex py-auto my-auto"><b>' . $penyelidikan->no_nota_dinas . '</b></p>';
-                $row[] = '  <p class="text-sm d-flex py-auto my-auto"><b>' . $penyelidikan->sop . '</b></p>
+            $row[] = '  <p class="text-sm d-flex py-auto my-auto"><b>' . $penyelidikan->no_nota_dinas . '</b></p>';
+            $row[] = '  <p class="text-sm d-flex py-auto my-auto"><b>' . $penyelidikan->sop . '</b></p>
                             <p class="text-sm d-flex py-auto my-auto">' . $penyelidikan->kategori . '</p>';
-                $row[] = '  <p class="text-sm d-flex py-auto my-auto"><b>' . character_limiter($penyelidikan->perihal, 25) . '</b></p>';
+            $row[] = '  <p class="text-sm d-flex py-auto my-auto"><b>' . character_limiter($penyelidikan->perihal, 25) . '</b></p>';
 
-                // $row[] = "
-                //     <div class='d-flex justify-content-center'>
-                //     " . ((in_array('UPENYELIDIKAN', $userPermission)) ? '<i class="ri-edit-2-line ri-lg text-warning m-1" role="button" title="Ubah" onclick="editData(' . $penyelidikan->id . ')"></i>' : '') . "
-                //     " . ((in_array('DPENYELIDIKAN', $userPermission)) ? '<i class="ri-delete-bin-line ri-lg text-danger m-1" role="button" title="Hapus" onclick="deleteData(' . $penyelidikan->id . ')"></i>' : '') . "
-                //     " . ((in_array('RDETAILPENYELIDIKAN', $userPermission)) ? '<i class="ri-information-line ri-lg text-primary m-1" role="button" title="Info" onclick="detail(' . $penyelidikan->id . ')"></i>' : '') . "
-                //     </div>
-                //     ";
+            // $row[] = "
+            //     <div class='d-flex justify-content-center'>
+            //     " . ((in_array('UPENYELIDIKAN', $userPermission)) ? '<i class="ri-edit-2-line ri-lg text-warning m-1" role="button" title="Ubah" onclick="editData(' . $penyelidikan->id . ')"></i>' : '') . "
+            //     " . ((in_array('DPENYELIDIKAN', $userPermission)) ? '<i class="ri-delete-bin-line ri-lg text-danger m-1" role="button" title="Hapus" onclick="deleteData(' . $penyelidikan->id . ')"></i>' : '') . "
+            //     " . ((in_array('RDETAILPENYELIDIKAN', $userPermission)) ? '<i class="ri-information-line ri-lg text-primary m-1" role="button" title="Info" onclick="detail(' . $penyelidikan->id . ')"></i>' : '') . "
+            //     </div>
+            //     ";
 
-                $row[] = "
+            $row[] = "
                 <div class='d-flex justify-content-center'>
                 " . ((in_array('RDETAILTUGASSELF', $userPermission)) ? '<i class="ri-information-line ri-lg text-primary m-1" role="button" title="Info" onclick="detail(' . $penyelidikan->id . ')"></i>' : '') . "
                 </div>
             ";
 
-                $data[] = $row;
-            }
+            $data[] = $row;
         }
 
         $output = array(
@@ -112,7 +113,7 @@ class Tugas extends MX_Controller
     public function detail()
     {
         $userPermission = getPermissionFromUser();
-        if (!in_array('RDETAILTUGASSELF', $userPermission)) {
+        if (!in_array('RDETAILTUGASSELF', $userPermission) && !in_array('RDETAILTUGASSELF', $userPermission)) {
             $data = array(
                 'status'         => FALSE,
                 'message'         => "Anda tidak memiliki akses!"
@@ -182,6 +183,7 @@ class Tugas extends MX_Controller
         $params = [
             'title' => 'Detail tugas',
             'tugas_id' => $this->input->post('tugas_id'),
+            'userPermission' => $userPermission,
             'tugas' => $tug,
             'detail_tugas' => $temp,
             'pengaduan' => $this->load->view($this->module . '/tugas/pengaduan', $pengaduan, TRUE),

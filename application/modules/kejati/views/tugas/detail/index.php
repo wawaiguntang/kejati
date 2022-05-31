@@ -61,7 +61,15 @@
                             foreach ($detail_tugas as $k => $g) {
                             ?>
                                 <div class="card card-body py-1 mb-1 mx-1 px-2" style="border: 1px solid #D4D4D4;" id="kegiatan3">
-                                    <?php if ($g['leader']['userCode'] == $this->session->userdata('userCode')) {
+                                    <?php
+                                    $kasidik = FALSE;
+                                    if (in_array('RALLDETAILTUGASSELF', $userPermission)) {
+                                        $kasidik = TRUE;
+                                        if (in_array($this->session->userdata('userCode'), array_values(array_column($g['pegawai'], 'userCode')))) {
+                                            $kasidik = FALSE;
+                                        }
+                                    }
+                                    if ($g['leader']['userCode'] == $this->session->userdata('userCode') || $kasidik == TRUE) {
                                         if ($g['dibuka'] == '0') {
                                             $this->db->where(['id' => $g['id']])->update('detail_tugas', ['dibuka' => '1', 'waktu_mulai' => date('Y-m-d H:i:s')]);
                                         }
@@ -107,7 +115,7 @@
                                                                         <p class="text-xs  py-0 my-0 ml-1">-
                                                                             <?php
                                                                             if (isset($g['leader']['userCode']) && ($g['detail_tugasStatus'] == 'Dalam proses' || $g['detail_tugasStatus'] == 'Ditolak')) {
-                                                                                if ($this->session->userdata('userCode') == $g['leader']['userCode']) {
+                                                                                if ($this->session->userdata('userCode') == $g['leader']['userCode']  || $kasidik == TRUE) {
                                                                             ?>
                                                                                     <i class="ri-file-upload-line ri-lg text-success" role="button" title="Upload Hasil" onclick="uploadHasil(<?php echo $g['id'] . ',' . $z['hasil_id'] ?>)"></i>
                                                                             <?php
@@ -133,7 +141,7 @@
 
                                                                 </div>
 
-                                                                <?php if ($g['leader']['userCode'] == $this->session->userdata('userCode') && $push == TRUE && ($g['detail_tugasStatus'] == 'Dalam proses' || $g['detail_tugasStatus'] == 'Ditolak')) { ?>
+                                                                <?php if (($g['leader']['userCode'] == $this->session->userdata('userCode') || $kasidik == TRUE) && $push == TRUE && ($g['detail_tugasStatus'] == 'Dalam proses' || $g['detail_tugasStatus'] == 'Ditolak')) { ?>
                                                                     <div class="d-flex justify-content-end mt-2">
                                                                         <button class="btn btn-sm btn-primary" onclick="kirim(<?php echo $g['id'] ?>)" title="Kirim ke atasan">Kirim ke atasan</button>
                                                                     </div>
@@ -191,8 +199,7 @@
                                             <hr>
                                             <div class="row m-2">
                                                 <span class="text-sm"><b>Instruksi Umum Dari Ketua Tim</b>
-                                                    <i class="ri-add-circle-line ri-lg text-success" role="button" title="Bagi instruksi umum untuk anggota" onclick="addTugasUmumUntukAnggota(<?php echo $g['id'] ?>)"></i>
-
+                                                    <?php echo (($g['detail_tugasStatus'] == 'Dalam proses' || $g['detail_tugasStatus'] == 'Ditolak')) ? '<i class="ri-add-circle-line ri-lg text-success" role="button" title="Bagi instruksi umum untuk anggota" onclick="addTugasUmumUntukAnggota(' . $g['id'] . ')"></i>' : ''; ?>
                                                     <?php
                                                     $umum = (!json_decode($g['umum'], TRUE) ? [] : json_decode($g['umum'], TRUE));
                                                     foreach ($umum as $r => $uu) {
@@ -201,7 +208,7 @@
 
                                                     <?php } ?>
                                                 </span>
-                                                <span class="text-sm"><b>Detail Instruksi Dari Ketua Tim</b></span>
+                                                <span class="text-sm"><b>Detail Instruksi Dari Ketua Tim/KaSiDik</b></span>
                                                 <table class="table table-sm">
                                                     <tbody id="detail_tugas3">
                                                         <?php
@@ -215,7 +222,10 @@
                                                                         <div class="author align-items-center mb-1">
                                                                             <img src="<?php echo base_url('assets/img/pegawai/foto/' . $a['foto']) ?>" alt="..." class="avatar shadow">
                                                                             <div class="name ps-3">
-                                                                                <span class=""><?php echo $a['nama'] ?> <?php echo (($g['detail_tugasStatus'] == 'Dalam proses' || $g['detail_tugasStatus'] == 'Ditolak')) ? '<i class="ri-add-circle-line ri-lg text-success" role="button" title="Bagi tugas untuk anggota" onclick="addTugasUntukAnggota(' . $a['pdtId'] . ',' . $g['id'] . ')"></i>' : ''; ?></span>
+                                                                                <span class=""><?php echo $a['nama'] ?> <?php echo (($g['detail_tugasStatus'] == 'Dalam proses' || $g['detail_tugasStatus'] == 'Ditolak')) ?
+                                                                                                                            (in_array('RALLDETAILTUGASSELF', $userPermission) && $this->session->userdata('userCode') == $a['userCode'] ? '' : '<i class="ri-add-circle-line ri-lg text-success" role="button" title="Bagi tugas untuk anggota" onclick="addTugasUntukAnggota(' . $a['pdtId'] . ',' . $g['id'] . ')"></i>')
+                                                                                                                            :
+                                                                                                                            ''; ?></span>
                                                                                 <div class="stats">
                                                                                     <small><?php echo $a['leader'] == 1 ? 'Ketua Tim' : 'Anggota Tim' ?></small>
                                                                                 </div>
@@ -256,15 +266,18 @@
                                                                         <?php
                                                                         }
                                                                         ?>
-                                                                </td>
-                                                                <td>
-                                                                    <div class="col-2">
-                                                                        <button type="button" class="btn  p-2 bg-gradient-info position-relative" onclick="cardKonsulKetua(<?= $a['pdtId']; ?>,<?= $g['id'] ?>,<?= $a['pegawai_id']; ?>,<?= $leader; ?>)">
-                                                                        <i class="fa-solid fa-person-military-to-person"></i> Koordinasi
-                                                                        </button>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
+                                                                    </td>
+                                                                    <?php if (in_array('RALLDETAILTUGASSELF', $userPermission) && $this->session->userdata('userCode') == $a['userCode']) {
+                                                                    } else { ?>
+                                                                        <td>
+                                                                            <div class="col-2">
+                                                                                <button type="button" class="btn  p-2 bg-gradient-info position-relative" onclick="cardKonsulKetua(<?= $a['pdtId']; ?>,<?= $g['id'] ?>,<?= $a['pegawai_id']; ?>,<?= $leader; ?>)">
+                                                                                    <i class="fa-solid fa-person-military-to-person"></i> Koordinasi
+                                                                                </button>
+                                                                            </div>
+                                                                        </td>
+                                                                    <?php } ?>
+                                                                </tr>
                                                         <?php
                                                             }
                                                         }
@@ -280,7 +293,6 @@
                                         <?php } ?>
                                         <?php
                                     } else {
-
                                         if ($g['dibuka'] == '0') {
                                         ?>
 
@@ -409,9 +421,7 @@
                                                             <tbody id="detail_tugas3">
                                                                 <?php
                                                                 foreach ($g['pegawai'] as $w => $a) {
-
                                                                 ?>
-
                                                                     <?php if ($a['leader'] == 1) {
                                                                         $leader = $a['pegawai_id'];
                                                                     } ?>
@@ -445,7 +455,7 @@
                                                             <p class="text-xs  py-0 my-0 ml-1">- <?php echo $uu['umum'] ?> - <span class="text-xs text-bold"><?php echo $uu['createAt'] ?></span></p>
                                                         <?php } ?>
                                                     </span>
-                                                    <span class="text-sm"><b>Instruksi Dari Ketua Tim</b></span>
+                                                    <span class="text-sm"><b>Instruksi Dari Ketua Tim/KaSiDik</b></span>
                                                     <?php
                                                     foreach ($g['pegawai'] as $w => $a) {
                                                         if ($a['userCode'] == $this->session->userdata('userCode')) {
@@ -475,65 +485,57 @@
 
                                                                 <div class="col-2">
                                                                     <button type="button" class="btn  p-2 bg-gradient-info position-relative" onclick="cardKonsul(<?= $a['pdtId']; ?>,<?= $g['id'] ?>,<?= $leader; ?>,<?= $a['pegawai_id']; ?>)">
-                                                                    <i class="fa-solid fa-person-military-to-person"></i> Koordinasi
-                                                                    </button>
+                                                                        <i class="fa-solid fa-person-military-to-person"></i> Koordinasi </button>
                                                                 </div>
-                                                            </div>
-                                                            <hr>
-                                                            <span class="text-sm"><b>Dokumen</b>
-                                                                <?php if ($g['detail_tugasStatus'] != "Diterima") { ?>
-                                                                    <i class="ri-add-circle-line ri-lg text-success" role="button" title="Upload File" onclick="addFile(<?php echo $a['pdtId'] . ',' . $g['id']; ?>)"></i>
-                                                                <?php } ?>
-                                                            </span>
-                                                            <div class="text-xs">
-                                                                <?php
-                                                                if ($a['dokumen'] == NULL) {
-                                                                    echo "Belum ada dokumen yang di upload";
-                                                                } else {
-                                                                    $dokumen = json_decode($a['dokumen'], true);
-                                                                ?>
+                                                                <div class="text-xs">
                                                                     <?php
-                                                                    foreach ($dokumen as $k => $v) {
-                                                                        echo '<p class="text-xs  py-0 my-0 ml-1">- ' . $v['nama'] . '<a href="' . base_url("kejati/tugas/download/" . encrypt("\assets\kejati\dokumenTim\\" . $v['dokumen']) . "/" . $v['dokumen']) . '" style="text-decoration: none;"><i class="ri-file-download-line ri-lg text-primary" role="button" title="Download Hasil Tim"></i></a></p>';
+                                                                    if ($a['dokumen'] == NULL) {
+                                                                        echo "Belum ada dokumen yang di upload";
+                                                                    } else {
+                                                                        $dokumen = json_decode($a['dokumen'], true);
+                                                                    ?>
+                                                                        <?php
+                                                                        foreach ($dokumen as $k => $v) {
+                                                                            echo '<p class="text-xs  py-0 my-0 ml-1">- ' . $v['nama'] . '<a href="' . base_url("kejati/tugas/download/" . encrypt("\assets\kejati\dokumenTim\\" . $v['dokumen']) . "/" . $v['dokumen']) . '" style="text-decoration: none;"><i class="ri-file-download-line ri-lg text-primary" role="button" title="Download Hasil Tim"></i></a></p>';
+                                                                        }
+                                                                        ?>
+                                                                    <?php
                                                                     }
                                                                     ?>
-                                                                <?php
-                                                                }
-                                                                ?>
-                                                            </div>
-                                                    <?php
+                                                                </div>
+                                                        <?php
                                                         }
                                                     }
+                                                        ?>
+
+                                                            </div>
+                                                    <?php
+
+                                                }
+                                            }
                                                     ?>
+                                                <?php } ?>
 
                                                 </div>
-                                        <?php
-
-                                            }
-                                        }
-                                        ?>
-                                    <?php } ?>
-
+                                            <?php } ?>
                                 </div>
-                            <?php } ?>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <!-- Modal Konsultasi -->
-    <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" id="modal-konsultasi" role="dialog">
-        <div class="modal-dialog modal-dialog-scrollable modal-xl  modal-dialog-centered " role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h6 class="modal-title" id="modal-title-notification">Koordinasi</h6>
-                    <button id="close-modal1" type="button" class="btn-close text-dark" data-bs-dismiss="modal" onclick="clearModal()" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body" id="modal-body">
-                    <!-- <input id="pegawai-detail-tugas-id" type="hidden" value="">
+        <!-- Modal Konsultasi -->
+        <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" id="modal-konsultasi" role="dialog">
+            <div class="modal-dialog modal-dialog-scrollable modal-xl  modal-dialog-centered " role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h6 class="modal-title" id="modal-title-notification">Koordinasi</h6>
+                        <button id="close-modal1" type="button" class="btn-close text-dark" data-bs-dismiss="modal" onclick="clearModal()" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="modal-body">
+                        <!-- <input id="pegawai-detail-tugas-id" type="hidden" value="">
                     <input id="detail-tugas-id" type="hidden" value="<?= $a['detail_tugas_id'] ?>">
                     <div id="list-konsultasi"></div>
                     <div id="chat-konsultasi"></div>
@@ -541,402 +543,402 @@
                     <div id="edit-konsultasi"></div>
                  -->
 
-                </div>
-                <div class="modal-footer">
-                    <button id="close-modal2" type="button" class="btn btn-link  ml-auto p-1" onclick="clearModal()" data-bs-dismiss="modal">Close</button>
-                </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="close-modal2" type="button" class="btn btn-link  ml-auto p-1" onclick="clearModal()" data-bs-dismiss="modal">Close</button>
+                    </div>
 
+                </div>
             </div>
+
         </div>
+        <!-- Akhir Modal Konsultasi -->
+        <div id="forModal"></div>
+        <script>
+            function addTugasUntukAnggota(id, detail_tugas_id) {
+                $.ajax({
+                    url: base_url + 'kejati/ajax/tugas/addTugasUntukAnggota',
+                    type: "POST",
+                    data: {
+                        id: id,
+                        detail_tugas_id: detail_tugas_id
+                    },
+                    success: function(data) {
+                        if (data.status) {
+                            $("#forModal").html(data.data);
+                            $("#addTugasUntukAnggota").modal("show");
+                        } else {
+                            handleError(data);
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert("Error get data from ajax");
+                    },
+                });
+            }
 
-    </div>
-    <!-- Akhir Modal Konsultasi -->
-    <div id="forModal"></div>
-    <script>
-        function addTugasUntukAnggota(id, detail_tugas_id) {
-            $.ajax({
-                url: base_url + 'kejati/ajax/tugas/addTugasUntukAnggota',
-                type: "POST",
-                data: {
-                    id: id,
-                    detail_tugas_id: detail_tugas_id
-                },
-                success: function(data) {
-                    if (data.status) {
-                        $("#forModal").html(data.data);
-                        $("#addTugasUntukAnggota").modal("show");
-                    } else {
-                        handleError(data);
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    alert("Error get data from ajax");
-                },
-            });
-        }
+            function saveTugasUntukAnggota() {
+                $("#btnSave").text("saving...");
+                $("#btnSave").attr("disabled", true);
+                var url, method;
 
-        function saveTugasUntukAnggota() {
-            $("#btnSave").text("saving...");
-            $("#btnSave").attr("disabled", true);
-            var url, method;
+                url = base_url + 'kejati/ajax/tugas/saveTugasUntukAnggota';
+                method = "saved";
 
-            url = base_url + 'kejati/ajax/tugas/saveTugasUntukAnggota';
-            method = "saved";
+                $.ajax({
+                    url: url,
+                    type: "POST",
+                    data: {
+                        id: $("#id").val(),
+                        detail_tugas_id: $("#detail_tugas_id").val(),
+                        tugas: $("#tugas").val(),
+                    },
+                    dataType: "json",
+                    success: function(data) {
+                        if (data.status) {
+                            detail(<?php echo $tugas_id ?>);
+                            $("#addTugasUntukAnggota").modal("hide");
+                            handleToast("success", data.message);
+                        } else {
+                            handleError(data);
+                        }
+                        $("#btnSave").text("save");
+                        $("#btnSave").attr("disabled", false);
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert("Error adding / update data");
+                        $("#btnSave").text("save");
+                        $("#btnSave").attr("disabled", false);
+                    },
+                });
 
-            $.ajax({
-                url: url,
-                type: "POST",
-                data: {
-                    id: $("#id").val(),
-                    detail_tugas_id: $("#detail_tugas_id").val(),
-                    tugas: $("#tugas").val(),
-                },
-                dataType: "json",
-                success: function(data) {
-                    if (data.status) {
-                        detail(<?php echo $tugas_id ?>);
-                        $("#addTugasUntukAnggota").modal("hide");
-                        handleToast("success", data.message);
-                    } else {
-                        handleError(data);
-                    }
-                    $("#btnSave").text("save");
-                    $("#btnSave").attr("disabled", false);
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    alert("Error adding / update data");
-                    $("#btnSave").text("save");
-                    $("#btnSave").attr("disabled", false);
-                },
-            });
+                $("#form input, #form textarea").on("keyup", function() {
+                    $(this).removeClass("is-valid is-invalid");
+                });
+                $("#form select").on("change", function() {
+                    $(this).removeClass("is-valid is-invalid");
+                });
+            }
 
-            $("#form input, #form textarea").on("keyup", function() {
-                $(this).removeClass("is-valid is-invalid");
-            });
-            $("#form select").on("change", function() {
-                $(this).removeClass("is-valid is-invalid");
-            });
-        }
+            function addTugasUmumUntukAnggota(detail_tugas_id) {
+                $.ajax({
+                    url: base_url + 'kejati/ajax/tugas/addTugasUmumUntukAnggota',
+                    type: "POST",
+                    data: {
+                        detail_tugas_id: detail_tugas_id
+                    },
+                    success: function(data) {
+                        if (data.status) {
+                            $("#forModal").html(data.data);
+                            $("#addTugasUmumUntukAnggota").modal("show");
+                        } else {
+                            handleError(data);
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert("Error get data from ajax");
+                    },
+                });
+            }
 
-        function addTugasUmumUntukAnggota(detail_tugas_id) {
-            $.ajax({
-                url: base_url + 'kejati/ajax/tugas/addTugasUmumUntukAnggota',
-                type: "POST",
-                data: {
-                    detail_tugas_id: detail_tugas_id
-                },
-                success: function(data) {
-                    if (data.status) {
-                        $("#forModal").html(data.data);
-                        $("#addTugasUmumUntukAnggota").modal("show");
-                    } else {
-                        handleError(data);
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    alert("Error get data from ajax");
-                },
-            });
-        }
+            function saveTugasUmumUntukAnggota() {
+                $("#btnSave").text("saving...");
+                $("#btnSave").attr("disabled", true);
+                var url, method;
 
-        function saveTugasUmumUntukAnggota() {
-            $("#btnSave").text("saving...");
-            $("#btnSave").attr("disabled", true);
-            var url, method;
+                url = base_url + 'kejati/ajax/tugas/saveTugasUmumUntukAnggota';
+                method = "saved";
 
-            url = base_url + 'kejati/ajax/tugas/saveTugasUmumUntukAnggota';
-            method = "saved";
+                $.ajax({
+                    url: url,
+                    type: "POST",
+                    data: {
+                        umum: $("#umum").val(),
+                        detail_tugas_id: $("#detail_tugas_id").val(),
+                    },
+                    dataType: "json",
+                    success: function(data) {
+                        if (data.status) {
+                            detail(<?php echo $tugas_id ?>);
+                            $("#addTugasUmumUntukAnggota").modal("hide");
+                            handleToast("success", data.message);
+                        } else {
+                            handleError(data);
+                        }
+                        $("#btnSave").text("save");
+                        $("#btnSave").attr("disabled", false);
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert("Error adding / update data");
+                        $("#btnSave").text("save");
+                        $("#btnSave").attr("disabled", false);
+                    },
+                });
 
-            $.ajax({
-                url: url,
-                type: "POST",
-                data: {
-                    umum: $("#umum").val(),
-                    detail_tugas_id: $("#detail_tugas_id").val(),
-                },
-                dataType: "json",
-                success: function(data) {
-                    if (data.status) {
-                        detail(<?php echo $tugas_id ?>);
-                        $("#addTugasUmumUntukAnggota").modal("hide");
-                        handleToast("success", data.message);
-                    } else {
-                        handleError(data);
-                    }
-                    $("#btnSave").text("save");
-                    $("#btnSave").attr("disabled", false);
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    alert("Error adding / update data");
-                    $("#btnSave").text("save");
-                    $("#btnSave").attr("disabled", false);
-                },
-            });
+                $("#form input, #form textarea").on("keyup", function() {
+                    $(this).removeClass("is-valid is-invalid");
+                });
+                $("#form select").on("change", function() {
+                    $(this).removeClass("is-valid is-invalid");
+                });
+            }
 
-            $("#form input, #form textarea").on("keyup", function() {
-                $(this).removeClass("is-valid is-invalid");
-            });
-            $("#form select").on("change", function() {
-                $(this).removeClass("is-valid is-invalid");
-            });
-        }
+            function bagikan(detail_tugas_id) {
+                $("#bagikan").text("loading...");
+                $("#bagikan").attr("disabled", true);
+                $.ajax({
+                    url: base_url + 'kejati/ajax/tugas/bagikan',
+                    type: "POST",
+                    data: {
+                        detail_tugas_id: detail_tugas_id
+                    },
+                    success: function(data) {
+                        if (data.status) {
+                            detail(<?php echo $tugas_id ?>);
+                            handleToast("success", data.message);
+                        } else {
+                            handleError(data);
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert("Error get data from ajax");
+                    },
+                });
+            }
 
-        function bagikan(detail_tugas_id) {
-            $("#bagikan").text("loading...");
-            $("#bagikan").attr("disabled", true);
-            $.ajax({
-                url: base_url + 'kejati/ajax/tugas/bagikan',
-                type: "POST",
-                data: {
-                    detail_tugas_id: detail_tugas_id
-                },
-                success: function(data) {
-                    if (data.status) {
-                        detail(<?php echo $tugas_id ?>);
-                        handleToast("success", data.message);
-                    } else {
-                        handleError(data);
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    alert("Error get data from ajax");
-                },
-            });
-        }
+            function addFile(id, detail_tugas_id) {
+                $.ajax({
+                    url: base_url + 'kejati/ajax/tugas/addFile',
+                    type: "POST",
+                    data: {
+                        id: id,
+                        detail_tugas_id: detail_tugas_id
+                    },
+                    success: function(data) {
+                        if (data.status) {
+                            $("#forModal").html(data.data);
+                            $("#addFile").modal("show");
+                        } else {
+                            handleError(data);
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert("Error get data from ajax");
+                    },
+                });
+            }
 
-        function addFile(id, detail_tugas_id) {
-            $.ajax({
-                url: base_url + 'kejati/ajax/tugas/addFile',
-                type: "POST",
-                data: {
-                    id: id,
-                    detail_tugas_id: detail_tugas_id
-                },
-                success: function(data) {
-                    if (data.status) {
-                        $("#forModal").html(data.data);
-                        $("#addFile").modal("show");
-                    } else {
-                        handleError(data);
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    alert("Error get data from ajax");
-                },
-            });
-        }
+            function saveFile() {
+                $("#btnSave").text("saving...");
+                $("#btnSave").attr("disabled", true);
+                var url, method;
 
-        function saveFile() {
-            $("#btnSave").text("saving...");
-            $("#btnSave").attr("disabled", true);
-            var url, method;
+                url = base_url + 'kejati/ajax/tugas/saveFile';
+                method = "saved";
 
-            url = base_url + 'kejati/ajax/tugas/saveFile';
-            method = "saved";
+                var formData = new FormData(this.form);
+                $.ajax({
+                    url: url,
+                    type: "POST",
+                    data: formData,
+                    async: false,
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                    success: function(data) {
+                        if (data.status) {
+                            detail(<?php echo $tugas_id ?>);
+                            $("#addFile").modal("hide");
+                            handleToast("success", data.message);
+                        } else {
+                            handleError(data);
+                        }
+                        $("#btnSave").text("save");
+                        $("#btnSave").attr("disabled", false);
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert("Error adding / update data");
+                        $("#btnSave").text("save");
+                        $("#btnSave").attr("disabled", false);
+                    },
+                });
 
-            var formData = new FormData(this.form);
-            $.ajax({
-                url: url,
-                type: "POST",
-                data: formData,
-                async: false,
-                cache: false,
-                processData: false,
-                contentType: false,
-                success: function(data) {
-                    if (data.status) {
-                        detail(<?php echo $tugas_id ?>);
-                        $("#addFile").modal("hide");
-                        handleToast("success", data.message);
-                    } else {
-                        handleError(data);
-                    }
-                    $("#btnSave").text("save");
-                    $("#btnSave").attr("disabled", false);
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    alert("Error adding / update data");
-                    $("#btnSave").text("save");
-                    $("#btnSave").attr("disabled", false);
-                },
-            });
+                $("#form input, #form textarea").on("keyup", function() {
+                    $(this).removeClass("is-valid is-invalid");
+                });
+                $("#form select").on("change", function() {
+                    $(this).removeClass("is-valid is-invalid");
+                });
+            }
 
-            $("#form input, #form textarea").on("keyup", function() {
-                $(this).removeClass("is-valid is-invalid");
-            });
-            $("#form select").on("change", function() {
-                $(this).removeClass("is-valid is-invalid");
-            });
-        }
-
-        function kirim(detail_tugas_id = '') {
-            $("#btnSave").text("mengirim...");
-            $("#btnSave").attr("disabled", true);
-            $.ajax({
-                url: base_url + 'kejati/ajax/tugas/kirim',
-                type: "POST",
-                data: {
-                    detail_tugas_id: detail_tugas_id,
-                },
-                success: function(data) {
-                    if (data.status) {
-                        handleToast("success", data.message);
-                        breadcrumb(data.breadcrumb);
-                    } else {
-                        handleError(data);
+            function kirim(detail_tugas_id = '') {
+                $("#btnSave").text("mengirim...");
+                $("#btnSave").attr("disabled", true);
+                $.ajax({
+                    url: base_url + 'kejati/ajax/tugas/kirim',
+                    type: "POST",
+                    data: {
+                        detail_tugas_id: detail_tugas_id,
+                    },
+                    success: function(data) {
+                        if (data.status) {
+                            handleToast("success", data.message);
+                            breadcrumb(data.breadcrumb);
+                        } else {
+                            handleError(data);
+                            $("#btnSave").text("Kirim ke atasan");
+                            $("#btnSave").attr("disabled", false);
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert("Error get data from ajax");
                         $("#btnSave").text("Kirim ke atasan");
                         $("#btnSave").attr("disabled", false);
+                    },
+                    complete: function() {
+                        detail(<?php echo $tugas_id ?>);
+                    },
+                });
+            }
+
+            // $.ajax({
+            //     url: base_url + 'kejati/ajax/Konsultasi/cardListKonsultasi/' + $('#pegawai-detail-tugas-id').val() + '/' + $('#detail-tugas-id').val(),
+            //     type: "GET",
+            //     success: function(data) {
+            //         $('#list-konsultasi').html(data)
+            //     }
+            // })
+            // $.ajax({
+            //     url: base_url + 'kejati/ajax/Konsultasi/cardChatKonsultasi/',
+            //     type: "GET",
+            //     success: function(data) {
+            //         $('#chat-konsultasi').html(data)
+            //     }
+            // })
+
+            function cardKonsul(pdtId, tugasId, pegawai_id_leader, pegawai_id) {
+
+
+                $.ajax({
+                    url: base_url + 'kejati/ajax/konsultasi/cardListKonsultasi/' + pdtId + '/' + tugasId + '/' + pegawai_id_leader + '/' + pegawai_id,
+                    type: "GET",
+                    success: function(data) {
+
+                        $('#modal-body').empty()
+                        $('#modal-body').html(data)
+                        $('#modal-konsultasi').modal('show');
+
+
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert("Error get data from ajax");
+                    },
+                });
+            }
+
+            function cardKonsulKetua(pdtId, tugasId, idPegawai, leader) {
+
+                $.ajax({
+                    url: base_url + 'kejati/ajax/konsultasi/cardListKonsultasiKetua/' + pdtId + '/' + tugasId + '/' + idPegawai + '/' + leader,
+                    type: "GET",
+                    success: function(data) {
+
+                        $('#modal-body').empty()
+                        $('#modal-body').html(data)
+                        $('#modal-konsultasi').modal('show');
+
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert("Error get data from ajax");
+                    },
+                });
+            }
+
+
+            function toTambahKonsultasi(id_pegawai) {
+
+                $.ajax({
+                    url: base_url + 'kejati/ajax/Konsultasi/cardTambahKonsultasi/' + id_pegawai,
+                    type: "GET",
+                    success: function(data) {
+
+                        $('#content').html(data)
+                        $('#tutup-list').hide()
+                        $('#tombol-tambah').hide()
                     }
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    alert("Error get data from ajax");
-                    $("#btnSave").text("Kirim ke atasan");
-                    $("#btnSave").attr("disabled", false);
-                },
-                complete: function() {
-                    detail(<?php echo $tugas_id ?>);
-                },
-            });
-        }
+                })
+            }
 
-        // $.ajax({
-        //     url: base_url + 'kejati/ajax/Konsultasi/cardListKonsultasi/' + $('#pegawai-detail-tugas-id').val() + '/' + $('#detail-tugas-id').val(),
-        //     type: "GET",
-        //     success: function(data) {
-        //         $('#list-konsultasi').html(data)
-        //     }
-        // })
-        // $.ajax({
-        //     url: base_url + 'kejati/ajax/Konsultasi/cardChatKonsultasi/',
-        //     type: "GET",
-        //     success: function(data) {
-        //         $('#chat-konsultasi').html(data)
-        //     }
-        // })
-
-        function cardKonsul(pdtId, tugasId, pegawai_id_leader, pegawai_id) {
-
-
-            $.ajax({
-                url: base_url + 'kejati/ajax/konsultasi/cardListKonsultasi/' + pdtId + '/' + tugasId + '/' + pegawai_id_leader + '/' + pegawai_id,
-                type: "GET",
-                success: function(data) {
-
-                    $('#modal-body').empty()
-                    $('#modal-body').html(data)
-                    $('#modal-konsultasi').modal('show');
-
-
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    alert("Error get data from ajax");
-                },
-            });
-        }
-
-        function cardKonsulKetua(pdtId, tugasId, idPegawai, leader) {
-
-            $.ajax({
-                url: base_url + 'kejati/ajax/konsultasi/cardListKonsultasiKetua/' + pdtId + '/' + tugasId + '/' + idPegawai + '/' + leader,
-                type: "GET",
-                success: function(data) {
-
-                    $('#modal-body').empty()
-                    $('#modal-body').html(data)
-                    $('#modal-konsultasi').modal('show');
-
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    alert("Error get data from ajax");
-                },
-            });
-        }
-
-
-        function toTambahKonsultasi(id_pegawai) {
-
-            $.ajax({
-                url: base_url + 'kejati/ajax/Konsultasi/cardTambahKonsultasi/' + id_pegawai,
-                type: "GET",
-                success: function(data) {
-
-                    $('#content').html(data)
-                    $('#tutup-list').hide()
-                    $('#tombol-tambah').hide()
-                }
-            })
-        }
-
-        function toEditKonsul(id_konsul) {
-            $.ajax({
-                url: base_url + 'kejati/ajax/Konsultasi/cardEditKonsultasi/' + id_konsul,
-                type: 'GET',
-                success: function(data) {
-                    $('#content').html(data)
-                    $('#tutup-list').hide()
-                    $('#tombol-tambah').hide()
-                }
-            })
-        }
-
-        function tutupTambah() {
-            $.ajax({
-                url: base_url + 'kejati/ajax/Konsultasi/cardListKonsultasi/' + $('#pegawai-detail-tugas-id').val() + '/' + $('#detail-tugas-id').val(),
-                type: "GET",
-                success: function(data) {
-                    $('#list-konsultasi').html(data)
-                }
-            })
-            $('#tambah-konsultasi').hide('fast')
-            $('#tombol-tambah').show()
-            $('[id^="list-konsul"]').show()
-
-        }
-
-        function tutupEdit() {
-            $.ajax({
-                url: base_url + 'kejati/ajax/Konsultasi/cardListKonsultasi/' + $('#pegawai-detail-tugas-id').val() + '/' + $('#detail-tugas-id').val(),
-                type: "GET",
-                success: function(data) {
-                    $('#list-konsultasi').html(data)
-                }
-            })
-
-            $('#edit-konsultasi').hide('fast')
-            $('#tombol-tambah').show()
-            $('[id^="list-konsul"]').show()
-
-        }
-
-        function simpanKonsul(pegawai_detail_id) {
-            console.log($('#form-tambah-konsul' + pegawai_detail_id).serialize());
-            $.ajax({
-                url: base_url + 'kejati/ajax/konsultasi/add/' + pegawai_detail_id,
-                type: 'POST',
-                data: $('#form-tambah-konsul' + pegawai_detail_id).serialize(),
-                success: function(data) {
-
-                    if (data.status) {
-                        handleToast("success", data.message)
-
-                    } else {
-                        handleError(data);
+            function toEditKonsul(id_konsul) {
+                $.ajax({
+                    url: base_url + 'kejati/ajax/Konsultasi/cardEditKonsultasi/' + id_konsul,
+                    type: 'GET',
+                    success: function(data) {
+                        $('#content').html(data)
+                        $('#tutup-list').hide()
+                        $('#tombol-tambah').hide()
                     }
-                    backList()
+                })
+            }
 
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    alert("Error get data from ajax");
-                    $("#btnSave").text("Kirim ke atasan");
-                    $("#btnSave").attr("disabled", false);
-                },
-                complete: function() {
+            function tutupTambah() {
+                $.ajax({
+                    url: base_url + 'kejati/ajax/Konsultasi/cardListKonsultasi/' + $('#pegawai-detail-tugas-id').val() + '/' + $('#detail-tugas-id').val(),
+                    type: "GET",
+                    success: function(data) {
+                        $('#list-konsultasi').html(data)
+                    }
+                })
+                $('#tambah-konsultasi').hide('fast')
+                $('#tombol-tambah').show()
+                $('[id^="list-konsul"]').show()
 
-                },
-            });
-        }
+            }
 
-        function clearModal() {
-            $('#modal-body').html('');
-        }
-    </script>
+            function tutupEdit() {
+                $.ajax({
+                    url: base_url + 'kejati/ajax/Konsultasi/cardListKonsultasi/' + $('#pegawai-detail-tugas-id').val() + '/' + $('#detail-tugas-id').val(),
+                    type: "GET",
+                    success: function(data) {
+                        $('#list-konsultasi').html(data)
+                    }
+                })
+
+                $('#edit-konsultasi').hide('fast')
+                $('#tombol-tambah').show()
+                $('[id^="list-konsul"]').show()
+
+            }
+
+            function simpanKonsul(pegawai_detail_id) {
+                console.log($('#form-tambah-konsul' + pegawai_detail_id).serialize());
+                $.ajax({
+                    url: base_url + 'kejati/ajax/konsultasi/add/' + pegawai_detail_id,
+                    type: 'POST',
+                    data: $('#form-tambah-konsul' + pegawai_detail_id).serialize(),
+                    success: function(data) {
+
+                        if (data.status) {
+                            handleToast("success", data.message)
+
+                        } else {
+                            handleError(data);
+                        }
+                        backList()
+
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        alert("Error get data from ajax");
+                        $("#btnSave").text("Kirim ke atasan");
+                        $("#btnSave").attr("disabled", false);
+                    },
+                    complete: function() {
+
+                    },
+                });
+            }
+
+            function clearModal() {
+                $('#modal-body').html('');
+            }
+        </script>
